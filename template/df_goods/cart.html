@@ -1,0 +1,188 @@
+{%extends 'base_left.html'%}
+{%block head%}
+<script>
+
+<!--统计总价钱数的方法-->
+	function count_goods(){
+		var goods_all=0
+		var num_count=0
+		var num_m=$('.col07');
+		$('.col07').each(function(){
+			if($(this).siblings('.col01').find('input').prop('checked')){
+				var good_text=$(this).text()
+				good_text=good_text.substring(0,good_text.length-1)
+				goods_all=goods_all+parseFloat(good_text)
+				num_count+=1
+			}else{
+				$('.settlements').find('input').prop('checked','')
+			}
+		});
+		$('.settlements').find('em').text(goods_all.toFixed(2));
+		$('.settlements').find('b').text(num_count);
+	}
+
+	$(function(){
+		count_goods()  <!--先将总数计算出来-->
+
+<!--全选input的处理 不使用attr，而是用prop-->
+ 		$('.settlements').find('input').click(function(){
+			console.log($('.settlements').find('input').prop('checked'))
+ 			if($('.settlements').find('input').prop('checked')){
+				$('input').prop('checked','true')
+				count_goods()
+ 			}else{
+ 				$('input').prop('checked','')
+ 				count_goods()
+ 			}
+ 		});
+
+<!--input手动输入数字后，失去焦点后统计商品总价-->
+		$('.num_show').blur(function(){
+			var number=$(this).val();
+			var numb_id=$(this).attr('id');
+			var price=$('ul[id=1'+numb_id+']').find('.col07').attr('value');
+			$('ul[id=1'+numb_id+']').find('.col07').text(+(parseInt(number)*parseFloat(price)).toFixed(2)+"元")
+			count_goods()
+			good_id=$(this).next().attr('good')
+			goods_count(good_id,number)
+
+		});
+	<!--});-->
+
+<!--输入限制为正整数-->
+		$('input').on("keyup keydown",function(){
+	 		if(this.value.length==1){
+	 			this.value=this.value.replace(/[^1-9]/g,'')
+	 		}else{
+	 			this.value=this.value.replace(/\D+/g,'')
+	 		}
+	 	});
+
+ <!--删除购物车商品使用-->
+		$('.col08').find('a').click(function(){
+			var num=$(this).attr('id')
+			$.get('/cart/cart_delete_'+num+'/',function(data){
+				if(data.status==1){
+					$('a[id='+num+']').parents('ul').remove();
+					count=parseInt($('.total_count').find('em').text())
+					$('.total_count').find('em').text(count-1)
+					count_goods()
+				}
+			});
+
+		});
+
+<!--提交订单		-->
+		$('.settlements').find('a').click(function(){
+			var get_ip=[]
+			var get_total=[]
+			var i=0
+			$('.cart_list_td').children('.col01').children(input).each(function(){
+				if($(this).prop('checked')){
+					var good_id=$(this).attr("good")
+					var good_to=$(this).parent().siblings('.col07').text()
+					good_to=good_to.substring(0,good_to.length-1)
+					get_ip[i]=good_id
+					get_total[i]=good_to
+					alert(get_total[i])
+					i+=1
+				}
+
+			});
+			if(get_ip!=''){
+			$(this).attr('href','/order/order_index/?good_id='+get_ip+'&good_total='+get_total)
+
+			}else{
+			alert('请选择商品')
+			}
+				<!--$(this).attr('href','/cart/order/?good_id='+get_ip+'&good_total='+get_total);-->
+		});
+	});
+
+<!--input点击+的处理-->
+	function add_c(e){
+		var numb_id=e.getAttribute('numtag');                <!--根据自定义属性NUMTAg，获取商品和用户ID组成属性-->
+		var price=$('ul[id=1'+numb_id+']').find('.col07').attr('value');  <!-- 根据自定义标签获取到所属ul下其他标签-->
+		var number=$('ul[id=1'+numb_id+']').find(".num_show").val();
+		$('ul[id=1'+numb_id+']').find(".num_show").val(parseInt(number)+1);
+		$('ul[id=1'+numb_id+']').find('.col07').text(+((parseInt(number)+1)*parseFloat(price)).toFixed(2)+"元");<!--toFixed限制取两位小数，防止计算错误-->
+		<!--if($('ul[id=1'+numb_id+']').find('input').prop(checked))-->
+		var good_id=e.getAttribute('good');
+		goods_count(good_id,parseInt(number)+1)
+		count_goods()
+	}
+<!--点击-号的处理-->
+	function minus_c(e){
+		var numb_id=e.getAttribute('numtag');   <!--通过函数传参，用js的getAttribute获取属性值。不能用attr获取-->
+		var price=$('ul[id=1'+numb_id+']').find('.col07').attr('value');
+		var number=$('input[id='+numb_id+']').val();
+		if(number>0){
+			$('input[id='+numb_id+']').val(parseInt(number)-1);
+			$('ul[id=1'+numb_id+']').find('.col07').text(((parseInt(number)-1)*parseFloat(price)).toFixed(2)+'元');
+	 		count_goods()
+	 		var good_id=e.getAttribute('good');
+	 		goods_count(good_id,parseInt(number)-1)
+	 	}else{
+	 		alert("不能少于0")
+	 	}
+	 }
+
+<!--统计单个商品总数修改数据库-->
+	 function goods_count(goods_id,goods_count){
+	 	$.get('cart/cart_count/?goods_id='+goods_id+'&count='+goods_count,function(data){
+			if(data.status==1){
+			return
+			}else{
+
+			}
+
+	 	});
+	 }
+
+</script>
+
+{%endblock head%}
+
+{%block min%}
+
+
+
+
+	<div class="total_count">全部商品<em>{{cart_count}}</em>件</div>
+	<ul class="cart_list_th clearfix">
+		<li class="col01">商品名称</li>
+		<li class="col02">商品单位</li>
+		<li class="col03">商品价格</li>
+		<li class="col04">数量</li>
+		<li class="col05">小计</li>
+		<li class="col06">操作</li>
+	</ul>
+	{%for cart in cart_data%}
+	<ul class="cart_list_td clearfix" id="1{{cart.use.id}}_{{cart.goods.id}}">
+		<li class="col01"><input good="{{cart.goods.id}}" onclick="count_goods()" type="checkbox" name="" checked="1"></li>
+		<li class="col02"><img src="/static/{{cart.goods.gpic}}"></li>
+		<li class="col03">{{cart.goods}}<br><em>{{cart.goods.gprice}}元/{{cart.goods.gunit}}</em></li>
+		<li class="col04">{{cart.goods.gunit}}</li>
+		<li class="col05">{{cart.goods.gprice}}元</li>
+		<li class="col06">
+			<div class="num_add">
+				<a href="javascript:;" good='{{cart.goods.id}}' onclick="add_c(this)" numtag='{{cart.use.id}}_{{cart.goods.id}}' class="add fl">+</a>
+				<input  type="text" class="num_show fl" value="{{cart.count}}" id='{{cart.use.id}}_{{cart.goods.id}}'>
+				<a href="javascript:;" good="{{cart.goods.id}}" onclick="minus_c(this)" numtag='{{cart.use.id}}_{{cart.goods.id}}' class="minus fl">-</a>
+			</div>
+		</li>
+		{% load tag_filter %}
+		<li class="col07" value="{{cart.goods.gprice}}">{{ cart.goods.gprice|mult_c:cart.count }}元</li>
+		<li class="col08"><a href="javascript:;" id="{{cart.goods.id}}">删除</a></li>
+	</ul>
+	{%endfor%}
+
+	<ul class="settlements">
+		<li class="col01"><input id="input" type="checkbox" name="" checked="1"></li>
+		<li class="col02">全选</li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em>00.00</em><br>共计<b>{{cart_count}}</b>件商品</li>
+		<li class="col04"><a href="javascript:;">去结算</a></li>
+	</ul>
+
+{%endblock min%}
+

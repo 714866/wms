@@ -1,0 +1,315 @@
+{%extends 'base_header.html'%}
+{%block head%}
+<script>
+		var list='p#list1'
+        var context = {%for g in goods%}'<li>'
+				+ '<a href="/goods/detail/?id={{g.id}}"><img src="/static/{{g.gpic}}"></a>'
+				+	'<h4><a href="/goods/detail/?id={{g.id}}">{{g.gtitle}}</a></h4>'
+				+	'<div class="operate">'
+				+		'<span class="prize">￥{{g.gprice}}</span>'
+				+		'<span class="unit">{{g.gprice}}/500g</span>'
+				+		'<a href="javascript:;" onclick="cart_handle({{g.id}})" class="add_goods" title="加入购物车"></a>'
+				+	'</div>'
+				+ '</li>';
+				{%endfor%}
+	<!--alert("jq开始")-->
+	var goods=1
+
+	function cart_handle(e){
+		alert(555)
+		$.get('/cart/cart_handle/?good_id='+e,function(data){
+			alert(data.answer)
+		});
+	}
+
+$(function(){
+	var sort=1
+	yeshu(0)
+
+
+	$("#jiage").click(function(){
+		$("#moren").attr("class","");
+		$("#jiage").attr("class","active");
+		$("#renqi").attr("class","");
+				        var context = {%for g in jia_goods%}'<li>'
+				+ '<a href="/goods/detail/?id={{g.id}}"><img src="/static/{{g.gpic}}"></a>'
+				+	'<h4><a href="/goods/detail/?id={{g.id}}">{{g.gtitle}}jiage</a></h4>'
+				+	'<div class="operate">'
+				+		'<span class="prize">￥{{g.gprice}}</span>'
+				+		'<span class="unit">{{g.gprice}}/500g</span>'
+				+		'<a href="javascript:;" onclick="cart_handle({{g.id}})" class="add_goods" title="加入购物车"></a>'
+				+	'</div>'
+				+ '</li>';
+				{%endfor%}
+		$(".goods_type_list").html(context);
+		sort=2
+	});
+
+	$("#renqi").click(function(){
+		$("#moren").attr("class","");
+		$("#renqi").attr("class","active");
+		$("#jiage").attr("class","");
+		var context = {%for g in ren_goods%}'<li>'
+				+ '<a href="/goods/detail/?id={{g.id}}"><img src="/static/{{g.gpic}}"></a>'
+				+	'<h4><a href="/goods/detail/?id={{g.id}}">{{g.gtitle}}renqi</a></h4>'
+				+	'<div class="operate">'
+				+		'<span class="prize">￥{{g.gprice}}</span>'
+				+		'<span class="unit">{{g.gprice}}/500g</span>'
+				+		'<a href="javascript:;" onclick="cart_handle({{g.id}})" class="add_goods" title="加入购物车"></a>'
+				+	'</div>'
+				+ '</li>';
+				{%endfor%}
+		$(".goods_type_list").html(context);
+		sort=3
+	});
+
+	$("#moren").click(function(){
+		$("#renqi").attr("class","");
+		$("#moren").attr("class","active");
+		$("#jiage").attr("class","");
+		        var context = {%for g in goods%}'<li>'
+				+ '<a href="/goods/detail/?id={{g.id}}"><img src="/static/{{g.gpic}}"></a>'
+				+	'<h4><a href="/goods/detail/?id={{g.id}}">{{g.gtitle}}houjian</a></h4>'
+				+	'<div class="operate">'
+				+		'<span class="prize">￥{{g.gprice}}</span>'
+				+		'<span class="unit">{{g.gprice}}/500g</span>'
+				+		'<a href="javascript:;" onclick="cart_handle({{g.id}})" class="add_goods" title="加入购物车"></a>'
+				+	'</div>'
+				+ '</li>';
+				{%endfor%}
+		$(".goods_type_list").empty();
+		$(".goods_type_list").html(context);
+		sort=1
+	});
+
+
+
+
+	$("a[id^='list']").click(function(){               <!-- 分页用的    -->
+		$('.pagenation a').attr('class','');
+		$(this).attr('class','active');
+
+		var number=parseInt($(this).text())
+		yeshu(number)
+		huanye(number,sort)
+	});
+
+	$("a[id^='next']").click(function(){
+		var number
+		var number=parseInt($('.pagenation a[class=active]').text())+1   <!-- 下一页 获取到页数了-->
+		yeshu(number)
+	});
+
+	$("a[id^='super']").click(function(){
+		var number
+		var number=parseInt($('.pagenation a[class=active]').text())-1   <!-- 下一页 获取到页数了-->
+		if(number>0){
+			yeshu(number)
+		}
+	});
+
+	$('.pagenation a').click(function(){
+
+	});
+
+
+
+
+});
+<!--<&#45;&#45;判断页码如何显示的函数&ndash;&gt;-->
+function yeshu(foc){
+		total_pages={{t_pages}}
+		if(foc==0){
+			if(total_pages<=10){
+				for(i=1; i<=total_pages;i++){
+					$('#next').before('<a href="#" class="" id="list'+i+'">'+i+'</a>');
+				}
+			}else{
+				for(i=1; i<=10;i++){
+					$('#next').before('<a href="#" class="" id="list'+i+'">'+i+'</a>');
+				}
+				$('#next').before('<a href="#" class="" id="xlist">...</a>');
+			}
+			$('#list1').attr('class','active');
+		}
+
+		else if(total_pages<=10){
+			console.log('直接跳')
+		}else{
+			console.log('....')
+			if(foc<=5){
+			console.log('小于5')
+				for(i=1;i<=10;i++){
+					$('#list'+i+'').text(i)
+				}
+			$('.pagenation a').attr('class','');
+			$('#list'+foc+'').attr('class','active');
+			$('#xlist').show()
+			}else{
+
+				if(total_pages-foc<5){
+					for(i=0;i<=(total_pages-foc);i++){
+						m=10-i
+						$('#list'+m+'').text(total_pages-i);
+					}
+					for(i=1;i<=10-(total_pages-foc);i++){
+						d=total_pages-10+i
+						$('#list'+i+'').text(d);
+
+					}
+
+					$('.pagenation a').attr('class','');
+					d=10-total_pages+foc
+					$('#list'+d+'').attr('class','active')
+					$('#xlist').hide();
+
+				}else{
+					console.log('大于5')
+					for(i=0;i<5;i++){
+						m=6+i
+						$('#list'+m+'').text(foc+i);
+						n=5-i
+						$('#list'+n+'').text(foc-i-1);
+
+					}
+					$('.pagenation a').attr('class','');
+					$('#list6').attr('class','active');
+					$('#xlist').show();
+				}
+
+			}
+
+
+
+
+		}
+
+
+}
+
+function huanye(number,sort){
+
+
+		var type='{{get}}'
+		$.get('/goods/deal_list/?deal='+number+'&type='+type+'&sort='+sort,function(data){
+
+
+			$.each(data.goods,function(index,itm){
+
+				  var context = '<li>'
+				+ '<a href="/goods/detail/?id='+itm["id"]+'"><img src="/static/'+itm["gpic"]+'"></a>'
+				+	'<h4><a href="/goods/detail/?'+itm['id']+'">'+itm['gtitle']+'houjian</a></h4>'
+				+	'<div class="operate">'
+				+		'<span class="prize">￥'+itm["gprice"]+'</span>'
+				+		'<span class="unit">'+itm["gprice"]+'/500g</span>'
+				+		'<a href="javascript:;" onclick="cart_handle'+itm["id"]+'" class="add_goods" title="加入购物车"></a>'
+				+	'</div>'
+				+ '</li>';
+			$('.goods_type_list').empty();
+			$('.goods_type_list').prepend(context);
+
+			});
+
+		});
+
+
+}
+
+
+
+
+
+</script>
+{%endblock head%}
+{%block min%}
+
+
+
+	<div class="navbar_con">
+		<div class="navbar clearfix">
+			<div class="subnav_con fl">
+				<h1>全部商品分类</h1>	
+				<span></span>			
+				<ul class="subnav">
+					<li><a href="/goods/list/?type=新鲜水果" class="fruit">新鲜水果</a></li>
+					<li><a href="/goods/list/?type=海鲜水产" class="seafood">海鲜水产</a></li>
+					<li><a href="/goods/list/?type=猪牛羊肉" class="meet">猪牛羊肉</a></li>
+					<li><a href="/goods/list/?type=禽类蛋品" class="egg">禽类蛋品</a></li>
+					<li><a href="/goods/list/?type=新鲜蔬菜" class="vegetables">新鲜蔬菜</a></li>
+					<li><a href="/goods/list/?type=速冻食品" class="ice">速冻食品</a></li>
+				</ul>
+			</div>
+			<ul class="navlist fl">
+				<li><a href="/goods/index/">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="">手机生鲜</a></li>
+				<li class="interval">|</li>
+				<li><a href="">抽奖</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="breadcrumb">
+		<a href="/goods/index/">全部分类</a>
+		<span>></span>
+		<a href="/goods/list/?type={{get}}">{{get}}</a>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>新品推荐</h3>
+				<ul>
+					{%for new in new_goods%}
+
+
+					<li>
+						<a href="/goods/detail/?id={{new.id}}"><img src="/static/{{new.gpic}}"></a>
+						<h4><a href="/goods/detail/?id={{new.id}}">{{new.gtitle}}</a></h4>
+						<div class="prize">￥{{new.gprice}}</div>
+					</li>
+					{%endfor%}
+				</ul>
+			</div>
+		</div>
+
+		<div class="r_wrap fr clearfix">
+			<div class="sort_bar">
+				<a href="#" class="active" id="moren">默认</a>
+				<a href="#" id="jiage">价格</a>
+				<a href="#" id="renqi">人气</a>
+			</div>
+
+			<ul class="goods_type_list clearfix">
+	{%for g in list.object_list%}
+				<li>
+					<a href="/goods/detail/?id={{g.id}}"><img src="/static/{{g.gpic}}"></a>
+						<h4><a href="/goods/detail/?id={{g.id}}">{{g.gtitle}}houjian</a></h4>
+						<div class="operate">
+						<span class="prize">￥{{g.gprice}}</span>
+						<span class="unit">{{g.gprice}}/500g</span>
+							<a href="javascript:;" onclick="cart_handle({{g.id}})" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+				{%endfor%}
+
+			</ul>
+
+			<div class="pagenation">
+				<a href="#" id="super"><上一页</a>
+				{#%for i in plist%#}
+
+				<!--<a href="#" class="active" id="list{{i}}">{{i}}</a>-->
+
+				<!--<a href="#" id="list2">2</a>-->
+				<!--<a href="#">4</a>-->
+				<!--<a href="#">5</a>-->
+				{#%endfor%#}
+				<a href="#" id="next">下一页></a>
+			</div>
+		</div>
+	</div>
+
+
+
+{%endblock min%}

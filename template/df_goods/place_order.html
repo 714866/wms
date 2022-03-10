@@ -1,0 +1,141 @@
+{%extends 'base_left.html'%}
+<!--<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">-->
+<!--<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">-->
+<!--<head>-->
+	<!--<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">-->
+	<!--<title>天天生鲜-提交订单</title>-->
+	<!--<link rel="stylesheet" type="text/css" href="css/reset.css">-->
+	<!--<link rel="stylesheet" type="text/css" href="css/main.css">-->
+<!--</head>-->
+<!--<body>-->
+{%block head%}
+<script>
+	$(function(){
+		var ye=0
+		var total_price=0
+		$('.col07').each(function(){
+			var total_goods=$(this).prev().text()
+			var price=$(this).siblings('.col05').text()
+			console.log(price)
+			ye+=1
+			total_price+=parseFloat(total_goods)*parseFloat(price).toFixed(2);
+			console.log(total_price)
+			$(this).text((parseFloat(total_goods)*parseFloat(price)).toFixed(2)+'元');
+		});
+		$('.total_goods_count').children('em').text(ye+'个');
+		$('.total_goods_count').children('b').text(total_price+'元');
+		$('.transit').children('b').text(ye*5+'元');
+		$('.total_pay').children('b').text(total_price+ye*5+'元');
+
+		$('#order_btn').click(function(){
+
+			orderid=[]
+			$('.goods_list_td').each(function(){
+			orderid.push($(this).attr('id'))
+
+			});
+
+			$.post({url:'/order/deal/',
+				data:{
+				'csrfmiddlewaretoken': '{{ csrf_token }}',
+				name:'123',
+				city:'678',
+				total_pay:total_price+ye*5,
+				id:orderid,
+				address:'{{use.uaddress}}',
+				},
+			})
+			.done(function(data,status){
+				alert('Data:'+data.nname+'\nStatus:'+status)
+				if(data.status==1){
+				alert('订单提交成功')
+				window.location.href = '/user/user_center_order/';
+				}else{
+				alert('订单提交失败')
+				}
+
+			 });
+
+
+		});
+	});
+
+</script>
+{%endblock head%}
+{%block min%}
+
+	<div class="search_bar clearfix">
+		<a href="index.html" class="logo fl"><img src="images/logo.png"></a>
+		<div class="sub_page_name fl">|&nbsp;&nbsp;&nbsp;&nbsp;提交订单</div>
+		<div class="search_con fr">
+			<input type="text" class="input_text fl" name="" placeholder="搜索商品">
+			<input type="button" class="input_btn fr" name="" value="搜索">
+		</div>		
+	</div>
+	
+	<h3 class="common_title">确认收货地址</h3>
+
+	<div class="common_list_con clearfix">
+		<dl>
+			<dt>寄送到：</dt>
+			<dd><input type="radio" name="" checked="">{{use.uaddress}}{{use.uphone}}北京市 海淀区 东北旺西路8号中关村软件园 （李思 收） 182****7528</dd>
+		</dl>
+		<a href="/user/user_center_site/" class="edit_site">编辑收货地址</a>
+
+	</div>
+	
+	<h3 class="common_title">支付方式</h3>	
+	<div class="common_list_con clearfix">
+		<div class="pay_style_con clearfix">
+			<input type="radio" name="pay_style" checked>
+			<label class="cash">货到付款</label>
+			<input type="radio" name="pay_style">
+			<label class="weixin">微信支付</label>
+			<input type="radio" name="pay_style">
+			<label class="zhifubao"></label>
+			<input type="radio" name="pay_style">
+			<label class="bank">银行卡支付</label>
+		</div>
+	</div>
+
+	<h3 class="common_title">商品列表</h3>
+	
+	<div class="common_list_con clearfix">
+		<ul class="goods_list_th clearfix">
+			<li class="col01">商品名称</li>
+			<li class="col02">商品单位</li>
+			<li class="col03">商品价格</li>
+			<li class="col04">数量</li>
+			<li class="col05">小计</li>		
+		</ul>
+		{%for i in data%}
+		<ul class="goods_list_td clearfix" id="{{i.id}}">
+			<li class="col01">1</li>			
+			<li class="col02"><img src="/static/{{i.goods.gpic}}"></li>
+			<li class="col03">{{i.goods.gtitle}}</li>
+			<li class="col04">{{i.goods.gunit}}</li>
+			<li class="col05">{{i.goods.gprice}}</li>
+			<li class="col06">{{i.count}}</li>
+			<li class="col07">25.80元</li>	
+		</ul>
+		{%endfor%}
+
+	</div>
+
+	<h3 class="common_title">总金额结算</h3>
+
+	<div class="common_list_con clearfix">
+		<div class="settle_con">
+			<div class="total_goods_count">共<em>2</em>件商品，总金额<b>42.60元</b></div>
+			<div class="transit">运费：<b>10元</b></div>
+			<div class="total_pay">实付款：<b>52.60元</b></div>
+		</div>
+	</div>
+
+	<div class="order_submit clearfix">
+		<a href="javascript:;" id="order_btn">提交订单</a>
+	</div>	
+
+
+{%endblock min%}
+

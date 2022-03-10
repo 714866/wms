@@ -1,0 +1,100 @@
+{%extends 'base_left.html' %}
+{%block head%}
+
+	<script type="text/javascript" src="/static/js/form_feed.js"></script>
+
+<script>
+	$(function(){
+
+			if($('li[status]').text()==''){
+
+				$('.common_title2').text("暂时还没有订单")
+
+		}
+
+
+
+		$('li[status]').each(function(){
+			if($(this).attr('status')==0){
+				$(this).text('未支付')
+			}else{
+				$(this).text('已支付')
+			}
+		});
+
+		$('td[status]').each(function(){
+			if($(this).attr('status')==0){
+				$(this).text('1待付款')
+			}else{
+				$(this).text('已付款')
+				$(this).next().text('准备发货');
+			}
+		});
+
+
+	});
+
+
+
+
+</script>
+{%endblock head%}
+{%block min%}
+{{t_pages}}
+	<div class="main_con clearfix">
+		<div class="left_menu_con clearfix">
+			<h3>用户中心</h3>
+			<ul>
+				<li><a href="/user/user_center_info">· 个人信息</a></li>
+				<li><a href="/user/user_center_order" class="active">· 全部订单</a></li>
+				<li><a href="/user/user_center_site">· 收货地址</a></li>
+			</ul>
+		</div>
+		<div class="right_content clearfix">
+				<h3 class="common_title2" id="{{t_pages}}">全部订单</h3>
+			{%for ord in order%}
+				<ul class="order_list_th w978 clearfix">
+					<li class="col01">{{ord.odate}}</li>
+					<li class="col02">订单号：{{ord.oid}}</li>
+					<li class="col02 stress" status="{{ord.ostatus}}">未支付</li>
+				</ul>
+
+				<table class="order_list_table w980">
+					<tbody>
+						<tr>
+							<td width="55%">
+
+								{%for item in ord.orderdetail_set.all%}
+								{#%for good in ord.goods%#}
+
+								{#%for g in good%#}
+								<ul class="order_goods_list clearfix">
+
+									<li class="col01"><img src="/static/{{item.goods.gpic}}"></li>
+									<li class="col02">{{item.goods.gtitle}}<em>{{item.goods.gprice}}元/{{item.goods.gunit}}</em></li>
+									<li class="col03">{{item.count}}</li>
+									<li class="col04">{{item.price}}元</li>
+								</ul>
+								{#%endfor%#}
+								{%endfor%}
+
+							</td>
+							<td width="15%">{{ord.ototal}}元</td>
+							<td width="15%" status="{{ord.ostatus}}">待付款</td>
+							<td width="15%"><a href="#" class="oper_btn">去付款</a></td>
+						</tr>
+					</tbody>
+				</table>
+				{%endfor%}
+
+
+				<div class="pagenation">
+					<a href="#" id="super"><上一页</a>
+
+					<a href="#" id="next" >下一页></a>
+				</div>
+		</div>
+	</div>
+
+{%endblock min%}
+

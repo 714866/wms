@@ -1,0 +1,161 @@
+{%extends 'base_header.html'%}
+
+{%block head%}
+<script>
+	$(function(){
+
+
+
+	});
+
+	function add_c(){
+			var number=$(".num_show").val();
+			$(".num_show").val(parseInt(number)+1);
+		}
+
+	function minus_c(){
+		var number=$(".num_show").val();
+		if(number>0){
+		$('.num_show').val(parseInt(number)-1);
+	 	}else{
+	 	alert("不能少于0")
+	 	}
+	}
+</script>
+
+{%endblock head%}
+
+{%block min%}
+<body>
+
+
+	<!--<div class="search_bar clearfix">-->
+		<!--<a href="/goods/index" class="logo fl"><img src="/static/images/logo.png"></a>-->
+		<!--<div class="search_con fl">-->
+			<!--<input type="text" class="input_text fl" name="" placeholder="搜索商品">-->
+			<!--<input type="button" class="input_btn fr" name="" value="搜索">-->
+		<!--</div>-->
+		<!--<div class="guest_cart fr">-->
+			<!--<a href="/cart/cart/" class="cart_name fl">我的购物车</a>-->
+			<!--<div class="goods_count fl" id="show_count">1</div>-->
+		<!--</div>-->
+	<!--</div>-->
+
+	<div class="navbar_con">
+		<div class="navbar clearfix">
+			<div class="subnav_con fl">
+				<h1>全部商品分类</h1>	
+				<span></span>			
+				<ul class="subnav">
+					<li><a href="#" class="fruit">新鲜水果</a></li>
+					<li><a href="#" class="seafood">海鲜水产</a></li>
+					<li><a href="#" class="meet">猪牛羊肉</a></li>
+					<li><a href="#" class="egg">禽类蛋品</a></li>
+					<li><a href="#" class="vegetables">新鲜蔬菜</a></li>
+					<li><a href="#" class="ice">速冻食品</a></li>
+				</ul>
+			</div>
+			<ul class="navlist fl">
+				<li><a href="/goods/index">首页</a></li>
+				<li class="interval">|</li>
+				<li><a href="">手机生鲜</a></li>
+				<li class="interval">|</li>
+				<li><a href="">抽奖</a></li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="breadcrumb">
+		<a href="#">全部分类</a>
+		<span>></span>
+		<a href="#">新鲜水果</a>
+		<span>></span>
+		<a href="#">商品详情</a>
+	</div>
+
+	<div class="goods_detail_con clearfix">
+		<div class="goods_detail_pic fl"><img src="/static/{{goods.gpic}}"></div>
+
+		<div class="goods_detail_list fr">
+			<h3>{{goods.gtitle}}</h3>
+			<p>{{goods.gjianjie}}</p>
+			<div class="prize_bar">
+				<span class="show_pirze">¥<em>{{goods.gprice}}</em></span>
+				<span class="show_unit">单  位：500g</span>
+			</div>
+			<div class="goods_num clearfix">
+				<div class="num_name fl">数 量：</div>
+				<div class="num_add fl">
+					<input type="number" class="num_show fl" value="1">
+					<a href="javascript:;" onclick="add_c()" class="add fr">+</a>
+					<a href="javascript:;" onclick="minus_c()" class="minus fr">-</a>
+				</div> 
+			</div>
+			<div class="total">总价：<em>16.80元</em></div>
+			<div class="operate_btn">
+				<a href="javascript:;" class="buy_btn">立即购买</a>
+				<a href="javascript:;" class="add_cart" id="add_cart">加入购物车</a>				
+			</div>
+		</div>
+	</div>
+
+	<div class="main_wrap clearfix">
+		<div class="l_wrap fl clearfix">
+			<div class="new_goods">
+				<h3>新品推荐</h3>
+				<ul>
+					{%for tui in tuijian%}
+					<li>
+						<a href="/goods/detail/?id={{tui.id}}"><img src="/static/{{tui.gpic}}"></a>
+						<h4><a href="/goods/detail/?id={{tui.id}}">{{tui.gtitile}}</a></h4>
+						<div class="prize">￥{{tui.gprice}}</div>
+					</li>
+					{%endfor%}
+
+				</ul>
+			</div>
+		</div>
+
+		<div class="r_wrap fr clearfix">
+			<ul class="detail_tab clearfix">
+				<li class="active">商品介绍</li>
+				<li>评论</li>
+			</ul>
+
+			<div class="tab_content">
+				<dl>
+					<dt>商品详情：</dt>
+					<dd>{{goods.gcontent|safe}} </dd>
+				</dl>
+			</div>
+
+		</div>
+	</div>
+{%endblock min%}
+
+	<div class="add_jump"></div>
+
+	<script type="text/javascript" src="js/jquery-1.12.2.js"></script>
+	<script type="text/javascript">
+		var $add_x = $('#add_cart').offset().top;
+		var $add_y = $('#add_cart').offset().left;
+
+		var $to_x = $('#show_count').offset().top;
+		var $to_y = $('#show_count').offset().left;
+
+		$(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
+		$('#add_cart').click(function(){
+			$(".add_jump").stop().animate({
+				'left': $to_y+7,
+				'top': $to_x+7},
+				"fast", function() {
+					$(".add_jump").fadeOut('fast',function(){
+						$('#show_count').html(2);
+					});
+
+			});
+		})
+	</script>
+	
+</body>
+</html>
