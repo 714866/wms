@@ -27,4 +27,5 @@ def index(request):
 def returnResult(request):
 
     list.append('a','b')
+    list2.append('c','d')
     return JsonResponse({'goods':list})

@@ -1,4 +1,4 @@
-Django==1.11.13
+Django==2.11.13
 django-haystack==2.8.1
 django-tinymce==2.7.0
 jieba==0.39
