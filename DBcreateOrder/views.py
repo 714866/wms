@@ -38,7 +38,7 @@ def returnResult(request):
     list=[]
     list.append('a')
     list.append('b')
-    return JsonResponse({'goods':list})
+    return JsonResponse({'psr':list})
 
 import pymssql
 def sqlServerConnect():
