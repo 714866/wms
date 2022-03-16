@@ -54,9 +54,24 @@ $(function(){
 			return true;
 			}
 
+		};
 
 
-		}
+    function login(){
+	    $.ajax({
+            type: "post",
+            datatype: "json",
+            url: "/DBcreateOrder/returnResult/",
+            data: $('#form1').serialize,
+            success: function (result) {
+                alert(12)
+            }
+
+        })
+
+    };
+
+
 
 
 
@@ -67,8 +82,8 @@ $(function(){
 {#					<a href="/user/register/">立即注册</a>#}
 				</div>
 				<div class="form_input">
-{#					<form  onsubmit="return check()">#}
-					<form action="/DBcreateOrder/returnResult/" method="post" onsubmit="return check()">
+					<form method="post"  onsubmit="return check()"  id="form1">
+{#					<form action="/DBcreateOrder/returnResult/" method="post" onsubmit="return check()">#}
 						{%csrf_token%}
 						<input type="text" name="process" class="name_input" placeholder="处理中心" value="{{uname}}">
 						<input type="text" name="process1" class="code_input" placeholder="处理中心1" >
@@ -86,7 +101,7 @@ $(function(){
 {#							<label>记住用户名</label>#}
 {#							<a href="#">忘记密码</a>#}
 {#						</div>#}
-						<input type="submit" name="" value="登录" class="input_submit" id="upload">
+						<input onclick="login()" type="button" name="" value="登录" class="input_submit" >
 					</form>
 				</div>
 			</div>

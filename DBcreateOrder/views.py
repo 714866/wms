@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 import os
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+
 # Create your views here.
 
 
@@ -24,7 +27,15 @@ def index(request):
     }
     return render(request,'DBcreateOrder/index.html',context)
 
+@csrf_exempt
 def returnResult(request):
+    post=request.POST
+    process=post.get('process')
+    return_list=[]
+    return_list.append('a')
+    return_list.append('b')
 
-    list.append('a','b')
+    list=[]
+    list.append('a')
+    list.append('b')
     return JsonResponse({'goods':list})
