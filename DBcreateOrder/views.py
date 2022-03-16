@@ -39,3 +39,13 @@ def returnResult(request):
     list.append('a')
     list.append('b')
     return JsonResponse({'goods':list})
+
+import pymssql
+def sqlServerConnect():
+    conn = pymssql.connect(server, user, password, database)
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM persons WHERE salesrep=%s', 'John Doe')
+    row = cursor.fetchone()
+    while row:
+        print("ID=%d, Name=%s" % (row[0], row[1]))
+        row = cursor.fetchone()
