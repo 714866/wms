@@ -1,0 +1,49 @@
+NORMAL(0, "普通"),
+    SAMPLE(2, "样品"),
+BACKUP(3, "备货"),
+    FBA(4, "FBA"),
+    NEWSHIFT(6, "海外新品调拨"),
+    WHOLESALE(7, "批发"),
+    AD(8, "广告推广"),
+    SEABACKUP(9, "海运备货"),
+    FBABACKUP(12, "FBA备货"),
+    SUPPLIES(13, "耗材"),
+    FBARG(14, "FBA退货"),
+    TP(15, "转仓"),
+    RED(16, "红人订单"),
+    FBC(17, "FBC"),
+    捷网(18, "捷网"),
+    FBJ(19, "FBJ"),
+    共享仓(20, "共享仓"),
+    FBW(21, "FBW"),
+    FBY(22, "FBY"),
+    JDC(23, "JDC"),
+    FBL(24, "FBL"),
+    FBN(25, "FBN"),
+    HBA(26, "HBA"),
+    万邑通调拨(27, "万邑通调拨"),
+    递四方调拨(28, "递四方调拨"),
+    FBD(29, "FBD"),
+    FBM(30, "FBM"),
+    驿川调拨(31, "驿川调拨"),
+    退货(32, "退货"),
+    FBS(33, "FBS"),
+    WFS(34, "WFS调拨"),
+    退件调拨(35, "退件调拨"),
+    三方仓调拨(36, "三方仓调拨"),
+    FBE调拨(37, "FBE"),
+    IML调拨（38, "IML"）
+    谷仓调拨（39,"GC"）
+    ;
+
+
+运输方式的：
+
+快递,Airfreight,1
+空运,Airlift,2
+常规,General,3
+海运,Seaway,4
+铁路,Railway,7
+陆运,Ground,8
+快船,Vessel,9
+快陆运,ExpressGround,10
