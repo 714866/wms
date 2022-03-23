@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
 import os
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
@@ -39,6 +39,11 @@ def returnResult(request):
     list.append('a')
     list.append('b')
     return JsonResponse({'psr':list})
+
+
+
+def page_not_found(request):
+    return redirect('http://127.0.0.1:8000/DBcreateOrder/index/')
 
 import pymssql
 def sqlServerConnect():

@@ -47,18 +47,18 @@ INSTALLED_APPS = (
     'DBcreateOrder'
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     # 'tiantian.Middleware.MyLoginMiddleware',
 
-)
+]
 
 ROOT_URLCONF = 'tiantian.urls'
 
@@ -90,8 +90,12 @@ DATABASES = {
         'HOST':'localhost',
         'PORT':'3306',
         'USER':'root',
-        'PASSWORD':'zzlpython',
-        'NAME': 'wms',
+        #mac mysql账号密码
+        # 'PASSWORD':'zzlpython',
+        # 'NAME': 'wms',
+        # 公司mysql账号密码
+        'PASSWORD': 'python',
+        'NAME': 'ews',
     }
 }
 

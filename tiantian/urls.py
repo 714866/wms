@@ -18,12 +18,12 @@ from django.conf.urls import include, url
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
+    url('admin/',admin.site.urls),
     # url(r'^user/', include('df_user.urls')),
     # url(r'^goods/', include('df_goods.urls')),
     # url(r'^cart/', include('cart.urls')),
     # url(r'^order/',include('order.urls')),
-    url(r'^DBcreateOrder/',include('DBcreateOrder.urls')),
+    url('DBcreateOrder/',include('DBcreateOrder.urls')),
     # url(r'^search/', include('haystack.urls')),
 ]
 
@@ -31,6 +31,6 @@ urlpatterns = [
 from django.conf.urls import handler404, handler500
 
 
-handler404 = "DBcreateOrder.views.index"
+# handler404 = "DBcreateOrder.views.page_error"
 #（handler404 = "你的app.views.函数名"）
 # handler500 = "df_user.views.page_error"
