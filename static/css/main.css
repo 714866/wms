@@ -282,20 +282,23 @@ html,body{height:100%}
 .login_form_wrap{width:960px;height:480px;margin:0 auto;}
 .login_banner{width:381px;height:322px;background:url(../images/login_banner.png) no-repeat;margin-top:90px;}
 .slogan{width:40px;height:300px;font-size:30px;color:#f0f9e8;text-align:center;line-height:36px;margin:80px 0 0 120px}
-.login_form{width:368px;height:378px;border:1px solid #c6c6c5;background-color:#fff; margin:10px;}
+.login_form{width:368px;height:538px;border:1px solid #c6c6c5;background-color:#fff; margin:10px;}
 
 .login_title{height:60px;width:308px;margin:10px auto;border-bottom:1px solid #e0e0e0;}
 
 .login_title h1{font-size:24px;height:60px;line-height:60px;color:#a8a8a8;float:left;font-weight:bold;margin-left:44px;}
 .login_title a{width:100px;height:20px;display:block;font-size:16px;color:#5fb42a;text-indent:26px;background:url(../images/icons02.png) left 5px no-repeat;float:left;margin:20px 0 0 36px}
 
+/*wms/列表css*/
 .form_input{width:120px;height:100px;margin-left:30px;position:relative;}
-.name_input,.pass_input{width:306px;height:36px;border:1px solid #e0e0e0;outline:none;font-size:14px;text-indent:10px;position: absolute;left:0;top:0}
+.name_input,.pass_input,.url_input,.cookie_input{width:306px;height:36px;border:1px solid #e0e0e0;outline:none;font-size:14px;text-indent:10px;position: absolute;left:0;top:0}
 .code_input,.select_input{width:306px;height:36px;border:1px solid #e0e0e0;outline:none;font-size:14px;text-indent:10px;position: absolute;left:0;top:0}
 
 .pass_input{top:130px;background-position:280px -95px;}
 .code_input{top:65px;background-position:280px -95px;}
-.select_input{top:195px;background-position:280px -95px;}
+.url_input{top:195px;background-position:280px -95px;}
+.cookie_input{top:265px;background-position:280px -95px;}
+.select_input{top:330px;background-position:280px -95px;}
 
 .user_error,.pwd_error{color:#f00;position:absolute;left:0;top:43px;display:none}
 
@@ -308,7 +311,7 @@ html,body{height:100%}
 .more_input a{float:right;color:#666}
 .more_input a:hover{color:#ff8800}
 
-.input_submit{width:100%;height:40px;position:absolute;left:0;top:280px;background-color:#47aa34;color:#fff;font-size:22px;border:0px;font-family:'Microsoft Yahei';cursor:pointer;}
+.input_submit{width:100%;height:40px;position:absolute;left:0;top:395px;background-color:#47aa34;color:#fff;font-size:22px;border:0px;font-family:'Microsoft Yahei';cursor:pointer;}
 
 
 /* 注册页面 */

@@ -29,6 +29,11 @@ def index(request):
 
 @csrf_exempt
 def returnResult(request):
+    """
+    PSR创建
+    :param request:
+    :return:
+    """
     post=request.POST
     process=post.get('process')
     return_list=[]
