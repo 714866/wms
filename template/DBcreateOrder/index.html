@@ -62,7 +62,7 @@ $(function(){
             type: "post",
             datatype: "json",
             url: "/DBcreateOrder/returnResult/",
-            data: $('#form1').serialize,
+            data: $('#form1').serialize(),
             success: function (result) {
                 alert(result.psr)
             }
