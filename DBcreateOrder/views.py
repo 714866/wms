@@ -35,14 +35,20 @@ def returnResult(request):
     :return:
     """
     post=request.POST
-    process=post.get('process')
-    return_list=[]
-    return_list.append('a')
-    return_list.append('b')
+    source_process=post.get('source_process')
+    targer_process=post.get('targer_process')
+    sku_code=post.get('sku_code')
+    oa_url=post.get('url')
+    cookie=post.get('cookie')
+    goods_type=post.get('goods_type')
 
     list=[]
-    list.append('a')
-    list.append('b')
+    list.append(source_process)
+    list.append(targer_process)
+    list.append(sku_code)
+    list.append(oa_url)
+    list.append(cookie)
+    list.append(goods_type)
     return JsonResponse({'psr':list})
 
 
