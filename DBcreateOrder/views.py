@@ -3,6 +3,9 @@ from django.http import HttpResponse, JsonResponse
 import os
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from  modular import mapper
+from  modular.PSR.createPSR import createPSR
+
 
 # Create your views here.
 
@@ -49,6 +52,10 @@ def returnResult(request):
     list.append(oa_url)
     list.append(cookie)
     list.append(goods_type)
+    api_action=createPSR(oa_url,cookie)
+    result=api_action.postPsr()
+    print(result.text)
+    sqlServerConnect(10)
     return JsonResponse({'psr':list})
 
 
@@ -56,12 +63,12 @@ def returnResult(request):
 def page_not_found(request):
     return redirect('http://127.0.0.1:8000/DBcreateOrder/index/')
 
-import pymssql
-def sqlServerConnect():
-    conn = pymssql.connect(server, user, password, database)
-    cursor = conn.cursor()
-    cursor.execute('SELECT * FROM persons WHERE salesrep=%s', 'John Doe')
-    row = cursor.fetchone()
-    while row:
-        print("ID=%d, Name=%s" % (row[0], row[1]))
-        row = cursor.fetchone()
+
+def sqlServerConnect(top_num):
+
+    cursor = mapper.connect_sqlserve()
+    updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in (select top 10 ShiftRequestID from ProductShiftRequest order by ShiftRequestID desc ); '
+    newId = cursor.execute(updateSql)
+
+    cursor.commitAndClose()
+

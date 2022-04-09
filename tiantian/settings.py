@@ -91,11 +91,11 @@ DATABASES = {
         'PORT':'3306',
         'USER':'root',
         #mac mysql账号密码
-        'PASSWORD':'zzlpython',
-        'NAME': 'wms',
+        # 'PASSWORD':'zzlpython',
+        # 'NAME': 'wms',
         # 公司mysql账号密码
-        # 'PASSWORD': 'python',
-        # 'NAME': 'ews',
+        'PASSWORD': 'python',
+        'NAME': 'ews',
     }
 }
 
