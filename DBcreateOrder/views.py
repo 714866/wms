@@ -38,12 +38,23 @@ def returnResult(request):
     :return:
     """
     post=request.POST
-    source_process=post.get('source_process')
-    targer_process=post.get('targer_process')
-    sku_code=post.get('sku_code')
-    oa_url=post.get('url')
-    cookie=post.get('cookie')
-    goods_type=post.get('goods_type')
+    post_data={}
+    post_data['source_process']=post.get('source_process')
+    post_data['targer_process']=post.get('targer_process')
+    post_data['sku_code']=post.get('sku_code')
+    post_data['oa_url']=post.get('url')
+    post_data['cookie']=post.get('cookie')
+    post_data['goods_type']=post.get('goods_type')
+    if post.get('sku_code')[0:3].upper()="SKU":
+        post_data['sku_code'] = post.get('sku_code')
+
+    else:
+
+        post_data['poa_code'] = post.get('sku_code')
+        post_data['sku_code'] = findsku
+
+        pass
+
 
     list=[]
     list.append(source_process)
@@ -52,8 +63,8 @@ def returnResult(request):
     list.append(oa_url)
     list.append(cookie)
     list.append(goods_type)
-    api_action=createPSR(oa_url,cookie)
-    result=api_action.postPsr()
+    api_action=createPSR(post_data['oa_url'],post_data['cookie'])
+    result=api_action.postPsr(post_data)
     print(result.text)
     sqlServerConnect(10)
     return JsonResponse({'psr':list})
