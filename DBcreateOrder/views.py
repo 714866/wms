@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from  modular import mapper
 from  modular.PSR.createPSR import createPSR
+from modular.goods.OAGoods import goodsSql
 
 
 # Create your views here.
@@ -45,25 +46,28 @@ def returnResult(request):
     post_data['oa_url']=post.get('url')
     post_data['cookie']=post.get('cookie')
     post_data['goods_type']=post.get('goods_type')
-    if post.get('sku_code')[0:3].upper()="SKU":
+    find_goods_code = goodsSql()
+    # 处理产品
+    if post.get('sku_code')[0:3].upper()=="SKU":
         post_data['sku_code'] = post.get('sku_code')
-
+        post_data['sku_id'] = find_goods_code.findOaGoodsBySku(post.get('sku_code'))
+        post_data['poa_code'] = ''
+        post_data['poa_id'] = ''
     else:
-
-        post_data['poa_code'] = post.get('sku_code')
-        post_data['sku_code'] = findsku
-
-        pass
-
-
-    list=[]
-    list.append(source_process)
-    list.append(targer_process)
-    list.append(sku_code)
-    list.append(oa_url)
-    list.append(cookie)
-    list.append(goods_type)
-    api_action=createPSR(post_data['oa_url'],post_data['cookie'])
+        poa_code=find_goods_code.findOaGoodsByPoa()
+        post_data['poa_code'] = poa_code
+        goods_message=find_goods_code.findOaGoodsByPoa(poa_code)
+        post_data['poa_id'] = goods_message['poa_id']
+        post_data['sku_code'] = goods_message['sku_code']
+        post_data['sku_id'] = goods_message['sku_id']
+    # list=[]
+    # list.append(source_process)
+    # list.append(targer_process)
+    # list.append(sku_code)
+    # list.append(oa_url)
+    # list.append(cookie)
+    # list.append(goods_type)
+    api_action= createPSR(post_data['cookie'], post_data['oa_url'])
     result=api_action.postPsr(post_data)
     print(result.text)
     sqlServerConnect(10)

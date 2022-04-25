@@ -3,6 +3,7 @@ import pymysql
 import os
 import pymssql
 
+
 print(os.path.abspath(os.path.dirname(__file__)))
 cp = ConfigParser()
 cp.read(os.path.abspath(os.path.dirname(__file__))+'/config/mysqldb.conf')
