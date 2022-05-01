@@ -85,8 +85,8 @@ $(function(){
 					<form method="post"  onsubmit="return check()"  id="form1">
 {#					<form action="/DBcreateOrder/returnResult/" method="post" onsubmit="return check()">#}
 						{%csrf_token%}
-						<input type="text" name="source_process" class="name_input" placeholder="来源处理中心" value="{{uname}}">
-						<input type="text" name="targer_process" class="code_input" placeholder="目标处理中心1" >
+						<input type="text" name="source_process_id" class="name_input" placeholder="来源处理中心id" value="{{uname}}">
+						<input type="text" name="targer_process_id" class="code_input" placeholder="目标处理中心id" >
 						<div class="user_error">输入错误</div>
 						<input type="text" name="sku_code" class="pass_input" placeholder="sku/poa code">
 						<input type="text" name="url" class="url_input" placeholder="请求地址" value="http://172.16.6.203:8092">

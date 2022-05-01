@@ -40,8 +40,8 @@ def returnResult(request):
     """
     post=request.POST
     post_data={}
-    post_data['source_process']=post.get('source_process')
-    post_data['targer_process']=post.get('targer_process')
+    post_data['source_process_id']=post.get('source_process_id')
+    post_data['targer_process_id']=post.get('targer_process_id')
     post_data['sku_code']=post.get('sku_code')
     post_data['oa_url']=post.get('url')
     post_data['cookie']=post.get('cookie')
@@ -54,9 +54,12 @@ def returnResult(request):
         post_data['poa_code'] = ''
         post_data['poa_id'] = ''
     else:
-        poa_code=find_goods_code.findOaGoodsByPoa()
+        poa_code= post.get('sku_code')
         post_data['poa_code'] = poa_code
-        goods_message=find_goods_code.findOaGoodsByPoa(poa_code)
+        try:
+            goods_message=find_goods_code.findOaGoodsByPoa(poa_code)
+        except TypeError:
+            print('产品信息为空')
         post_data['poa_id'] = goods_message['poa_id']
         post_data['sku_code'] = goods_message['sku_code']
         post_data['sku_id'] = goods_message['sku_id']
@@ -67,7 +70,10 @@ def returnResult(request):
     # list.append(oa_url)
     # list.append(cookie)
     # list.append(goods_type)
-    api_action= createPSR(post_data['cookie'], post_data['oa_url'])
+    try:
+        api_action= createPSR(post_data['cookie'], post_data['oa_url'])
+    except:
+        return JsonResponse({'psr':'请求失败'})
     result=api_action.postPsr(post_data)
     print(result.text)
     sqlServerConnect(10)
