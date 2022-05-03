@@ -1,5 +1,7 @@
 import requests
 
+from modular.mapper import ConnectWSPdb
+
 
 class wspPSR(object):
     def __init__(self):
@@ -17,6 +19,6 @@ class wspPSR(object):
         pass
 
     def find_wsp_psr_info(self):
-
+        curse=ConnectWSPdb
         pass
 
