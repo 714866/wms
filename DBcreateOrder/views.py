@@ -47,6 +47,7 @@ def returnResult(request):
     post_data['cookie']=post.get('cookie')
     post_data['goods_type']=post.get('goods_type')
     find_goods_code = goodsSql()
+    num=10   #执行次数
     # 处理产品
     if post.get('sku_code')[0:3].upper()=="SKU":
         post_data['sku_code'] = post.get('sku_code')
@@ -73,11 +74,12 @@ def returnResult(request):
     try:
         api_action= createPSR(post_data['cookie'], post_data['oa_url'])
     except:
-        return JsonResponse({'psr':'请求失败'})
-    result=api_action.postPsr(post_data)
+        return JsonResponse({'psr': '请求失败'})
+    result = api_action.postPsr(post_data, num)
     print(result.text)
-    sqlServerConnect(10)
-    return JsonResponse({'psr':list})
+    psr_codes = sqlServerConnect(num)
+    put_wsp_db = sourcePsr_put_wsp()
+    return JsonResponse({'psr': psr_codes})
 
 
 
@@ -88,8 +90,21 @@ def page_not_found(request):
 def sqlServerConnect(top_num):
 
     cursor = mapper.connect_sqlserve()
-    updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in (select top 10 ShiftRequestID from ProductShiftRequest order by ShiftRequestID desc ); '
-    newId = cursor.execute(updateSql)
-
+    select_psr = 'select top {} ShiftRequestID,ProductShiftRequestitem from ProductShiftRequest order by id desc'
+    psrs = cursor.fetchall(select_psr.format(top_num))
+    psr_ids = ''
+    psr_codes = []
+    count = 0
+    for psr in psrs:
+        psr_codes.append(psr[1])
+        psr_id = psr[0]
+        if count < top_num-1:
+            psr_ids = psr_ids + psr_id+','
+        else:
+            psr_ids = psr_ids + psr_id
+    # updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in (select top 10 ShiftRequestID from ProductShiftRequest order by ShiftRequestID desc ); '
+    updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in ({0}); '.format(psr_ids)
+    cursor.execute(updateSql)
     cursor.commitAndClose()
+    return psr_codes
 
