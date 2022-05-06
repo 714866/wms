@@ -38,6 +38,7 @@ def connect_db(db_name):
                          port=port,
                          user=user,
                          password=password,
-                         database=database
+                         database=database,
+                         cursorclass=pymysql.cursors.DictCursor
                          )
     return db
