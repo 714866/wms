@@ -1,17 +1,19 @@
 import requests
-from modular.wspDB import wspPsrDB
-wsp_xxl_url='http://172.16.6.203:9696/wsp/page/product-shift-monitor-config/executeJob?jobName='
+from modular.wspDB.wspPsrDB import WspPsrSql
+from modular.GetApplication import wsp_url
+
+wsp_xxl_url = wsp_url + '/wsp/page/product-shift-monitor-config/executeJob?jobName='
 class SourceXXlJob(object):
     def __init__(self):
+        self.wsp_db = WspPsrSql()
         pass
 
-    def SourcePsrToOperationHandler(self,source_psr_codes,job_name="SourcePsrToOperationHandler"):
+    def SourcePsrToOperationHandler(self, source_psr_codes, job_name="SourcePsrToOperationHandler"):
         result = requests.get(url=wsp_xxl_url+job_name)
-        wsp_db = wspPsrDB.WspPsr()
-        operation_psr_codes = wsp_db.find_psr(source_psr_codes)
+        operation_psr_codes = self.wsp_db.find_psr(source_psr_codes)
         return  operation_psr_codes
 
-    def ShiftGenerateFileTask(self,operation_psr_codes,job_name='ShiftGenerateFileTask'):
+    def ShiftGenerateFileTask(self, operation_psr_codes, job_name='ShiftGenerateFileTask'):
         """
         生成文件服务
         psr 最终升才pck，  且服务会根据模板处理中心来判断生成文件逻辑，为了保证流程正常走，
@@ -21,8 +23,7 @@ class SourceXXlJob(object):
         :return: 返回生成pck的调拨请求
         """
         result = requests.get(url=wsp_xxl_url+job_name)
-        wsp_db =wspPsrDB.WspPsr()
-        pck_order = wsp_db.find_pck_by_psr(operation_psr_codes)
+        pck_order = self.wsp_db.find_pck_by_psr(operation_psr_codes)
 
 
 

@@ -5,6 +5,8 @@ from modular.mapper import ConnectWSPdb
 from modular.wspDB.wspPsrDB import WspPsrSql
 import json
 from modular.GetApplication import wsp_url
+from modular.wspxxlJob.xxlJob import SourceXXlJob
+
 
 class CreateWspPSR(object):
     def __init__(self):
@@ -50,19 +52,20 @@ class CreateWspPSR(object):
         return source_psr
 
     def find_wsp_psr_info(self):
-        curse=ConnectWSPdb
+        curse = ConnectWSPdb
         pass
 
-    def source_to_operation(self,psr_codes):
-        operation_psr_codes=SourceXXlJob().SourcePsrToOperationHandler(psr_codes)
+    def source_to_operation(self, psr_codes):
+        operation_psr_codes = SourceXXlJob().SourcePsrToOperationHandler(psr_codes)
         return operation_psr_codes
 
     def psr_to_pck(self,psr_codes):
         psr_codes = SourceXXlJob().ShiftGenerateFileTask(psr_codes)
 
-    def psr_create_pck(self,psr_codes):
+    def psr_create_pck(self, psr_codes):
         source_request_data = self.get_oa_psr(psr_codes)
-        psr_codes = self.put_wsp(source_request_data,wsp_url)
+        psr_codes = self.put_wsp(source_request_data, wsp_url)
+        psr_codes = self.source_to_operation(psr_codes)
         pass
 
 

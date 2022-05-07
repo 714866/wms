@@ -29,7 +29,7 @@ from package_info where order_id in ({0});
             for psr_message in sql_result:
                 is_true = 0
                 if psr_code in psr_message.values():
-                    is_true=1
+                    is_true = 1
                     source_psr_codes.append(psr_code)
                     break
                 print('{0}未生成psr来源单据'.format(psr_code))
