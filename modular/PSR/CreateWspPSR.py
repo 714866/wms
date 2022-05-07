@@ -60,13 +60,19 @@ class CreateWspPSR(object):
         return operation_psr_codes
 
     def psr_to_pck(self,psr_codes):
-        psr_codes = SourceXXlJob().ShiftGenerateFileTask(psr_codes)
-
+        pck_order = SourceXXlJob().ShiftGenerateFileTask(psr_codes)
+        return
     def psr_create_pck(self, psr_codes):
         source_request_data = self.get_oa_psr(psr_codes)
-        psr_codes = self.put_wsp(source_request_data, wsp_url)
-        psr_codes = self.source_to_operation(psr_codes)
-        pass
+        # 返回源单的psr
+        source_psr_codes = self.put_wsp(source_request_data, wsp_url)
+        # 生成作业单据的psr
+        operation_psr_codes = self.source_to_operation(source_psr_codes)
+        # psr生成pck后，返回的psr
+        pck_order = self.psr_to_pck(operation_psr_codes)
+
+        return pck_order
+
 
 
 

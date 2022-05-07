@@ -24,7 +24,7 @@ class SourceXXlJob(object):
         """
         result = requests.get(url=wsp_xxl_url+job_name)
         pck_order = self.wsp_db.find_pck_by_psr(operation_psr_codes)
-
+        return pck_order
 
 
 if __name__=='__main__':

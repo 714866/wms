@@ -80,7 +80,7 @@ def returnResult(request):
     print(result.text)
     psr_codes = sqlServerConnect(num)
     put_wsp_db = CreateWspPSR().psr_create_pck(psr_codes)
-    return JsonResponse({'psr': psr_codes})
+    return JsonResponse({'psr': put_wsp_db})
 
 
 
