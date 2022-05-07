@@ -4,6 +4,7 @@ import os
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from  modular import mapper
+from modular.PSR.CreateWspPSR import CreateWspPSR
 from  modular.PSR.createPSR import createPSR
 from modular.goods.OAGoods import goodsSql
 
@@ -78,7 +79,7 @@ def returnResult(request):
     result = api_action.postPsr(post_data, num)
     print(result.text)
     psr_codes = sqlServerConnect(num)
-    put_wsp_db = sourcePsr_put_wsp()
+    put_wsp_db = CreateWspPSR().psr_create_pck(psr_codes)
     return JsonResponse({'psr': psr_codes})
 
 
@@ -96,8 +97,8 @@ def sqlServerConnect(top_num):
     psr_codes = []
     count = 0
     for psr in psrs:
-        psr_codes.append(psr[1])
-        psr_id = psr[0]
+        psr_codes.append(psr['ProductShiftRequestitem'])
+        psr_id = psr['ShiftRequestID']
         if count < top_num-1:
             psr_ids = psr_ids + psr_id+','
         else:
