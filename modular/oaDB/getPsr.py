@@ -1,4 +1,5 @@
 from modular import mapper
+from modular.common.SqlChangeFormat import SqlChangeFormat
 
 find_psr = """   SELECT
         TOP 10
@@ -51,6 +52,8 @@ find_psr = """   SELECT
         AND psr.IsCompleted = 0
         and psr.ProductShiftRequestCode in ({0});"""
 
+update_process_by_psr = """ update update_process_by_psr set ProcessCenterID={process} where ProductShiftRequestCode in ({psr_codes})"""
+
 
 class PsrMessage():
 
@@ -58,15 +61,30 @@ class PsrMessage():
         self.cursor = mapper.connect_sqlserve()
 
     def findPsrMessage(self, psr_codes):
-        psr_code_str=''
-        for psr_code in psr_codes:
-            psr_code_str+='\''+psr_code+'\','
-        psr_code_str=psr_code_str.strip(',')
+        """
+        根据调拨请求单号查询数据库获取生成源单所需参数，
+        sql从以下接口逻辑获取
+        http://172.16.11.39:9996/oa-sync-server/syncapi/productshift-request/queryProductShiftRequestToWsp?modifyTimeStamp=
+        :param psr_codes:
+        :return: 返回生成调拨申请源单数据
+        """
+        psr_code_str = SqlChangeFormat(psr_codes)
         sql = find_psr.format(psr_code_str)
         psr_message = self.cursor.fetchall(sql)
         return psr_message
 
-
+    def updatePsrTargetProcess(self, psr_codes, process):
+        """
+        变更调拨请求目标处理中心， 初始设计原因，wps生成pck根据oa调拨请求目标处理中心进行不同处理，需要变更为不需要生成文件的处理中心，
+        减少无法生成pck的情况
+        :param psr_codes: 需要变更调拨请求单号
+        :param process:  变更处理中心值
+        :return:
+        """
+        psr_code_str = SqlChangeFormat(psr_codes)
+        sql = update_process_by_psr.format(process=process, psr_codes=psr_code_str)
+        self.cursor.execute(sql)
+        self.cursor.commit(sql)
 
 if __name__=="__main__":
 

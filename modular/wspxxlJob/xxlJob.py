@@ -26,6 +26,18 @@ class SourceXXlJob(object):
         pck_order = self.wsp_db.find_pck_by_psr(operation_psr_codes)
         return pck_order
 
+    def apiGenerateFile(self, operation_psr_codes):
+        """
+        使用接口调用生成文件逻辑，能按传参，生成pck
+        :param operation_psr_codes:  需执行调拨请求列表
+        :return:
+        """
+        header={"Content-Type": "application/json"}
+        api_url = wsp_url + "/api/product-shift-request/generateFile"
+        result = requests.request('POST', data=operation_psr_codes, headers=header, url=api_url)
+        pck_order = self.wsp_db.find_pck_by_psr(operation_psr_codes)
+
+
 
 if __name__=='__main__':
     lists = ['PSR-A2-20220507-00011']
