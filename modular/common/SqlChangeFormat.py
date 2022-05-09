@@ -5,7 +5,7 @@
 class SqlChangeFormat(object):
     def list_to_str(lists):
         sql_str = ''
-        for code in list:
+        for code in lists:
              sql_str+= '\'' + code + '\','
         return sql_str.strip(',')
 

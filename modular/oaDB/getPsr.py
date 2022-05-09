@@ -52,8 +52,9 @@ find_psr = """   SELECT
         AND psr.IsCompleted = 0
         and psr.ProductShiftRequestCode in ({0});"""
 
-update_process_by_psr = """ update update_process_by_psr set ProcessCenterID={process} where ProductShiftRequestCode in ({psr_codes})"""
+update_process_by_psr = """ update  SellerCube.dbo.ProductShiftRequest set ProcessCenterID={process} where ProductShiftRequestCode in ({psr_codes})"""
 
+find_psr_targeprocess = """select ProcessCenterID from  SellerCube.dbo.ProductShiftRequest where   ProductShiftRequestCode = ('{psr_code}') """
 
 class PsrMessage():
 
@@ -68,12 +69,17 @@ class PsrMessage():
         :param psr_codes:
         :return: 返回生成调拨申请源单数据
         """
-        psr_code_str = SqlChangeFormat(psr_codes)
+        psr_code_str = SqlChangeFormat.list_to_str(psr_codes)
         sql = find_psr.format(psr_code_str)
         psr_message = self.cursor.fetchall(sql)
         return psr_message
 
-    def updatePsrTargetProcess(self, psr_codes, process):
+    def findTargeProcess(self,psr_code):
+
+        sql = find_psr_targeprocess.format(psr_code=psr_code)
+        targe_process_id = self.cursor.fetchone(sql)['ProcessCenterID']
+        return targe_process_id
+    def updatePsrTargeProcess(self, psr_codes, process):
         """
         变更调拨请求目标处理中心， 初始设计原因，wps生成pck根据oa调拨请求目标处理中心进行不同处理，需要变更为不需要生成文件的处理中心，
         减少无法生成pck的情况
@@ -81,15 +87,37 @@ class PsrMessage():
         :param process:  变更处理中心值
         :return:
         """
-        psr_code_str = SqlChangeFormat(psr_codes)
+        psr_code_str = SqlChangeFormat.list_to_str(psr_codes)
         sql = update_process_by_psr.format(process=process, psr_codes=psr_code_str)
         self.cursor.execute(sql)
-        self.cursor.commit(sql)
+        self.cursor.commit()
+
+    def updatePsrBstatus(self,top_num):
+
+        select_psr = 'select top {num} ShiftRequestID,ProductShiftRequestCode  from ProductShiftRequest where bStatus=0 order by CreateDate desc'
+        psrs = self.cursor.fetchall(select_psr.format(num=top_num))
+        psr_ids = ''
+        psr_codes = []
+        count = 0
+        for psr in psrs:
+            psr_codes.append(psr['ProductShiftRequestCode'])
+            psr_id = str(psr['ShiftRequestID'])
+
+            psr_ids = psr_ids + psr_id + ','
+        psr_ids = psr_ids.strip(',')
+        # updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in (select top 10 ShiftRequestID from ProductShiftRequest order by ShiftRequestID desc ); '
+        updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in ({0}); '.format(
+            psr_ids)
+        self.cursor.execute(updateSql)
+        self.cursor.commit()
+        print(psr_codes)
+        return psr_codes
 
 if __name__=="__main__":
 
     get_Psr=PsrMessage()
     b=['PSR-A0-20190327-0642','PSR-A0-20190327-0658']
-    get_Psr.findPsrMessage(b)
+    # get_Psr.findPsrMessage(b)
+    get_Psr.updatePsrBstatus(10)
 
 

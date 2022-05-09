@@ -7,7 +7,7 @@ from  modular import mapper
 from modular.PSR.CreateWspPSR import CreateWspPSR
 from  modular.PSR.createPSR import createPSR
 from modular.goods.OAGoods import goodsSql
-
+from modular.oaDB.getPsr import PsrMessage
 
 # Create your views here.
 
@@ -78,7 +78,7 @@ def returnResult(request):
         return JsonResponse({'psr': '请求失败'})
     result = api_action.postPsr(post_data, num)
     print(result.text)
-    psr_codes = sqlServerConnect(num)
+    psr_codes = PsrMessage().updatePsrBstatus(num)
     put_wsp_db = CreateWspPSR().psr_create_pck(psr_codes)
     return JsonResponse({'psr': put_wsp_db})
 
@@ -91,7 +91,7 @@ def page_not_found(request):
 def sqlServerConnect(top_num):
 
     cursor = mapper.connect_sqlserve()
-    select_psr = 'select top {} ShiftRequestID,ProductShiftRequestitem from ProductShiftRequest order by id desc'
+    select_psr = 'select top {} ShiftRequestID,ProductShiftRequestitem from ProductShiftRequest where bStatus=0 order by id desc'
     psrs = cursor.fetchall(select_psr.format(top_num))
     psr_ids = ''
     psr_codes = []

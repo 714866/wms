@@ -4,19 +4,22 @@ from modular.oaDB.getPsr import PsrMessage
 from modular.mapper import ConnectWSPdb
 from modular.wspDB.wspPsrDB import WspPsrSql
 import json
-from modular.GetApplication import wsp_url
+# from modular.GetApplication import wsp_url
 from modular.wspxxlJob.xxlJob import SourceXXlJob
 
+from modular.GetApplication import get_value
 
+wsp_url = get_value('wsp_url')
 class CreateWspPSR(object):
     def __init__(self):
         pass
     def get_oa_psr(self,data):
         psrs = PsrMessage().findPsrMessage(data)
+        print ('查询PSR下发信息{0}'.format(psrs))
         return psrs
-    def put_wsp(self,request_data,url):
+    def put_wsp(self,request_data):
         header={"Content-Type":"application/json"}
-        WSP_URL = url
+        url = wsp_url +'/wsp/api/productshiftrequest/syncSourceProductShiftRequest-back'
         data_list=[]
         psr_codes = []
         for r in request_data:
@@ -47,8 +50,9 @@ class CreateWspPSR(object):
                         }
             data_list.append(data_dict)
             psr_codes.append(r['productShiftRequestCode'])
-        res = requests.request('POST', url=WSP_URL,headers=header, data = json.dumps(data_list,cls=DateEncoder))
+        res = requests.request('POST', url=url, headers=header, data = json.dumps(data_list,cls=DateEncoder))
         source_psr = WspPsrSql().find_source_psr(psr_codes)
+        print('生成调拨请求源单{0}'.format(source_psr))
         return source_psr
 
     def find_wsp_psr_info(self):
@@ -60,12 +64,12 @@ class CreateWspPSR(object):
         return operation_psr_codes
 
     def psr_to_pck(self,psr_codes):
-        pck_order = SourceXXlJob().ShiftGenerateFileTask(psr_codes)
-        return
+        pck_order = SourceXXlJob().apiGenerateFile(psr_codes)
+        return pck_order
     def psr_create_pck(self, psr_codes):
         source_request_data = self.get_oa_psr(psr_codes)
         # 返回源单的psr
-        source_psr_codes = self.put_wsp(source_request_data, wsp_url)
+        source_psr_codes = self.put_wsp(source_request_data)
         # 生成作业单据的psr
         operation_psr_codes = self.source_to_operation(source_psr_codes)
         # psr生成pck后，返回的psr

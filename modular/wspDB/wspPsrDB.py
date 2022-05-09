@@ -19,7 +19,7 @@ from source_product_shift_request where is_deleted=0 and  product_shift_request_
 from package_info where order_id in ({0});
     """
     def __init__(self):
-        self.cursor = mapper.connect_DB()
+        self.cursor = mapper.connect_DB('wsp_mysql')
 
     def find_source_psr(self,psr_codes):
         sql = self.find_source_psr_sql.format(SqlChangeFormat.list_to_str(psr_codes))
@@ -54,8 +54,8 @@ from package_info where order_id in ({0});
         return operation_psr_codes
 
     def find_pck_by_psr(self,psr_codes):
-        psr_codes = SqlChangeFormat.list_to_str(psr_codes)
-        sql = self.find_pck_by_psr_sql.format(psr_codes)
+        psr_codes_str = SqlChangeFormat.list_to_str(psr_codes)
+        sql = self.find_pck_by_psr_sql.format(psr_codes_str)
         pck_messages = self.cursor.fetchall(sql)
         pck_orders_codes = []
         for psr_code in psr_codes:
@@ -68,6 +68,7 @@ from package_info where order_id in ({0});
                 print('{0}未生成psr的包裹单'.format(psr_code))
         return pck_orders_codes
 
-
-
+if __name__=='__main__':
+    test = WspPsrSql()
+    test.find_operation_psr(['psr'])
 

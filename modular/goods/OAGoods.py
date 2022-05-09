@@ -17,10 +17,10 @@ class goodsSql():
     def findOaGoodsBySku(self, sku_code):
         sql = find_sku.format(sku_code)
         oa_sku = self.cursor.fetchone(sql)
-        return oa_sku[0]
+        return oa_sku['ProductID']
 
     def findOaGoodsByPoa(self, poa_code):
         sql = find_poa.format(poa_code)
         oa_poa = self.cursor.fetchone(sql)
 
-        return {'poa_id': oa_poa[0], 'sku_code': oa_poa[1], 'sku_id': oa_poa[2]}
+        return {'poa_id': oa_poa['PropertyID'], 'sku_code': oa_poa['Productcode'], 'sku_id': oa_poa['ProductID']}
