@@ -78,20 +78,20 @@ $(function(){
 </script>
     			<div class="login_form fl">
 				<div class="login_title clearfix">
-					<h1>测试不知道要测什么的</h1>
+					<h1>创建PSR到生成PCK</h1>
 {#					<a href="/user/register/">立即注册</a>#}
 				</div>
 				<div class="form_input">
 					<form method="post"  onsubmit="return check()"  id="form1">
 {#					<form action="/DBcreateOrder/returnResult/" method="post" onsubmit="return check()">#}
 						{%csrf_token%}
-						<input type="text" name="source_process_id" class="name_input" placeholder="来源处理中心id" value="{{uname}}">
-						<input type="text" name="targer_process_id" class="code_input" placeholder="目标处理中心id" >
+						<input type="text" name="source_process_id" class="name_input" placeholder="来源处理中心id,不填写默认1040" value="{{uname}}">
+						<input type="text" name="targer_process_id" class="code_input" placeholder="目标处理中心id，不填写默认1111" >
 						<div class="user_error">输入错误</div>
-						<input type="text" name="sku_code" class="pass_input" placeholder="sku/poa code">
-						<input type="text" name="url" class="url_input" placeholder="请求地址" value="http://172.16.6.203:8092">
+						<input type="text" name="sku_code" class="pass_input" placeholder="sku/poa code，不填写默认POA4235465">
+						<input type="text" name="url" class="url_input" placeholder="请求地址，不填写默认测试环境" value="http://172.16.6.203:8092">
                         <h1>
-						<input type="text" name="cookie" class="cookie_input" placeholder="cookie">
+						<input type="text" name="storage" class="cookie_input" placeholder="店铺，不填写默认获取发货仓">
                             </h1>
                             <select name="goods_type" class="select_input">
   <option value="0">普通</option>
@@ -103,13 +103,16 @@ $(function(){
   <option value="38">IML</option>
   <option value="39">GC</option>
   </select>
+                        <input type="text" name="product_num" class="num_input" placeholder="产品数量,不填写默认1" value="">
+                        生成<input type="text" name="count_num" class="count_input" placeholder="生成调拨单数量，,不填写默认10" value="">
+
 {#						<div class="pwd_error">输入错误</div>#}
 {#						<div class="more_input clearfix">#}
 {#							<input type="checkbox" name="jizhu" value="1" checked="checked">#}
 {#							<label>记住用户名</label>#}
 {#							<a href="#">忘记密码</a>#}
 {#						</div>#}
-						<input onclick="login()" type="button" name="" value="登录" class="input_submit" >
+						<input onclick="login()" type="button" name="" value="提交" class="input_submit" >
 					</form>
 				</div>
 			</div>

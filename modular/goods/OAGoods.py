@@ -6,6 +6,10 @@ find_poa = 'select pop.PropertyID,p.Productcode,pop.ProductID from Product p inn
            'ProductOptionProperty pop on pop.ProductID=p.ProductID' \
            ' where pop.PropertyCode=\'{0}\''
 
+amz_product_user = """SELECT u.UserName,pu.Id,pu.UserType,pu.UserId
+FROM SellerCube.dbo.ProductUser (NOLOCK) pu
+         INNER JOIN SellerCube.dbo.Users (NOLOCK) u ON pu.UserId = u.UserID
+WHERE pu.ProductId = {sku_id};"""
 
 class goodsSql():
     global find_sku
@@ -24,3 +28,7 @@ class goodsSql():
         oa_poa = self.cursor.fetchone(sql)
 
         return {'poa_id': oa_poa['PropertyID'], 'sku_code': oa_poa['Productcode'], 'sku_id': oa_poa['ProductID']}
+
+    def updateGoodsAMZ(self,sku_id):
+
+        sql = amz_product_user.format(sku_id=sku_id)
