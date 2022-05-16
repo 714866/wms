@@ -91,18 +91,28 @@ $(function(){
 						<input type="text" name="sku_code" class="pass_input" placeholder="sku/poa code，不填写默认POA4235465">
 						<input type="text" name="url" class="url_input" placeholder="请求地址，不填写默认测试环境" value="http://172.16.6.203:8092">
                         <h1>
-						<input type="text" name="storage" class="cookie_input" placeholder="店铺，不填写默认获取发货仓">
+{#						<input type="text" name="storage" class="cookie_input" placeholder="店铺，不填写默认获取发货仓">#}
+						<select  name="storage" class="cookie_input" >
+                            <option value="Airfreight">快递</option>
+                            <option value="Airlift">空运</option>
+                            <option value="General">常规</option>
+                            <option value="Seaway">海运</option>
+                            <option value="Railway">铁路</option>
+                            <option value="Ground">陆运</option>
+                            <option value="Vessel">快船</option>
+                            <option value="快陆运">ExpressGround</option>
+                        </select>
                             </h1>
-                            <select name="goods_type" class="select_input">
-  <option value="0">普通</option>
-  <option value="17">FBC</option>
-  <option value="27">万邑通调拨</option>
-  <option value="28">递四方调拨</option>
-  <option value="36">三方仓调拨JD</option>
-  <option value="37">FBE</option>
-  <option value="38">IML</option>
-  <option value="39">GC</option>
-  </select>
+                        <select name="goods_type" class="select_input">
+                          <option value="0">普通</option>
+                          <option value="17">FBC</option>
+                          <option value="27">万邑通调拨</option>
+                          <option value="28">递四方调拨</option>
+                          <option value="36">三方仓调拨JD</option>
+                          <option value="37">FBE</option>
+                          <option value="38">IML</option>
+                          <option value="39">GC</option>
+                        </select>
                         <input type="text" name="product_num" class="num_input" placeholder="产品数量,不填写默认1" value="">
                         生成<input type="text" name="count_num" class="count_input" placeholder="生成调拨单数量，,不填写默认10" value="">
 

@@ -6,10 +6,15 @@ find_poa = 'select pop.PropertyID,p.Productcode,pop.ProductID from Product p inn
            'ProductOptionProperty pop on pop.ProductID=p.ProductID' \
            ' where pop.PropertyCode=\'{0}\''
 
-amz_product_user = """SELECT u.UserName,pu.Id,pu.UserType,pu.UserId
-FROM SellerCube.dbo.ProductUser (NOLOCK) pu
-         INNER JOIN SellerCube.dbo.Users (NOLOCK) u ON pu.UserId = u.UserID
-WHERE pu.ProductId = {sku_id};"""
+amz_product_user = """SELECT pu.Id,pu.UserType,pu.UserId
+ FROM SellerCube.dbo.ProductUser (NOLOCK) pu
+ WHERE pu.ProductId = {sku_id} and pu.UserType=1;"""
+
+update_product_amzuser_sql = "update ProductUser set UserId={user_id} where id={id}"
+
+inser_product_amzuser_sql = """INSERT INTO SellerCube.dbo.ProductUser ( ProductId, UserType, UserId ,
+                                        OaProductUserName)
+VALUES ( {ProductId}, 1, 21488, N'');"""
 
 class goodsSql():
     global find_sku
@@ -30,5 +35,39 @@ class goodsSql():
         return {'poa_id': oa_poa['PropertyID'], 'sku_code': oa_poa['Productcode'], 'sku_id': oa_poa['ProductID']}
 
     def updateGoodsAMZ(self,sku_id):
-
+        """
+        产品用户表中userid为0，则更新产品用户表userid=21488
+        产品用户表为空，则插入用户表
+        :param sku_id:
+        :return:
+        """
         sql = amz_product_user.format(sku_id=sku_id)
+        resulst = self.cursor.fetchone(sql)
+        if resulst is not None and resulst['UserId']==0:
+            """ 处理产品用户表中用户Id为0的"""
+            resulst['UserId']=21488
+            self.cursor.executeAndcommit(update_product_amzuser_sql.format(user_id=resulst['UserId'],id=resulst['Id']))
+        elif resulst is None:
+            """无 产品用户表的需插入"""
+            self.cursor.executeAndcommit(inser_product_amzuser_sql.format(ProductId=sku_id))
+
+    def inserProcessCenterTransShipPrice(self,source_process_id,targer_process_id,shift_type):
+        """
+        插入处理中心转运价
+        :param source_process_id:
+        :param targer_process_id:
+        :param shift_type:
+        :return:
+        """
+        inser_price_sql = """INSERT INTO SellerCube.dbo.ProcessCenterTransShipPrice (FromProcessCenterID, ToProcessCenterID, ShipType,
+                                                        TransShipmentPrice, CreatedDate, IsDeleted, IsCalcVolume,
+                                                        CalcVolumeNumber, BillingModel, BillingWeight,VATTaxRate,IsVAT)
+VALUES ({source_process_id}, {targer_process_id}, '{shift_type}', 1.000, GETDATE(), 0, 0, 0.000, 0, 0,0.000000,0 );"""
+        self.cursor.executeAndcommit(inser_price_sql.format(source_process_id=source_process_id,targer_process_id=targer_process_id,shift_type=shift_type))
+        return True
+
+
+
+if __name__=="__main__":
+    testsql = goodsSql()
+    testsql.inserProcessCenterTransShipPrice(1040,1111,'Seaway')

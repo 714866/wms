@@ -42,27 +42,27 @@ def returnResult(request):
     post=request.POST
     post_data={}
     post_data['source_process_id']=post.get('source_process_id')
-    if post_data['source_process_id'] is None:
+    if post_data['source_process_id'] is None or post_data['source_process_id']=='':
         post_data['source_process_id'] = 1040
     post_data['targer_process_id']=post.get('targer_process_id')
-    if post_data['targer_process_id'] is None:
+    if post_data['targer_process_id'] is None or post_data['targer_process_id']=='':
         post_data['targer_process_id'] = 1111
     sku_code = post.get('sku_code')
+    if sku_code is None or sku_code=='':
+        sku_code ='POA4235465'
     post_data['sku_code']=sku_code
-    if post_data['sku_code'] is None:
-        post_data['sku_code'] ='POA4235465'
     post_data['oa_url']=post.get('url')
-    if post_data['oa_url'] is None:
+    if post_data['oa_url'] is None or  post_data['oa_url']=='':
         post_data['oa_url']='http://172.16.6.203:8092'
     post_data['storage']=post.get('storage')
     post_data['goods_type']=post.get('goods_type')
     num=post.get('count_num')
-    if num is None:
+    if num is None or num=='':
         num =10
     #执行次数
     post_data['count_num']=num
     product_num = post.get('product_num')
-    if product_num is None:
+    if product_num is None or product_num=='':
         product_num=1
     post_data['product_num']=product_num
     # 处理产品
@@ -86,8 +86,8 @@ def returnResult(request):
     try:
         api_action= createPSR( post_data['oa_url'])
         result = api_action.postPsr(post_data)
-    except :
-        return JsonResponse({'psr': '请求失败'})
+    except BaseException as  err:
+        return JsonResponse({'psr': '请求失败{0}'.format(err)})
     print(result.text)
     psr_codes = PsrMessage().updatePsrBstatus(num)
     put_wsp_db = CreateWspPSR().psr_create_pck(psr_codes)
