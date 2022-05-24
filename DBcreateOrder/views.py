@@ -95,6 +95,18 @@ def returnResult(request):
 
 
 
+def inStorageRequest(request):
+    """
+    生成入库申请
+    :param request:
+    :return:
+    """
+    post = request.POST
+    post_data = {}
+    post_data['sft_code'] = post.get('sft_code')
+
+    pass
+
 def page_not_found(request):
     return redirect('http://127.0.0.1:8000/DBcreateOrder/index/')
 
