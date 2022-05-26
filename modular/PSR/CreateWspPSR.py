@@ -9,7 +9,7 @@ from modular.wspxxlJob.xxlJob import SourceXXlJob
 
 from modular.GetApplication import get_value
 
-wsp_url = get_value('wsp_url')
+wsp_url = get_value('wsp_url','url')
 class CreateWspPSR(object):
     def __init__(self):
         pass

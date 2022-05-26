@@ -8,5 +8,5 @@ print(os.path.abspath(os.path.dirname(__file__)))
 cp = ConfigParser()
 cp.read(os.path.abspath(os.path.dirname(__file__))+'/config/application.conf')
 
-def get_value(key):
-    return cp.get('wsp_url','url')
+def get_value(key,vaule='url'):
+    return cp.get(key,vaule)
