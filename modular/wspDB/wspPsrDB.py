@@ -1,5 +1,5 @@
 from modular import mapper
-from modular.common.SqlChangeFormat import SqlChangeFormat
+from modular.common.SqlChangeFormat import list_to_str
 
 
 
@@ -22,7 +22,7 @@ from package_info where order_id in ({0});
         self.cursor = mapper.connect_DB('wsp_mysql')
 
     def find_source_psr(self,psr_codes):
-        sql = self.find_source_psr_sql.format(SqlChangeFormat.list_to_str(psr_codes))
+        sql = self.find_source_psr_sql.format(list_to_str(psr_codes))
         sql_result = self.cursor.fetchall(sql)
         source_psr_codes = []
         for psr_code in psr_codes:
@@ -40,7 +40,7 @@ from package_info where order_id in ({0});
         :param psr_codes:
         :return:operation_psr_codes    已生成作业单的调拨单
         '''
-        sql = self.find_operation_psr_sql.format(SqlChangeFormat.list_to_str(psr_codes))
+        sql = self.find_operation_psr_sql.format(list_to_str(psr_codes))
         psr_messages = self.cursor.fetchall(sql)
         operation_psr_codes=[]
         for psr_code in psr_codes:
@@ -54,7 +54,7 @@ from package_info where order_id in ({0});
         return operation_psr_codes
 
     def find_pck_by_psr(self,psr_codes):
-        psr_codes_str = SqlChangeFormat.list_to_str(psr_codes)
+        psr_codes_str = list_to_str(psr_codes)
         sql = self.find_pck_by_psr_sql.format(psr_codes_str)
         pck_messages = self.cursor.fetchall(sql)
         pck_orders_codes = []

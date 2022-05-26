@@ -3,7 +3,7 @@ import simplejson as simplejson   # 解决数据库返回Decimal类型转换成j
 
 from modular.GetApplication import get_value
 from modular.SFT.enums.shiptype import ShipType
-from modular.common.SqlChangeFormat import DateEncoder, SqlChangeFormat
+from modular.common.SqlChangeFormat import DateEncoder, list_to_str
 from modular.oaDB.getSFT import SftMessage
 import json
 
@@ -32,7 +32,7 @@ class CreateSfiInstorageRequest():
         :return: 返回接口参数 类型为list
         """
         # sft_lists= self.query_db.getSFTtoInstorgeRequest(SqlChangeFormat.list_to_str(shif_codes))
-        shif_codes = SqlChangeFormat.list_to_str(shif_codes)
+        shif_codes = list_to_str(shif_codes)
         sft_lists= self.query_db.getSFTtoInstorageRequest(shif_codes)
         product_shift_lists = []   #  # 存储 [{api_info},{api_info}]
         # product_shift_dicts = {}   #存放总调用字典数据  {sft_code:{api_info}}

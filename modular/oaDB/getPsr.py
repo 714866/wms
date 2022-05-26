@@ -1,5 +1,5 @@
 from modular import mapper
-from modular.common.SqlChangeFormat import SqlChangeFormat
+from modular.common.SqlChangeFormat import  list_to_str
 
 find_psr = """   SELECT
         TOP 10
@@ -69,7 +69,7 @@ class PsrMessage():
         :param psr_codes:
         :return: 返回生成调拨申请源单数据
         """
-        psr_code_str = SqlChangeFormat.list_to_str(psr_codes)
+        psr_code_str = list_to_str(psr_codes)
         sql = find_psr.format(psr_code_str)
         psr_message = self.cursor.fetchall(sql)
         return psr_message
@@ -87,7 +87,7 @@ class PsrMessage():
         :param process:  变更处理中心值
         :return:
         """
-        psr_code_str = SqlChangeFormat.list_to_str(psr_codes)
+        psr_code_str = list_to_str(psr_codes)
         sql = update_process_by_psr.format(process=process, psr_codes=psr_code_str)
         self.cursor.execute(sql)
         self.cursor.commit()

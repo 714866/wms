@@ -3,14 +3,30 @@
 """
 from decimal import Decimal
 
-class SqlChangeFormat(object):
-    def list_to_str(lists):
-        sql_str = ''
-        for code in lists:
-             sql_str+= '\'' + code + '\','
-        return sql_str.strip(',')
+from pytz import unicode
 
 
+# class SqlChangeFormat(object):
+def list_to_str(lists):
+    sql_str = ''
+    sql_str = ','.join('\''+str(i)+'\'' for i in lists)
+    # for code in lists:
+    #      sql_str+= '\'' + code + '\','
+    # return sql_str.strip(',')
+
+def selectChangeInser(table,select_results):
+    insert_sqls=''
+    for select_result in select_results:
+        if insert_sql=='':
+            row_key = ','.join(str(v) for v in select_result.keys())
+            row_value = ','.join('\'' +str(v) +'\'' if isinstance(v,str) or isinstance(v, unicode) or isinstance(v,datetime) else str(v) for v in select_result.values())
+            row_value = row_value.replace('None', 'NULL')
+            insert_sql = "insert into `%s`(%s) values (%s);" % (table, row_key, row_value)
+        else:
+            row_value = ','.join('\'' +str(v) +'\'' if isinstance(v,str) or isinstance(v, unicode) or isinstance(v,datetime) else str(v) for v in select_result.values())
+            row_value = row_value.replace('None', 'NULL')
+            insert_sql = insert_sql + ',(' + row_value + ')'
+    return insert_sqls
 
 """
 dumps方法无法对字典中datetime时间格式的数据进行转化

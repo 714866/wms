@@ -6,7 +6,7 @@ from in_storage_request where customer_order_no in ({customer_order_no}) and is_
 
 sql_update_isr_request_sr_status="""
 
-update in_storage_request set sr_status=1 where is_deleted=0 and customer_order_no in (customer_order_no})
+update in_storage_request set sr_status=1 where is_deleted=0 and customer_order_no in ({customer_order_no})
 """
 
 
@@ -73,4 +73,4 @@ select id,
        owner_name,
        goods_size,
        origin_processcenter_id
-from in_storage_request where customer_order_no={customer_order_no} and is_deleted=0;"""
+from in_storage_request where customer_order_no in ({customer_order_no}) and is_deleted=0;"""
