@@ -7,6 +7,7 @@ from modular.common.SqlChangeFormat import DateEncoder, list_to_str
 from modular.oaDB.getSFT import SftMessage
 import json
 
+from modular.wmsDB.instoragerequest import InstorageMessage1WMS
 from modular.wspDB.instoragerequest import InstorageMessage
 
 wsp_url = get_value('wsp_url','url')
@@ -16,6 +17,7 @@ class CreateSfiInstorageRequest():
     def __init__(self):
         self.query_db = SftMessage()
         self.query_wsp_db = InstorageMessage()
+        self.query_wms_db = InstorageMessage1WMS()
         pass
 
     def oaNotMessageQueryProductShiftItemToWsp(self, separate_box_info_list):
@@ -93,6 +95,11 @@ class CreateSfiInstorageRequest():
         return product_shift_lists
 
     def syncFromProductShiftInfo(self,separate_box_info_list):
+        """
+        调用wsp接口生成入库申请单
+        :param separate_box_info_list:   syncFromProductShiftInfo接口参数
+        :return: 生成入库申请单的来源单  sft
+        """
         error_message=''
         header = {"Content-Type": "application/json"}
         url = wsp_url + 'wsp/api/separate-box/syncFromProductShiftInfo?key='+key
@@ -114,10 +121,26 @@ class CreateSfiInstorageRequest():
                 continue
             else:
                 error_message+='{order_no} /n'.format(order_no=order_no)
+        self.query_wsp_db.updateInstorageRequestSrstatus()
+        return update_codes
 
+    def isrFromWspToWms(self,sft_codes):
+        """
+        从wsp数据库查询数据，inser到wms数据库
+        原因：业务线下发数据不稳定，直接自己同步数据
+        :param sft_codes:
+        :return:
+        """
+        sft_codes = self.query_wms_db.select_isr_request(sft_codes)
+        insert_wms_isr_sql = self.query_wsp_db.returnInsertSql(sft_codes)
+        self.query_wms_db.inserIsrRequest(insert_wms_isr_sql)
+        return sft_codes
 
-
-
+    def createIsrRequestToWms(self,sft_codes):
+        create_info = self.queryProductShiftItemToWsp(sft_codes)
+        wsp_isr = self.syncFromProductShiftInfo(create_info)
+        wms_code = self.isrFromWspToWms(wsp_isr)
+        return wms_code
 
 if __name__=='__main__':
     test = CreateSfiInstorageRequest()

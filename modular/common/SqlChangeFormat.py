@@ -13,20 +13,23 @@ def list_to_str(lists):
     # for code in lists:
     #      sql_str+= '\'' + code + '\','
     # return sql_str.strip(',')
+    return sql_str
 
-def selectChangeInser(table,select_results):
-    insert_sqls=''
+def selectChangeInsert(table,select_results):
+    insert_sql=''
     for select_result in select_results:
         if insert_sql=='':
             row_key = ','.join(str(v) for v in select_result.keys())
-            row_value = ','.join('\'' +str(v) +'\'' if isinstance(v,str) or isinstance(v, unicode) or isinstance(v,datetime) else str(v) for v in select_result.values())
+            row_value = ','.join('\'' +str(v) +'\'' if isinstance(v,str) or isinstance(v, unicode) or isinstance(v,datetime) or isinstance(v,date) else str(v) for v in select_result.values())
             row_value = row_value.replace('None', 'NULL')
-            insert_sql = "insert into `%s`(%s) values (%s);" % (table, row_key, row_value)
+            insert_sql = "insert into `%s`(%s) values (%s)" % (table, row_key, row_value)
         else:
-            row_value = ','.join('\'' +str(v) +'\'' if isinstance(v,str) or isinstance(v, unicode) or isinstance(v,datetime) else str(v) for v in select_result.values())
+            row_value = ','.join('\'' +str(v) +'\'' if isinstance(v,str) or isinstance(v, unicode) or isinstance(v,datetime) or isinstance(v,date) else str(v) for v in select_result.values())
             row_value = row_value.replace('None', 'NULL')
             insert_sql = insert_sql + ',(' + row_value + ')'
-    return insert_sqls
+    return insert_sql
+
+
 
 """
 dumps方法无法对字典中datetime时间格式的数据进行转化
@@ -34,7 +37,8 @@ dumps方法无法对字典中datetime时间格式的数据进行转化
 
 """
 import json
-from datetime import datetime
+from datetime import datetime, date
+
 
 class DateEncoder(json.JSONEncoder):
     def default(self, obj):

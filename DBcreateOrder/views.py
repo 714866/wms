@@ -6,6 +6,7 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from  modular import mapper
 from modular.PSR.CreateWspPSR import CreateWspPSR
 from  modular.PSR.createPSR import createPSR
+from modular.SFT.createSftInstorageRequest import CreateSfiInstorageRequest
 from modular.goods.OAGoods import goodsSql
 from modular.oaDB.getPsr import PsrMessage
 
@@ -95,7 +96,7 @@ def returnResult(request):
 
 
 
-def inStorageRequest(request):
+def InStorageRequest(request):
     """
     生成入库申请
     :param request:
@@ -104,31 +105,36 @@ def inStorageRequest(request):
     post = request.POST
     post_data = {}
     post_data['sft_code'] = post.get('sft_code')
-
-    pass
+    isr = CreateSfiInstorageRequest()
+    wms_code = isr.createIsrRequestToWms(post.get('sft_code'))
+    print('创建入库单成功的单据{0}'.format(wms_code))
+    return wms_code
 
 def page_not_found(request):
     return redirect('http://127.0.0.1:8000/DBcreateOrder/index/')
 
 
-def sqlServerConnect(top_num):
+# def sqlServerConnect(top_num):
+#
+#     cursor = mapper.connect_sqlserve()
+#     select_psr = 'select top {0} ShiftRequestID,ProductShiftRequestitem from ProductShiftRequest where bStatus=0 order by id desc'
+#     psrs = cursor.fetchall(select_psr.format(top_num))
+#     psr_ids = ''
+#     psr_codes = []
+#     count = 0
+#     for psr in psrs:
+#         psr_codes.append(psr['ProductShiftRequestitem'])
+#         psr_id = psr['ShiftRequestID']
+#         if count < top_num-1:
+#             psr_ids = psr_ids + psr_id+','
+#         else:
+#             psr_ids = psr_ids + psr_id
+#     # updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in (select top 10 ShiftRequestID from ProductShiftRequest order by ShiftRequestID desc ); '
+#     updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in ({0}); '.format(psr_ids)
+#     cursor.execute(updateSql)
+#     cursor.commitAndClose()
+#
+#     return psr_codes
 
-    cursor = mapper.connect_sqlserve()
-    select_psr = 'select top {0} ShiftRequestID,ProductShiftRequestitem from ProductShiftRequest where bStatus=0 order by id desc'
-    psrs = cursor.fetchall(select_psr.format(top_num))
-    psr_ids = ''
-    psr_codes = []
-    count = 0
-    for psr in psrs:
-        psr_codes.append(psr['ProductShiftRequestitem'])
-        psr_id = psr['ShiftRequestID']
-        if count < top_num-1:
-            psr_ids = psr_ids + psr_id+','
-        else:
-            psr_ids = psr_ids + psr_id
-    # updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in (select top 10 ShiftRequestID from ProductShiftRequest order by ShiftRequestID desc ); '
-    updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in ({0}); '.format(psr_ids)
-    cursor.execute(updateSql)
-    cursor.commitAndClose()
-    return psr_codes
+
 

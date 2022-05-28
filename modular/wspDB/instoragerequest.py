@@ -2,10 +2,11 @@ from datetime import datetime
 
 from pytz import unicode
 
-from modular.common.SqlChangeFormat import  selectChangeInser, list_to_str
-from modular.wspDB.commonDB import WspCommonDB
+from modular.common.SqlChangeFormat import  selectChangeInsert, list_to_str
+from modular.common.commonDB import WspCommonDB
+
 from modular.wspDB.wspsql.instoragerequestsql import sql_get_instorage_request_by_customer, \
-    sql_update_isr_request_sr_status, sql_select_isr_request
+    sql_update_isr_request_sr_status, sql_select_isr_request, sql_select_isr_box, sql_select_isr_box_item
 
 
 class InstorageMessage(WspCommonDB):
@@ -28,20 +29,24 @@ class InstorageMessage(WspCommonDB):
         self.cursor.executeAndcommit(sql)
 
     def returnInsertSql(self,customer):
+        #获取入库申请主表，并组装插入sql
         sql = sql_select_isr_request.format(customer_order_no=list_to_str(customer))
-        re = self.cursor.fetchall(sql)
-        print(selectChangeInser(re))
-        for row_dict in re:
+        isr_main = self.cursor.fetchall(sql)
+        isr_main_insert_sql = selectChangeInsert('in_storage_request',isr_main)
+        print(isr_main_insert_sql)
+        #获取入库申请分箱表，并组装插入sql
+        in_storage_request_ids =  ','.join('\''+str(isr['id'])+'\'' for isr in isr_main)
+        isr_box = self.cursor.fetchall(sql_select_isr_box.format(in_storage_request_id = in_storage_request_ids))
+        isr_box_insert_sql = selectChangeInsert('in_storage_request_box',isr_box)
+        print(isr_box_insert_sql)
 
-                row_key = ','.join(str(v) for v in row_dict.keys())
+        #获取入库申请分箱明细表，并组装插入sql
+        isr_box_ids =  ','.join('\''+str(isr['id'])+'\'' for isr in isr_box)
+        isr_box_item = self.cursor.fetchall(sql_select_isr_box_item.format(isr_box_id=isr_box_ids))
+        isr_item_insert_sql = selectChangeInsert('in_storage_request_box_item',isr_box_item)
+        print(isr_item_insert_sql)
 
-                row_value = ','.join('\'' +str(v) +'\'' if isinstance(v,str) or isinstance(v, unicode) or isinstance(v,datetime) else str(v) for v in row_dict.values())
-
-                row_value = row_value.replace('None', 'NULL')
-
-                insert_sql = "insert into `%s`(%s) values (%s);" % ('in_storage_request', row_key, row_value)
-                print(insert_sql)
-
+        return [isr_main_insert_sql,isr_box_insert_sql,isr_item_insert_sql]
 
 if __name__=='__main__':
     t =InstorageMessage()
