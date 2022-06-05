@@ -1,4 +1,3 @@
-from modular.common.SqlChangeFormat import SqlChangeFormat
 from modular.oaDB.DBConnect import OAMessage
 
 from modular.oaDB.oasql.sftsql import sql_get_sft_to_instorage

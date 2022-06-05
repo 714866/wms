@@ -2,7 +2,7 @@ from modular import mapper
 from modular.common.SqlChangeFormat import  list_to_str
 
 find_psr = """   SELECT
-        TOP 10
+        
           psr.ProductShiftRequestCode AS productShiftRequestCode,
         psr.ProductID AS productId,
         ISNULL(psr.PropertyID, 0) AS propertyId,
@@ -93,7 +93,11 @@ class PsrMessage():
         self.cursor.commit()
 
     def updatePsrBstatus(self,top_num):
-
+        """
+        更新调拨请求状态，符合正常下发流程，
+        :param top_num:
+        :return: 返回更新后的调拨请求单号
+        """
         select_psr = 'select top {num} ShiftRequestID,ProductShiftRequestCode  from ProductShiftRequest where bStatus=0 order by CreateDate desc'
         psrs = self.cursor.fetchall(select_psr.format(num=top_num))
         psr_ids = ''
@@ -102,7 +106,6 @@ class PsrMessage():
         for psr in psrs:
             psr_codes.append(psr['ProductShiftRequestCode'])
             psr_id = str(psr['ShiftRequestID'])
-
             psr_ids = psr_ids + psr_id + ','
         psr_ids = psr_ids.strip(',')
         # updateSql = 'update ProductShiftRequest set bStatus=1 , AuditState=2 where ShiftRequestID in (select top 10 ShiftRequestID from ProductShiftRequest order by ShiftRequestID desc ); '
@@ -110,7 +113,7 @@ class PsrMessage():
             psr_ids)
         self.cursor.execute(updateSql)
         self.cursor.commit()
-        print(psr_codes)
+        print('修改状态，能正常下发wsp的调拨请求{0}'.format(psr_codes))
         return psr_codes
 
 if __name__=="__main__":

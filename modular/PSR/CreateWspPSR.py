@@ -10,6 +10,7 @@ from modular.wspxxlJob.xxlJob import SourceXXlJob
 from modular.GetApplication import get_value
 
 wsp_url = get_value('wsp_url','url')
+wsp_key = get_value('wsp_url','key')
 class CreateWspPSR(object):
     def __init__(self):
         pass
@@ -19,7 +20,7 @@ class CreateWspPSR(object):
         return psrs
     def put_wsp(self,request_data):
         header={"Content-Type":"application/json"}
-        url = wsp_url +'/wsp/api/productshiftrequest/syncSourceProductShiftRequest-back'
+        url = wsp_url + '/wsp/api/productshiftrequest/syncSourceProductShiftRequest-back'
         data_list=[]
         psr_codes = []
         for r in request_data:
@@ -51,6 +52,8 @@ class CreateWspPSR(object):
             data_list.append(data_dict)
             psr_codes.append(r['productShiftRequestCode'])
         res = requests.request('POST', url=url, headers=header, data = json.dumps(data_list,cls=DateEncoder))
+        operate_url =  wsp_url + '/wsp/api/product-shift-request/createProductShiftRequest-back?key='+wsp_key
+        operate = requests.request('POST', url=operate_url, headers=header, data = json.dumps(data_list,cls=DateEncoder),verify=False)
         source_psr = WspPsrSql().find_source_psr(psr_codes)
         print('生成调拨请求源单{0}'.format(source_psr))
         return source_psr
@@ -64,14 +67,20 @@ class CreateWspPSR(object):
         return operation_psr_codes
 
     def psr_to_pck(self,psr_codes):
+        """
+        s调用接口生成pck
+        :param psr_codes:
+        :return:
+        """
         pck_order = SourceXXlJob().apiGenerateFile(psr_codes)
         return pck_order
+
     def psr_create_pck(self, psr_codes):
         source_request_data = self.get_oa_psr(psr_codes)
         # 返回源单的psr
         source_psr_codes = self.put_wsp(source_request_data)
         # 生成作业单据的psr
-        operation_psr_codes = self.source_to_operation(source_psr_codes)
+        operation_psr_codes = self.source_to_operation(psr_codes)
         # psr生成pck后，返回的psr
         pck_order = self.psr_to_pck(operation_psr_codes)
 

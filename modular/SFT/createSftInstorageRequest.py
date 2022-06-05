@@ -1,3 +1,4 @@
+from datetime import time
 import requests
 import simplejson as simplejson   # 解决数据库返回Decimal类型转换成json错误使用
 
@@ -23,10 +24,76 @@ class CreateSfiInstorageRequest():
     def oaNotMessageQueryProductShiftItemToWsp(self, separate_box_info_list):
         """
         预设给OA没sft也进行入库申请生成的方法
-        :param separate_box_info_list:
-        :return: 
+        :param separate_box_info_list:[
+        "originCode":"SFT-A1-20220307-5006A",
+        "ProcessCenterId":1138,
+        "shipType":3,
+        productShiftDownToWspItemList[
+        {"quantity":
+
+        }
+        ]
+        :return:
+
+        未完成
         """
-        pass
+        separate_box_info_list
+        product_shift_lists=[]
+        nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        for sft_list in sft_lists:
+            is_not_exit = True
+            product_shift = {}
+            for p in product_shift_lists:
+                if sft_list['originCode'] == p['originCode']:
+                    # 判断是否为重复的调拨单，sft_list以分箱为维度，存在一个调拨单多个分箱
+                    is_not_exit = False
+                    product_shift = p
+            if is_not_exit:
+                ''' 不存在 证明主表信息没赋值，是新的调拨单'''
+                # product_shift_dicts[sft_list['originCode']] = {}
+                product_shift = {}
+                product_shift['originCode'] = sft_list['originCode'] + '-1'
+                product_shift['productShitItemOriginCode'] = separate_box_info_list['originCode']
+                product_shift['originProcessCenterId'] = separate_box_info_list['ProcessCenterId']
+                product_shift['targetProcessCenterId'] = separate_box_info_list['ProcessCenterId']
+                product_shift['shipType'] = ShipType[sft_list['shipType']].value
+                product_shift['modifyTimeStamp'] = nowDate
+                product_shift['goodsType'] = sft_list['goodsType']
+                product_shift['amazonShop'] = sft_list['amazonShop']
+                product_shift['storageCode'] = sft_list['storageCode']
+                product_shift['deliveryProductCode'] = sft_list['deliveryProductCode']
+                product_shift['relativeCode'] = sft_list['relativeCode']
+                product_shift['traceCode'] = sft_list['traceCode']
+                product_shift['goodsSize'] = sft_list['goodsSize']
+                product_shift['isCustoms'] = False  # 原逻辑是根据目标，来源处理中心与运输方式绝对是否需要报关字段，现在直接写死false
+                product_shift['productShiftDownToWspItemList'] = []
+                product_shift_lists.append(product_shift)  # 加到主表中
+
+            productShiftDownToWspItemList = []
+            # 明细赋值
+
+            item = {}
+            item['baseProductCode'] = sft_list['baseProductCode']
+            item['productId'] = sft_list['productId']
+            item['propertyId'] = sft_list['propertyId']
+            item['quantity'] = sft_list['quantity']
+            item['height'] = sft_list['height']
+            item['length'] = sft_list['length']
+            item['width'] = sft_list['width']
+            item['weight'] = sft_list['weight']
+            item['productShiftBoxCode'] = sft_list['productShiftBoxCode']
+            item['detailLabel'] = sft_list['detailLabel']
+            item['ful'] = sft_list['ful']
+            item['fboxItemOriginCode'] = sft_list['fboxItemOriginCode']
+            item['type'] = sft_list['type']
+
+            # 请求参数组装明细
+
+            product_shift['productShiftDownToWspItemList'].append(item)
+            # product_shift_dict['originCode']['productShiftDownToWspItemList'].append(item)
+            print(product_shift)
+        print(json.dumps(product_shift_lists, cls=DateEncoder))
+
     def queryProductShiftItemToWsp(self,shif_codes):
         """
         替代同步系统的queryProductShiftItemToWsp接口，返回
@@ -51,7 +118,7 @@ class CreateSfiInstorageRequest():
                 ''' 不存在 证明主表信息没赋值，是新的调拨单'''
                 # product_shift_dicts[sft_list['originCode']] = {}
                 product_shift = {}
-                product_shift['originCode']=  sft_list['originCode']+'-1'
+                product_shift['originCode']=  sft_list['originCode']
                 product_shift['productShitItemOriginCode']=  sft_list['productShitItemOriginCode']
                 product_shift['originProcessCenterId']=  sft_list['originProcessCenterId']
                 product_shift['targetProcessCenterId']=  sft_list['targetProcessCenterId']

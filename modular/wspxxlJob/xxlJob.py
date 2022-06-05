@@ -2,6 +2,7 @@ import json
 
 import requests
 
+from modular.common.commonDB import wmsCommonDB
 from modular.oaDB.getPsr import PsrMessage
 from modular.wspDB.wspPsrDB import WspPsrSql
 from modular.GetApplication import get_value
@@ -11,11 +12,14 @@ wsp_xxl_url = get_value('wsp_url') + '/wsp/page/product-shift-monitor-config/exe
 class SourceXXlJob(object):
     def __init__(self):
         self.wsp_db = WspPsrSql()
+        self.wms_db = wmsCommonDB()
         pass
 
     def SourcePsrToOperationHandler(self, source_psr_codes, job_name="SourcePsrToOperationHandler"):
         result = requests.get(url=wsp_xxl_url+job_name)
         operation_psr_codes = self.wsp_db.find_operation_psr(source_psr_codes)
+        if operation_psr_codes is None:
+            raise Exception("创建调拨请求作业报错，{0}".format(source_psr_codes))
         return  operation_psr_codes
 
     def ShiftGenerateFileTask(self, operation_psr_codes, job_name='ShiftGenerateFileTask'):
@@ -50,13 +54,19 @@ class SourceXXlJob(object):
         finally:
             psr.updatePsrTargeProcess(operation_psr_codes, targe_process_id)
         pck_order = self.wsp_db.find_pck_by_psr(operation_psr_codes)
+        # 更新pck状态为待调度，wms系统逻辑是下发到wms再跑服务变更的
+        self.wsp_db.update_pck_statue(pck_order)
+        # 使用查询语句组装insert语句
+        insert_sql = self.wsp_db.returnInsertSql(pck_order)
+        # 插入wms库
+        self.wms_db.insertLists(insert_sql)
         return pck_order
         # res = requests.request('POST', url=WSP_URL,headers=header, data = json.dumps(data_list,cls=DateEncoder))
 
 
 
 if __name__=='__main__':
-    lists = ['PSR-A2-20220507-00011']
+    lists = ['PSR-A2-20220605-00021']
     t = SourceXXlJob().apiGenerateFile(lists)
 
 

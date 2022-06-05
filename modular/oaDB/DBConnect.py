@@ -1,5 +1,4 @@
 from modular import mapper
-from modular.common.SqlChangeFormat import SqlChangeFormat
 
 
 class OAMessage(object):
