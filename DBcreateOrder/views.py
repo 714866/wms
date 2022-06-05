@@ -97,14 +97,14 @@ def returnResult(request):
     except BaseException as  err:
         return JsonResponse({'psr': '请求失败{0}'.format(err)})
     print(result.text)
-    # try:
+    try:
     #更改生成的调拨单状态
-    psr_codes = PsrMessage().updatePsrBstatus(num)
-    print('oa创建成功，且修改调拨请求的bstatus状态')
-    #wsp创建调拨请求与包裹单
-    put_wsp_db = CreateWspPSR().psr_create_pck(psr_codes)
-    # except BaseException as  err:
-    #     return JsonResponse({'psr': '在wsp创建数据失败,请求失败{0}'.format(err)})
+        psr_codes = PsrMessage().updatePsrBstatus(num)
+        print('oa创建成功，且修改调拨请求的bstatus状态')
+        #wsp创建调拨请求与包裹单
+        put_wsp_db = CreateWspPSR().psr_create_pck(psr_codes)
+    except AssertionError as  err:
+        return JsonResponse({'psr': '{0}'.format(err)})
 
     return JsonResponse({'psr': put_wsp_db})
 

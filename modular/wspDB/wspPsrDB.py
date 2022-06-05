@@ -33,6 +33,7 @@ from package_info where order_id in ({0});
                     break
             if is_true==0:
                 print('{0}未生成psr来源单据'.format(psr_code))
+        assert  len(source_psr_codes) != 0,('全部数据未生成psr来源单据,{0}'.format(psr_codes))
         return source_psr_codes
     def find_operation_psr(self,psr_codes):
         '''
@@ -52,6 +53,7 @@ from package_info where order_id in ({0});
                     break
             if is_true == 0:
                 print('{0}未生成psr作业单据'.format(psr_code))
+        assert  len(operation_psr_codes) != 0,('全部数据未生成psr作业单据,{0}'.format(psr_codes))
         return operation_psr_codes
 
     def find_pck_by_psr(self,psr_codes):
@@ -70,6 +72,7 @@ from package_info where order_id in ({0});
                 print('{0}未生成psr的包裹单'.format(psr_code))
             else:
                 is_true = 0
+        assert  len(pck_orders_codes) != 0,('全部数据未生成psr包裹单据PCK,{0}'.format(psr_codes))
         return pck_orders_codes
 
     def update_pck_statue(self,psr_codes):
