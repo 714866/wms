@@ -2,62 +2,12 @@
 
 {%block body%}
     <script>
-$(function(){
-
-		name_error=false;
-		pwd_error=false;
-		if({{error_name}}==1){
-			$('.user_error').html('用户名错误').show();
-		}
-
-		if({{error_pwd}}==1){
-			$('.pwd_error').html('密码错误').show();
-		}
-
-		$('.name_input').blur(function(){
-
-			if($('.name_input').val().length==0){
-
-				$('.user_error').html('请输入用户名').show();
-				name_error=false; <!--为什么要再设置为falese-->
-			}else{
-				$('.user_error').hide();
-				name_error=true;
-			}
-
-		});
-
-		$('.pass_input').blur(function(){
-
-			if($('.pass_input').val().length==0){
-				$('.pwd_error').html('密码不能为空').show();
-				pwd_error=false;
-			}else{
-				$('.pwd_error').hide();
-				pwd_error=true;
-			}
-		});
-
-    	$("#upload").click(function(){
-        $.get('/DBcreateOrder/returnResult',function(data){
-            alert(data)
-        })
-		})
-	});
-
-	function check(){
-			if($('.name_input').val().length==0||$('.pass_input').val().length==0){
-			alert('账号和密码不能为空{{uname}}');
-			return false;
-
-			}else{
-			return true;
-			}
-
-		};
-
 
     function login(){
+
+        $(".input_submit").attr({"value":"提交中",
+                                   "onclick":""});
+        {#$("#loading").show();#}
 	    $.ajax({
             type: "post",
             datatype: "json",
@@ -65,18 +15,21 @@ $(function(){
             data: $('#form1').serialize(),
             success: function (result) {
                 alert(result.psr)
+                       $(".input_submit").attr({"value":"提交",
+                                   "onclick":"login()"});
+                {#$("#loading").hide();#}
             }
 
         })
 
-    };
+    }
 
 
 
 
 
 </script>
-    			<div class="login_form fl">
+    			<div class="login_form ">
 				<div class="login_title clearfix">
 					<h1>创建PSR到生成PCK</h1>
 {#					<a href="/user/register/">立即注册</a>#}
@@ -114,32 +67,14 @@ $(function(){
                           <option value="39">GC</option>
                         </select>
                         <input type="text" name="product_num" class="num_input" placeholder="产品数量,不填写默认1" value="">
-                        生成<input type="text" name="count_num" class="count_input" placeholder="生成调拨单数量，,不填写默认10" value="">
-
-{#						<div class="pwd_error">输入错误</div>#}
-{#						<div class="more_input clearfix">#}
-{#							<input type="checkbox" name="jizhu" value="1" checked="checked">#}
-{#							<label>记住用户名</label>#}
-{#							<a href="#">忘记密码</a>#}
-{#						</div>#}
+                        <input type="text" name="count_num" class="count_input" placeholder="生成调拨单数量，,不填写默认5" value="">
+{#                        <div id="loading" style="display:none;position:fixed;z-index:20202001;top:0;left:0;height:100%;width:100%;background: rgba(0,0,0,0.2) url(https://img2.baidu.com/it/u=2791829532,2972582740&fm=253&fmt=auto&app=138&f=PNG?w=500&h=888) no-repeat fixed center;"></div>#}
 						<input onclick="login()" type="button" name="" value="提交" class="input_submit" >
 					</form>
 				</div>
 			</div>
 {%endblock body%}
-	<!--<div class="footer no-mp">-->
-		<!--<div class="foot_link">-->
-			<!--<a href="#">关于我们</a>-->
-			<!--<span>|</span>-->
-			<!--<a href="#">联系我们</a>-->
-			<!--<span>|</span>-->
-			<!--<a href="#">招聘人才</a>-->
-			<!--<span>|</span>-->
-			<!--<a href="#">友情链接</a>		-->
-		<!--</div>-->
-		<!--<p>CopyRight © 2016 北京天天生鲜信息技术有限公司 All Rights Reserved</p>-->
-		<!--<p>电话：010-****888    京ICP备*******8号</p>-->
-	<!--</div>-->
+
 	
 </body>
 </html>

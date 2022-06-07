@@ -42,6 +42,7 @@ def returnResult(request):
     :param request:
     :return:
     """
+    print('请求开始，验证是否重复请求的')
     post=request.POST
     if post.__len__()==0 :
         post=json.loads(request.body)
@@ -66,7 +67,7 @@ def returnResult(request):
     post_data['goods_type'] = goods_type
     num=post.get('count_num')
     if num is None or num=='':
-        num =10
+        num =5
     #执行次数
     post_data['count_num']=num
     product_num = post.get('product_num')
