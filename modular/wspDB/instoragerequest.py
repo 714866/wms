@@ -49,24 +49,29 @@ class InstorageMessage(WspCommonDB):
         return [isr_main_insert_sql,isr_box_insert_sql,isr_item_insert_sql]
 
     def findGoodsInfo(self,goods_code):
+
         """
 
         :param goods_code:
-        :return:
+        :return: 返回PBU编码
         """
         # start_code = goods_code[0:3].upper()
         # if start_code == "PBU":
-        pbu_sql='''
-        select gmbp.bg_product_id   as product_id,
-       gmbp.bg_product_code  as product_code,
-       gmbp.bg_property_id   as property_id,
-       gmbp.bg_property_code as property_code
-from goods g
-         inner join goods_mapper_bg_product gmbp on gmbp.goods_id = g.id
-where g.is_deleted = 0
-  and g.base_product_code = '{0}';'''.format(goods_code)
-        select_result = self.cursor.fetchone(pbu_sql)
-        return select_result
+#         pbu_sql='''
+#         select gmbp.bg_product_id   as product_id,
+#        gmbp.bg_product_code  as product_code,
+#        gmbp.bg_property_id   as property_id,
+#        gmbp.bg_property_code as property_code
+# from goods g
+#          inner join goods_mapper_bg_product gmbp on gmbp.goods_id = g.id
+# where g.is_deleted = 0
+#   and g.base_product_code = '{0}';'''.format(goods_code)
+        order_sql = """
+            select g.base_product_code
+        from goods g inner join goods_bar_code gbc on g.id = gbc.goods_id where gbc.goods_code='{0}' ;
+        """.format(goods_code)
+        select_result = self.cursor.fetchone(order_sql)
+        return select_result['base_product_code']
         # elif start_code == "SKU":
         #     sku_sql='select g.* from goods g inner join goods_bar_code gbc on gbc.goods_id=g.id where gbc.goods_code={0};'.format(goods_code)
         #     select_result = self.cursor.fetchone(sku_sql)
@@ -74,7 +79,7 @@ where g.is_deleted = 0
         #
         #     pass
     def findExistSftCode(self,code):
-        sql = "select box_code from in_storage_request_box where  box_code like '{0}%T'  ORDER BY box_code DESC ;".format(code)
+        sql = " select customer_order_no from in_storage_request where  customer_order_no like '{0}%'  ORDER BY customer_order_no DESC ;".format(code)
         sql_result = self.cursor.fetchone(sql)
         return sql_result
 

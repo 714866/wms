@@ -178,6 +178,8 @@ class CreateSfiInstorageRequest():
             sft_codes_list.append(info_list['originCode'])
         sft_codes_list = set(sft_codes_list)
         instorage_request_lists = self.query_wsp_db.checkInstorageRequest(sft_codes_list)
+        if instorage_request_lists.__len__()==0:
+            return '生成入库申请单失败'
         order_no = []
         for instorage_request_dict in instorage_request_lists:
             order_no.append(instorage_request_dict['customer_order_no'])
@@ -199,7 +201,6 @@ class CreateSfiInstorageRequest():
         :param sft_codes:
         :return:
         """
-        sft_codes = self.query_wms_db.select_isr_request(sft_codes)
         insert_wms_isr_sql = self.query_wsp_db.returnInsertSql(sft_codes)
         self.query_wms_db.inserIsrRequest(insert_wms_isr_sql)
         return sft_codes

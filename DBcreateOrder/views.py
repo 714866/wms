@@ -158,27 +158,28 @@ def virtualInStorageRequest(request):
     wsp_db =InstorageMessage()
     post_data['baseProductCode'] = post.get('goods_code')
     start_code = post_data['baseProductCode'][0:3].upper()
-    if start_code=="PBU":
-        # 未完成，后续补逻辑
-        goods_message = wsp_db.findGoodsInfo( post_data['baseProductCode'])
-        post_data['propertyId'] = goods_message['property_id']
-        post_data['productId'] = goods_message['product_id']
-        if goods_message['property_id']=='0':
-            post_data['baseProductCode'] = goods_message['product_code']
-        else:
-            post_data['baseProductCode'] = goods_message['property_code']
-        pass
-    elif  start_code == "POA":
+    #WSP创建调拨单接口，如果判断property_id与productId都为空，则用baseProductCode查询goods表获取产品信息
+    post_data['propertyId'] = None
+    post_data['productId'] = None
+    if start_code!="PBU":
         try:
-            goods_message = find_goods_code.findOaGoodsByPoa(post_data['goods_code'])
+            base_product_code = wsp_db.findGoodsInfo( post_data['baseProductCode'])
         except TypeError:
             print('产品信息为空')
-        post_data['propertyId'] = goods_message['poa_id']
-        post_data['productId'] = goods_message['sku_id']
-    else:
-        post_data['sku_id'] = find_goods_code.findOaGoodsBySku(post_data['goods_code'])
-        post_data['PropertyCode'] = ''
-        post_data['poa_id'] = ''
+            return JsonResponse({'error_message': '产品信息为空'})
+        post_data['baseProductCode'] = base_product_code
+
+    # elif  start_code == "POA":
+    #     try:
+    #         goods_message = find_goods_code.findOaGoodsByPoa(post_data['baseProductCode'])
+    #     except TypeError:
+    #         print('产品信息为空')
+    #     post_data['propertyId'] = goods_message['poa_id']
+    #     post_data['productId'] = goods_message['sku_id']
+    # else:
+    #     post_data['productId'] = find_goods_code.findOaGoodsBySku(post_data['baseProductCode'])
+    #     post_data['PropertyCode'] = ''
+    #     post_data['propertyId'] = ''
     nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     post_data['modifyTimeStamp'] = nowDate
 
@@ -215,7 +216,8 @@ def virtualInStorageRequest(request):
     isr = CreateSfiInstorageRequest()
     # 组装参数
     create_info = isr.wspApiMessages(post_datas)
-    wms_codes = isr.syncFromProductShiftInfo(create_info)
+    wsp_codes = isr.syncFromProductShiftInfo(create_info)
+    wms_codes = isr.isrFromWspToWms(wsp_codes)
     return JsonResponse({'wms_code': wms_codes})
 
 
