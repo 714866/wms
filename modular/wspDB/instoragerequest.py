@@ -48,6 +48,33 @@ class InstorageMessage(WspCommonDB):
 
         return [isr_main_insert_sql,isr_box_insert_sql,isr_item_insert_sql]
 
+    def findGoodsInfo(self,goods_code):
+        """
+
+        :param goods_code:
+        :return:
+        """
+        # start_code = goods_code[0:3].upper()
+        # if start_code == "PBU":
+        pbu_sql='select * from goods where is_deleted=0 and  base_product_code={0});'.format(goods_code)
+        select_result = self.cursor.fetchone(pbu_sql)
+        return select_result
+        # elif start_code == "SKU":
+        #     sku_sql='select g.* from goods g inner join goods_bar_code gbc on gbc.goods_id=g.id where gbc.goods_code={0};'.format(goods_code)
+        #     select_result = self.cursor.fetchone(sku_sql)
+        # else:
+        #
+        #     pass
+    def findExistSftCode(self,code):
+        sql = "select box_code from in_storage_request_box where  box_code like '{0}%T'  ORDER BY box_code DESC ;".format(code)
+        sql_result = self.cursor.fetchone(sql)
+        return sql_result
+
+    def findExistBoxCode(self,code):
+        sql = "select box_code from in_storage_request_box where  box_code like '{0}%T'  ORDER BY box_code DESC ;".format(code)
+        sql_result = self.cursor.fetchone(sql)
+        return sql_result
+
 if __name__=='__main__':
     t =InstorageMessage()
     t.returnInsertSql(['SFT-A1-20220307-5006A','SFT-B1-21830-00300093'])

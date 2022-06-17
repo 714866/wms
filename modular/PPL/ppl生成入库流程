@@ -1,0 +1,23 @@
+1.请求接口，获取OA符合下发条件的PPL单据
+http://172.16.6.203:9996/oa-sync-server/syncapi/purchase-package/queryPurchasePackageInfo?packageId=186610275&processCenterIds=1150&top=500
+
+2.调用接口，wsp生成PPL源单
+http://172.16.6.203:9696/wsp/api/in-storage-request/syncFromPPL-back?key=UDDD6TZ7ZP6ZCGD5IUQQUP1AGL50T5MK9U0KQQ16XEK2SS6Y1A43TABL2ZAPGT1C
+
+3.执行服务 源单生成作业单
+SourceToInStorageRequestTask
+
+4.执行服务，作业单生成文件，修改入库申请单状态，符合下发条件
+InStorageGenerateFileTask
+
+5.单仓进行收货上架处理
+
+6.执行wsp服务，根据wms收货和上架的日志，修改源单信息
+InStorageRequestLogToSourceLogTask
+
+7.执行wsp服务，回传oa
+SourceLogToSendOutTask
+
+调用同步接口
+/syncapi/purchase-package/syncInStorageREPL_wspLog
+在同步系统推送消息到供应链，

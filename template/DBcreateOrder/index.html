@@ -45,7 +45,7 @@
 						<input type="text" name="url" class="url_input" placeholder="请求地址，不填写默认测试环境" value="http://apiewms-dev.banggood.cn">
                         <h1>
 {#						<input type="text" name="storage" class="cookie_input" placeholder="店铺，不填写默认获取发货仓">#}
-						<select  name="storage" class="cookie_input" >
+						<select  name="ship_type" class="cookie_input" >
                             <option value="Airfreight">快递</option>
                             <option value="Airlift">空运</option>
                             <option value="General">常规</option>
@@ -53,12 +53,13 @@
                             <option value="Railway">铁路</option>
                             <option value="Ground">陆运</option>
                             <option value="Vessel">快船</option>
-                            <option value="快陆运">ExpressGround</option>
+                            <option value="ExpressGround">快陆运</option>
                         </select>
                             </h1>
                         <select name="goods_type" class="select_input">
                           <option value="0">普通</option>
                           <option value="17">FBC</option>
+                          <option value="24">FBL</option>
                           <option value="27">万邑通调拨</option>
                           <option value="28">递四方调拨</option>
                           <option value="36">三方仓调拨JD</option>

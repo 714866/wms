@@ -1,4 +1,5 @@
 import json
+import time
 
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
@@ -9,6 +10,7 @@ from  modular import mapper
 from modular.PSR.CreateWspPSR import CreateWspPSR
 from  modular.PSR.createPSR import createPSR
 from modular.SFT.createSftInstorageRequest import CreateSfiInstorageRequest
+from modular.common.craetecode import GetCode
 from modular.goods.OAGoods import goodsSql
 from modular.oaDB.getPsr import PsrMessage
 
@@ -16,6 +18,9 @@ from modular.oaDB.getPsr import PsrMessage
 
 
 # 测试验证用  暂时无用
+from modular.wspDB.instoragerequest import InstorageMessage
+
+
 def create_order(request):
     return HttpResponse('create_order')
 
@@ -47,6 +52,7 @@ def returnResult(request):
     if post.__len__()==0 :
         post=json.loads(request.body)
     post_data={}
+    post_data['ship_type']=post.get('ship_type')
     post_data['source_process_id']=post.get('source_process_id')
     if post_data['source_process_id'] is None or post_data['source_process_id']=='':
         post_data['source_process_id'] = 1040
@@ -76,26 +82,26 @@ def returnResult(request):
     post_data['product_num']=product_num
     # 处理产品
     find_goods_code = goodsSql()
-    if sku_code[0:3].upper()=="SKU":
-        post_data['sku_code'] = sku_code
-        post_data['sku_id'] = find_goods_code.findOaGoodsBySku(sku_code)
-        post_data['poa_code'] = ''
-        post_data['poa_id'] = ''
-    else:
-        poa_code= sku_code
+    if sku_code[0:3].upper()=="POA":
+        poa_code = sku_code
         post_data['poa_code'] = poa_code
         try:
-            goods_message=find_goods_code.findOaGoodsByPoa(poa_code)
+            goods_message = find_goods_code.findOaGoodsByPoa(poa_code)
         except TypeError:
             print('产品信息为空')
         post_data['poa_id'] = goods_message['poa_id']
         post_data['sku_code'] = goods_message['sku_code']
         post_data['sku_id'] = goods_message['sku_id']
+    else:
+        post_data['sku_code'] = sku_code
+        post_data['sku_id'] = find_goods_code.findOaGoodsBySku(sku_code)
+        post_data['poa_code'] = ''
+        post_data['poa_id'] = ''
     #调用oa接口创建调拨请求
     try:
         api_action= createPSR( post_data['oa_url'])
         result = api_action.postPsr(post_data)
-    except BaseException as  err:
+    except AssertionError as  err:
         return JsonResponse({'psr': '请求失败{0}'.format(err)})
     print(result.text)
     try:
@@ -110,7 +116,7 @@ def returnResult(request):
     return JsonResponse({'psr': put_wsp_db})
 
 
-
+@csrf_exempt
 def InStorageRequest(request):
     """
     生成入库申请
@@ -118,12 +124,66 @@ def InStorageRequest(request):
     :return:
     """
     post = request.POST
+    if post.__len__() == 0:
+        post = json.loads(request.body)
     post_data = {}
     post_data['sft_code'] = post.get('sft_code')
     isr = CreateSfiInstorageRequest()
     wms_code = isr.createIsrRequestToWms(post.get('sft_code'))
     print('创建入库单成功的单据{0}'.format(wms_code))
-    return wms_code
+    return JsonResponse(json.dumps({'wms_code': list(wms_code)}))
+
+def virtualInStorageRequest(request):
+    """
+{
+	"goods_code":"PBUC01BBCAD",
+	"quantity":3,
+	"processcenter_id":1138,
+	"shipType":3,   -- 传入
+
+    :param request:
+    :return:
+    """
+    post = request.POST
+    if post.__len__() == 0:
+        post = json.loads(request.body)
+    post_data = {}
+    post_data['quantity'] = post.get('quantity')
+    post_data['originProcessCenterId'] = post.get('processcenter_id')
+    post_data['targetProcessCenterId'] = post.get('processcenter_id')
+    find_goods_code = goodsSql()
+    wsp_db =InstorageMessage()
+    goods_code = post.get('goods_code')
+    start_code = post_data['goods_code'][0:3].upper()
+    if start_code=="PBU":
+        wsp_db.findGoodsInfo( post_data['goods_code'])
+        pass
+    elif  start_code == "POA":
+        try:
+            goods_message = find_goods_code.findOaGoodsByPoa(post_data['goods_code'])
+        except TypeError:
+            print('产品信息为空')
+        post_data['propertyId'] = goods_message['poa_id']
+        post_data['ProductCode'] = goods_message['sku_code']
+        post_data['productId'] = goods_message['sku_id']
+        post_data['PropertyCode'] = goods_message['sku_id']
+    else:
+        post_data['sku_id'] = find_goods_code.findOaGoodsBySku(post_data['goods_code'])
+        post_data['PropertyCode'] = ''
+        post_data['poa_id'] = ''
+    nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    post_data['modifyTimeStamp'] = nowDate
+
+    # 自建单号SFT-T1-日期 ,暂时只做单条的逻辑
+    get_code = GetCode()
+    sft_codes = get_code.getSftCode(1)
+    post_data['originCode']=sft_codes[0]
+    #自建分箱单号
+    box_codes = get_code.getboxCode(1)
+    post_data['productShiftBoxCode']=sft_codes[0]
+    post_data['productShitItemOriginCode']=''
+    post_data['productShitItemOriginCode']=''
+
 
 def page_not_found(request):
     return redirect('http://127.0.0.1:8000/DBcreateOrder/index/')

@@ -14,6 +14,6 @@ class ShipType(Enum):
 
 if __name__=="__main__":
     print(ShipType.Vessel)
-    print(ShipType(1))
+    print(ShipType(1).name)
     print(ShipType['Seaway'].value)
     print(ShipType['Seaway'])
