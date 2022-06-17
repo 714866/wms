@@ -10,6 +10,7 @@ from  modular import mapper
 from modular.PSR.CreateWspPSR import CreateWspPSR
 from  modular.PSR.createPSR import createPSR
 from modular.SFT.createSftInstorageRequest import CreateSfiInstorageRequest
+from modular.SFT.enums.shiptype import ShipType
 from modular.common.craetecode import GetCode
 from modular.goods.OAGoods import goodsSql
 from modular.oaDB.getPsr import PsrMessage
@@ -131,8 +132,9 @@ def InStorageRequest(request):
     isr = CreateSfiInstorageRequest()
     wms_code = isr.createIsrRequestToWms(post.get('sft_code'))
     print('创建入库单成功的单据{0}'.format(wms_code))
-    return JsonResponse(json.dumps({'wms_code': list(wms_code)}))
+    return JsonResponse({'wms_code': list(wms_code)})
 
+@csrf_exempt
 def virtualInStorageRequest(request):
     """
 {
@@ -147,16 +149,24 @@ def virtualInStorageRequest(request):
     post = request.POST
     if post.__len__() == 0:
         post = json.loads(request.body)
+    post_datas = []
     post_data = {}
     post_data['quantity'] = post.get('quantity')
     post_data['originProcessCenterId'] = post.get('processcenter_id')
     post_data['targetProcessCenterId'] = post.get('processcenter_id')
     find_goods_code = goodsSql()
     wsp_db =InstorageMessage()
-    goods_code = post.get('goods_code')
-    start_code = post_data['goods_code'][0:3].upper()
+    post_data['baseProductCode'] = post.get('goods_code')
+    start_code = post_data['baseProductCode'][0:3].upper()
     if start_code=="PBU":
-        wsp_db.findGoodsInfo( post_data['goods_code'])
+        # 未完成，后续补逻辑
+        goods_message = wsp_db.findGoodsInfo( post_data['baseProductCode'])
+        post_data['propertyId'] = goods_message['property_id']
+        post_data['productId'] = goods_message['product_id']
+        if goods_message['property_id']=='0':
+            post_data['baseProductCode'] = goods_message['product_code']
+        else:
+            post_data['baseProductCode'] = goods_message['property_code']
         pass
     elif  start_code == "POA":
         try:
@@ -164,9 +174,7 @@ def virtualInStorageRequest(request):
         except TypeError:
             print('产品信息为空')
         post_data['propertyId'] = goods_message['poa_id']
-        post_data['ProductCode'] = goods_message['sku_code']
         post_data['productId'] = goods_message['sku_id']
-        post_data['PropertyCode'] = goods_message['sku_id']
     else:
         post_data['sku_id'] = find_goods_code.findOaGoodsBySku(post_data['goods_code'])
         post_data['PropertyCode'] = ''
@@ -180,9 +188,36 @@ def virtualInStorageRequest(request):
     post_data['originCode']=sft_codes[0]
     #自建分箱单号
     box_codes = get_code.getboxCode(1)
-    post_data['productShiftBoxCode']=sft_codes[0]
+    post_data['productShiftBoxCode']=box_codes[0]
+    # 调拨单的来源单号，后面再看看是否可以传空
     post_data['productShitItemOriginCode']=''
-    post_data['productShitItemOriginCode']=''
+    #运输方式
+    post_data['shipType'] = ShipType(post.get('shipType')).name
+    #货位类型
+    post_data['goodsType'] = post.get('goodsType')
+    post_data['length']='120'
+    post_data['width']='120'
+    post_data['height']='120'
+    post_data['weight']='120'
+    #可为空的 暂时就直接赋值空
+    post_data['storageCode']=''
+    post_data['deliveryProductCode']=''
+    post_data['amazonShop']=''
+    post_data['detailLabel']=''
+    post_data['relativeCode']=''
+    post_data['traceCode']=''
+    post_data['logId']=''
+    post_data['goodsSize']=''
+    post_data['fboxItemOriginCode']=''
+    post_data['type']=''
+    post_data['ful']=False
+    post_datas.append(post_data)
+    isr = CreateSfiInstorageRequest()
+    # 组装参数
+    create_info = isr.wspApiMessages(post_datas)
+    wms_codes = isr.syncFromProductShiftInfo(create_info)
+    return JsonResponse({'wms_code': wms_codes})
+
 
 
 def page_not_found(request):

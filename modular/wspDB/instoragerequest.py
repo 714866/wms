@@ -56,7 +56,15 @@ class InstorageMessage(WspCommonDB):
         """
         # start_code = goods_code[0:3].upper()
         # if start_code == "PBU":
-        pbu_sql='select * from goods where is_deleted=0 and  base_product_code={0});'.format(goods_code)
+        pbu_sql='''
+        select gmbp.bg_product_id   as product_id,
+       gmbp.bg_product_code  as product_code,
+       gmbp.bg_property_id   as property_id,
+       gmbp.bg_property_code as property_code
+from goods g
+         inner join goods_mapper_bg_product gmbp on gmbp.goods_id = g.id
+where g.is_deleted = 0
+  and g.base_product_code = '{0}';'''.format(goods_code)
         select_result = self.cursor.fetchone(pbu_sql)
         return select_result
         # elif start_code == "SKU":
