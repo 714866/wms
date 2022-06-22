@@ -21,71 +21,71 @@ class CreateSfiInstorageRequest():
         self.query_wms_db = InstorageMessage1WMS()
         pass
 
-    def oaNotMessageQueryProductShiftItemToWsp(self, separate_box_info_list):
-        """
-        预设给OA没sft也进行入库申请生成的方法
-        :param [
-    {
-        "originCode":"SFT-A1-20220307-5006A",
-        "originProcessCenterId":1138,
-        "targetProcessCenterId":1196,
-        "shipType":3,
-        "goodsType":0,
-        "amazonShop":"",
-        "storageCode":"",
-        "deliveryProductCode":"",
-        "relativeCode":"",
-        "traceCode":"",
-        "goodsSize":0,
-        "isCustoms":false,
-        "productShiftDownToWspItemList":[
-            {
-                "baseProductCode":"POA3708156",
-                "productId":1468378,
-                "propertyId":3715804,
-                "quantity":3,
-                "height":"1.0000",
-                "length":"1.0000",
-                "width":"1.0000",
-                "weight":"1.0000",
-                "productShiftBoxCode":"Fbox-20220307-00006",
-                "detailLabel":"",
-                "ful":false,
-                "fboxItemOriginCode":"PSR-A2-20220307-00005",
-                "type":1
-            },
-            {
-                "baseProductCode":"POA3925407",
-                "productId":1519824,
-                "propertyId":3933699,
-                "quantity":3,
-                "height":"1.0000",
-                "length":"1.0000",
-                "width":"1.0000",
-                "weight":"1.0000",
-                "productShiftBoxCode":"Fbox-20220307-00006",
-                "detailLabel":"",
-                "ful":false,
-                "fboxItemOriginCode":"PSR-A2-20220307-00005",
-                "type":24
-            }
-        ]
-    }
-]
-        :return:
-
-        未完成
-        """
-        separate_box_info_list
-        product_shift_lists=[]
-        sft_list=separate_box_info_list
-        nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        # for sft_list in sft_lists:
-        is_not_exit = True
-        product_shift = {}
-        sft_lists = []
-
-        return self.wspApiMessages(sft_lists)
+#     def oaNotMessageQueryProductShiftItemToWsp(self, separate_box_info_list):
+#         """
+#         预设给OA没sft也进行入库申请生成的方法
+#         :param [
+#     {
+#         "originCode":"SFT-A1-20220307-5006A",
+#         "originProcessCenterId":1138,
+#         "targetProcessCenterId":1196,
+#         "shipType":3,
+#         "goodsType":0,
+#         "amazonShop":"",
+#         "storageCode":"",
+#         "deliveryProductCode":"",
+#         "relativeCode":"",
+#         "traceCode":"",
+#         "goodsSize":0,
+#         "isCustoms":false,
+#         "productShiftDownToWspItemList":[
+#             {
+#                 "baseProductCode":"POA3708156",
+#                 "productId":1468378,
+#                 "propertyId":3715804,
+#                 "quantity":3,
+#                 "height":"1.0000",
+#                 "length":"1.0000",
+#                 "width":"1.0000",
+#                 "weight":"1.0000",
+#                 "productShiftBoxCode":"Fbox-20220307-00006",
+#                 "detailLabel":"",
+#                 "ful":false,
+#                 "fboxItemOriginCode":"PSR-A2-20220307-00005",
+#                 "type":1
+#             },
+#             {
+#                 "baseProductCode":"POA3925407",
+#                 "productId":1519824,
+#                 "propertyId":3933699,
+#                 "quantity":3,
+#                 "height":"1.0000",
+#                 "length":"1.0000",
+#                 "width":"1.0000",
+#                 "weight":"1.0000",
+#                 "productShiftBoxCode":"Fbox-20220307-00006",
+#                 "detailLabel":"",
+#                 "ful":false,
+#                 "fboxItemOriginCode":"PSR-A2-20220307-00005",
+#                 "type":24
+#             }
+#         ]
+#     }
+# ]
+#         :return:
+#
+#         未完成
+#         """
+#         separate_box_info_list
+#         product_shift_lists=[]
+#         sft_list=separate_box_info_list
+#         nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+#         # for sft_list in sft_lists:
+#         is_not_exit = True
+#         product_shift = {}
+#         sft_lists = []
+#
+#         return self.wspApiMessages(sft_lists)
 
     def queryProductShiftItemToWsp(self,shif_codes):
         """

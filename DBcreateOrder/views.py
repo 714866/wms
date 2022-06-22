@@ -7,6 +7,7 @@ import os
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from  modular import mapper
+from modular.PPL.createPPLInstorageRequest import CreatePPLInstorageRequest
 from modular.PSR.CreateWspPSR import CreateWspPSR
 from  modular.PSR.createPSR import createPSR
 from modular.SFT.createSftInstorageRequest import CreateSfiInstorageRequest
@@ -220,7 +221,22 @@ def virtualInStorageRequest(request):
     wms_codes = isr.isrFromWspToWms(wsp_codes)
     return JsonResponse({'wms_code': wms_codes})
 
-
+@csrf_exempt
+def InStorageRequestPPL(request):
+    """
+    生成入库申请
+    :param request:
+    :return:
+    """
+    post = request.POST
+    if post.__len__() == 0:
+        post = json.loads(request.body)
+    post_data = {}
+    post_data['ppl_code'] = post.get('ppl_code')
+    isr = CreatePPLInstorageRequest()
+    wms_code = isr.createIsrRequestToWms(post.get('ppl_code'))
+    print('创建入库单成功的单据{0}'.format(wms_code))
+    return JsonResponse({'wms_code': list(wms_code)})
 
 def page_not_found(request):
     return redirect('http://127.0.0.1:8000/DBcreateOrder/index/')

@@ -14,6 +14,14 @@ class SourceXXlJob(object):
         self.wsp_db = WspPsrSql()
         self.wms_db = wmsCommonDB()
         pass
+    @classmethod
+    def xxlJobAction(cls,job_name):
+        """
+        调用任意
+        :param job_name:
+        :return:
+        """
+        requests.get(url=wsp_xxl_url + job_name)
 
     def SourcePsrToOperationHandler(self, source_psr_codes, job_name="SourcePsrToOperationHandler"):
         result = requests.get(url=wsp_xxl_url+job_name)
