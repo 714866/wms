@@ -1,1 +1,2 @@
-1.django 中地址匹配问题
+1.django 中地址匹配问题,默认会根据正则匹配，在地址结尾加$,防止正则匹配
+如配置test 与test1, 请求test1时会匹配test,导致进不去test1,只要配置test$,则调用test1时不再匹配到test
