@@ -1,0 +1,9 @@
+1.调用OA页面创建接口/warehouse/product/shift/request/createProductShiftRequestEwmsOnly
+
+2.
+模拟业务线下发源单
+OA-WSP-调拨-调拨请求-外部单据导入
+bl_oa_wsp_source_product_shfit_request
+
+
+3.

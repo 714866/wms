@@ -153,9 +153,9 @@ def virtualInStorageRequest(request):
     post_datas = []
     post_data = {}
     post_data['quantity'] = post.get('quantity')
-    post_data['originProcessCenterId'] = post.get('processcenter_id')
-    post_data['targetProcessCenterId'] = post.get('processcenter_id')
-    find_goods_code = goodsSql()
+    post_data['originProcessCenterId'] = post.get('ProcessCenterId')
+    post_data['targetProcessCenterId'] = post.get('ProcessCenterId')
+    # find_goods_code = goodsSql()
     wsp_db =InstorageMessage()
     post_data['baseProductCode'] = post.get('goods_code')
     start_code = post_data['baseProductCode'][0:3].upper()
@@ -237,6 +237,55 @@ def InStorageRequestPPL(request):
     wms_code = isr.createIsrRequestToWms(post.get('ppl_code'))
     print('创建入库单成功的单据{0}'.format(wms_code))
     return JsonResponse({'wms_code': list(wms_code)})
+
+@csrf_exempt
+def virtualInstorageRequestPPL(request):
+    ppl_list = request.POST
+    if ppl_list.__len__() == 0:
+        ppl_list = json.loads(request.body)
+    nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    zzl_user_id = 50561
+    ppl_instorages = []
+    ppl_instorage = {}
+    ppl_instorage['originProcessCenterId'] = ppl_list['OriginProcessCenterId']
+    ppl_instorage['targetProcessCenterId'] = ppl_list['TargetProcessCenterId']
+    ppl_instorage['shipType'] = ppl_list['shipType']
+    ppl_instorage['lastUpdateTime'] = nowDate
+    ppl_instorage['lastUpdateUserId'] = zzl_user_id
+    ppl_instorage['createUserId'] = zzl_user_id
+    ppl_instorage['createTime'] = nowDate
+    ppl_instorage['quantity'] = ppl_list['quantity']
+    wsp_db =InstorageMessage()
+    try:
+        porduct_info = wsp_db.findGoodsOAId( ppl_list['goods_code'])
+    except TypeError:
+        print('产品信息为空')
+        return JsonResponse({'error_message': 'goods,goods_bar_code与goods_mapper_bg_product联表查询产品信息为空'})
+
+    ppl_instorage['productId'] = porduct_info['bg_product_id']
+    ppl_instorage['propertyId'] = porduct_info['bg_property_id']
+    ppl_instorage['isTest'] = ppl_list['isTest'] #是否需求测试
+    ppl_instorage['goodsType'] = ppl_list['goodsType']
+    ppl_instorage['vacuumPacking'] = 0  #是否真空包装
+    ppl_instorage['isShiftCosting'] = 0  #'是否资本化[0-来源仓入库结算,1-目标仓入库结算]',
+    ppl_instorage['goodsSize'] = 0   #o：普通 1：大货
+    ppl_instorage['salePlatform'] = 0  # 销售平台',
+    # ppl_instorage['packageId'] = ppl_list['PackageID']
+    ppl_instorage['packageCode'] = GetCode().getPPLCode(1)[0]
+    # lclLimitLevel 在原代码中是判断货物类型为21的则不允许拼箱，不为21允许相同货主拼箱
+    ppl_instorage['lclLimitLevel'] = "允许相同货主拼箱"
+    ppl_instorage['storageCode'] = 0  #仓库代码
+    ppl_instorage['amazonShop'] = 0    # '亚马逊店铺',
+    ppl_instorage['deliveryProductCode'] = ''  #分箱子明细发货条码
+    ppl_instorage['isDrowback'] = 0  #是否退税
+    ppl_instorage['shipmentId'] = ''   #入库单号
+    ppl_instorages.append(ppl_instorage)
+    isr = CreatePPLInstorageRequest()
+    #生成源单与作业单据
+    wsp_codes = isr.syncFromPPL(ppl_instorages)
+    #下发到wms
+    wms_code = isr.isrFromWspToWms(wsp_codes)
+    return JsonResponse({'wms_code':wms_code})
 
 def page_not_found(request):
     return redirect('http://127.0.0.1:8000/DBcreateOrder/index/')

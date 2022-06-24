@@ -1,3 +1,7 @@
+1与2模拟以下业务线功能
+OA-WSP-入库-源单同步PPLFPL
+bl_ppl_source_oa_wsp
+
 1.请求接口，获取OA符合下发条件的PPL单据
 http://172.16.6.203:9996/oa-sync-server/syncapi/purchase-package/queryPurchasePackageInfo?packageId=186610275&processCenterIds=1150&top=500
 
@@ -15,7 +19,7 @@ InStorageGenerateFileTask
 6.执行wsp服务，根据wms收货和上架的日志，修改源单信息
 InStorageRequestLogToSourceLogTask
 
-7.执行wsp服务，回传oa
+7.执行wsp服务，回传oa，并推送消息到供应链
 SourceLogToSendOutTask
 
 调用同步接口

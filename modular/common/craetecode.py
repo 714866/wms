@@ -48,9 +48,9 @@ class GetCode(object):
              传入需要返回分箱数
              :param count:
              :return:['SFT-T1-20220616-00001', 'SFT-T1-20220616-00002']
-             """
+        """
         box_codes = []
-        now_date = time.strftime("%Y%m%d", time.localtime())
+        # now_date = time.strftime("%Y%m%d", time.localtime())
         code = 'FBOX-' + time.strftime("%Y%m%d", time.localtime())
         # code = 'SFT-O1-20210407'
         exist_box_code = self.wsp_db.findExistBoxCode(code)
@@ -69,6 +69,25 @@ class GetCode(object):
                 box_codes.append(box_code)
         return box_codes
 
+    def getPPLCode(self,count):
+        ppl_codes = []
+        code = 'PPL-' + time.strftime("%Y%m%d", time.localtime())
+        exist_PPL_code = self.wsp_db.findExistPplCode(code)
+        if exist_PPL_code == None:
+            for i in range(count):
+                ppl_code = code + '-' + str(i + 1).zfill(6)
+                ppl_codes.append(ppl_code)
+        else:
+            # 提取数字
+            # exist_sft_code['']
+            # lists = exist_PPL_code['source_code'].split('-')
+            exist_sft_code_num = exist_PPL_code['source_code'].split('-')[2]
+            num = ''.join(list(filter(str.isdigit, exist_sft_code_num)))
+            for i in range(count):
+                num = str(int(num) + 1).zfill(5)
+                ppl_code = code + '-' + num
+                ppl_codes.append(ppl_code)
+        return ppl_codes
 if __name__=='__main__':
     test = GetCode()
     print(test)

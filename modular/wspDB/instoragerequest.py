@@ -78,6 +78,19 @@ class InstorageMessage(WspCommonDB):
         # else:
         #
         #     pass
+
+    def findGoodsOAId(self,goods_code):
+        order_sql = """
+                     select g.base_product_code,gmbp.bg_product_id,gmbp.bg_property_id
+        from goods g
+            inner join goods_bar_code gbc on g.id = gbc.goods_id
+  inner join goods_mapper_bg_product gmbp on g.id = gmbp.goods_id
+  where gbc.goods_code='{0}' ;
+               """.format(goods_code)
+
+        select_result = self.cursor.fetchone(order_sql)
+        return select_result
+
     def findExistSftCode(self,code):
         sql = " select customer_order_no from in_storage_request where  customer_order_no like '{0}%'  ORDER BY customer_order_no DESC ;".format(code)
         sql_result = self.cursor.fetchone(sql)
@@ -85,6 +98,10 @@ class InstorageMessage(WspCommonDB):
 
     def findExistBoxCode(self,code):
         sql = "select box_code from in_storage_request_box where  box_code like '{0}%T'  ORDER BY box_code DESC ;".format(code)
+        sql_result = self.cursor.fetchone(sql)
+        return sql_result
+    def findExistPplCode(self,code):
+        sql = "select source_code from source_ppl_repl where source_code like '{0}%'order by source_code desc ;".format(code)
         sql_result = self.cursor.fetchone(sql)
         return sql_result
 

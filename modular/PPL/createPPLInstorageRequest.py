@@ -48,13 +48,6 @@ class CreatePPLInstorageRequest():
             is_not_exit = True
             ppl_instorage={}
             for p in  ppl_instorage_lists:
-                if ppl_list['originCode']  == p['originCode']:
-                    # 判断是否为重复的调拨单，ppl_list以分箱为维度，存在一个调拨单多个分箱
-                    is_not_exit=  False
-                    ppl_instorage=p
-            if is_not_exit:
-                ''' 不存在 证明主表信息没赋值，是新的调拨单'''
-                # ppl_instorage_dicts[ppl_list['originCode']] = {}
                 ppl_instorage = {}
                 ppl_instorage['originProcessCenterId']=  ppl_list['OriginProcessCenterId']
                 ppl_instorage['targetProcessCenterId']=  ppl_list['TargetProcessCenterId']
@@ -82,21 +75,20 @@ class CreatePPLInstorageRequest():
                 ppl_instorage['createUserId'] =  ppl_list['CreateUserID']
                 ppl_instorage['createTime'] =  ppl_list['CreateTime']
                 ppl_instorage_lists.append(ppl_instorage)  # 加到主表中
-
-            print(ppl_instorage)
+                # print(ppl_instorage)
         print(json.dumps(ppl_instorage_lists, cls=DateEncoder))
         return ppl_instorage_lists
 
-    def syncFromProductShiftInfo(self,ppl_info):
+    def syncFromPPL(self,ppl_info):
         """
         调用wsp接口生成入库申请单
-        :param separate_box_info_list:   syncFromProductShiftInfo接口参数
+        :param separate_box_info_list:   syncFromPPL
         :return: 生成入库申请单的来源单  ppl
         """
         error_message=''
         header = {"Content-Type": "application/json"}
         url = wsp_url + '/wsp/api/in-storage-request/syncFromPPL-back?key='+key
-        print(url)
+        print(json.dumps(ppl_info, cls=DateEncoder))
         #在wsp生成PPL源单
         res = requests.request('POST', url=url, headers=header, data=json.dumps(ppl_info, cls=DateEncoder))
         #对PPL源单生成作业单
@@ -135,7 +127,7 @@ class CreatePPLInstorageRequest():
 
     def createIsrRequestToWms(self,ppl_codes):
         create_info = self.queryPPLToWsp(ppl_codes)
-        wsp_isr = self.syncFromProductShiftInfo(create_info)
+        wsp_isr = self.syncFromPPL(create_info)
         wms_code = self.isrFromWspToWms(wsp_isr)
         return wms_code
 
@@ -143,4 +135,4 @@ if __name__=='__main__':
     test = CreatePPLInstorageRequest()
     ppl_lists = ['PPL-20190520-363856','PPL-20190521-372385']
     separate_box_info_list=test.queryPPLToWsp(ppl_lists)
-    test.syncFromProductShiftInfo(separate_box_info_list)
+    test.syncFromPPL(separate_box_info_list)
