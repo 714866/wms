@@ -17,8 +17,14 @@ from source_product_shift_request where is_deleted=0 and  product_shift_request_
     find_pck_by_psr_sql="""select id,package_id,order_id
 from package_info where order_id in ({0});
     """
+    # __instance = None
+    # def __new__(cls, *args, **kwargs):
+    #     # 类对象唯一
+    #     if cls.__instance is None:
+    #         cls.__instance = super(WspPsrSql, cls).__new__(cls)
+    #     return cls.__instance
     def __init__(self):
-        self.cursor = mapper.connect_DB('wsp_mysql')
+        self.cursor = mapper.ConnectWSPdb()
 
     def find_source_psr(self,psr_codes):
         sql = self.find_source_psr_sql.format(list_to_str(psr_codes))

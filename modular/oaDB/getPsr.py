@@ -74,6 +74,11 @@ class PsrMessage():
         psr_message = self.cursor.fetchall(sql)
         return psr_message
 
+    def getPsrCodeByGoodsType(self,goods_type):
+        sql = "select ProductShiftRequestCode from ProductShiftRequest where  GoodsType=17 order by ProductShiftRequestCode desc ;".format(goods_type)
+        psr_message = self.cursor.fetchone(sql)
+        return psr_message['ProductShiftRequestCode']
+
     def findTargeProcess(self,psr_code):
 
         sql = find_psr_targeprocess.format(psr_code=psr_code)

@@ -20,10 +20,16 @@ https://wsp-api.banggood.cn/wsp/api/productshiftrequest/syncSourceProductShiftRe
   ①使用接口调用xxljob服务：SourcePsrToOperationHandler
 ②对是否生成作业单进行判断，无则返回未生成作业单
 
-4.调用wsp生成文件服务，psr，生成PCK
+4.调用wsp生成文件服务(ShiftGenerateFileTask)，psr，生成PCK
   ①使用接口wsp/api/product-shift-request/generateFile生成PCK
 ②查询到没有生成PCK，则返回未生成包裹单PCK
 
 5.PCK组装参数插入到wms库
 ①修改PCK的状态为0
-  ②查询wsp数据库中的 PSR、PCK主表与明细表，组装成insert语句，插入到wms表
+②查询wsp数据库中的 PSR、PCK主表与明细表，组装成insert语句，插入到wms表
+
+
+6.wms操作装箱并申请后，生成货单回传OA，
+对应服务：ManifestUploadHandle
+
+7.

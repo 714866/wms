@@ -1,3 +1,4 @@
+import copy
 import json
 import time
 
@@ -9,9 +10,11 @@ from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from  modular import mapper
 from modular.PPL.createPPLInstorageRequest import CreatePPLInstorageRequest
 from modular.PSR.CreateWspPSR import CreateWspPSR
-from  modular.PSR.createPSR import createPSR
+from modular.PSR.createPSR import createPSR, CreateThirdPsr
 from modular.SFT.createSftInstorageRequest import CreateSfiInstorageRequest
 from modular.SFT.enums.shiptype import ShipType
+from modular.SFT.sftflow import SftFlow
+from modular.common.SqlChangeFormat import DateEncoder
 from modular.common.craetecode import GetCode
 from modular.goods.OAGoods import goodsSql
 from modular.oaDB.getPsr import PsrMessage
@@ -116,7 +119,29 @@ def returnResult(request):
         return JsonResponse({'psr': '{0}'.format(err)})
 
     return JsonResponse({'psr': put_wsp_db})
+@csrf_exempt
+def getPsr(request):
+    post = request.POST
+    if post.__len__() == 0:
+        post = json.loads(request.body)
 
+    psr_code = post.get('psr_codes')
+    test_psr = CreateWspPSR()
+    data = test_psr.get_oa_psr(psr_code)
+    source_psr_codes = test_psr.put_wsp(data)
+    operation_psr_codes = test_psr.source_to_operation(source_psr_codes)
+    return JsonResponse({'psr': operation_psr_codes})
+@csrf_exempt
+def thirdPsr(request):
+    third_psr = CreateThirdPsr()
+    post = request.POST
+    if post.__len__() == 0:
+        post = json.loads(request.body)
+    post_data = {}
+    post_data['goodsType'] =15
+    third_psr.thirdPsrApiMessages(post_data)
+
+    pass
 
 @csrf_exempt
 def InStorageRequest(request):
@@ -286,6 +311,105 @@ def virtualInstorageRequestPPL(request):
     #下发到wms
     wms_code = isr.isrFromWspToWms(wsp_codes)
     return JsonResponse({'wms_code':wms_code})
+
+
+@csrf_exempt
+def virtualSyncSFT(request):
+    sft_list = request.POST
+    if sft_list.__len__() == 0:
+        sft_list = json.loads(request.body)
+    now_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    source_process_id = sft_list['source_process_id']
+    targer_process_id = sft_list['targer_process_id']
+    goods_type = sft_list['goods_type']
+    shifs_type = sft_list['shiftType']
+    # 接口参数汇总
+    sft_request_list = []
+    #主表调拨单信息
+    sft_request = {}
+    sft_request['modifyTimeStamp'] = now_date
+    sft_request['modifyDate'] = now_date
+    get_code=GetCode()
+    sft_code = get_code.getOaSFTCode(1)[0]
+    sft_request['productShiftItemCode'] =  sft_code
+    sft_request['originProcessCenterId'] =  source_process_id
+    sft_request['targetProcessCenterId'] =  targer_process_id
+    sft_request['shipType'] = shifs_type
+    sft_request['goodsType'] =  goods_type
+    sft_request['lastTraceStatus'] =  0
+    sft_request['modifyUserId'] =  0
+    sft_request['modifyUserName'] =  ""
+    sft_request['goodsSize'] =  0
+    sft_request['productShiftOriginCode'] =  ""
+    productShiftBoxList = []
+    sft_request['productShiftBoxList'] = productShiftBoxList
+    sft_request_list.append(sft_request)
+    #分箱信息
+    request_box_info_lists = sft_list['box_lists']
+    find_goods_code = goodsSql()
+    zzl_user_id = 50561
+    # 需要分箱数
+    box_num = 0
+    for i in request_box_info_lists:
+        box_num += int(i['box_num'])
+    #箱号列表
+    box_code_list = get_code.getOaBoxCode(box_num)
+    psr_code = PsrMessage().getPsrCodeByGoodsType(goods_type)
+    count = 0
+    for index,box_code_info in enumerate(request_box_info_lists):
+        sft_request_box={}
+        sft_request_box['originProcessCenterId'] =  source_process_id
+        sft_request_box['targetProcessCenterId'] =  targer_process_id
+        sft_request_box['shipType'] =  shifs_type
+        sft_request_box['goodsType'] =  goods_type
+        sft_request_box['length'] =  1000
+        sft_request_box['height'] =  900
+        sft_request_box['width'] =  900
+        sft_request_box['weight'] =  15
+        sft_request_box['userId'] =  zzl_user_id
+        sft_request_box['modifyTimeStamp'] =  None
+        sft_request_box['ful'] =  False
+        sft_request_box['boxDeleted'] =  False
+        #分箱明细
+        productShiftBoxItemList = []
+        sft_request_box['productShiftBoxItemList'] = productShiftBoxItemList
+        goods_infos = box_code_info['goods_info']
+        for goods_info in goods_infos:
+            sft_request_box_item={}
+            goods_code = goods_info['goods_code']
+            goods_message={}
+            if goods_code[0:3].upper() == "POA":
+                poa_code = goods_code
+                try:
+                    goods_message = find_goods_code.findOaGoodsByPoa(poa_code)
+                    sft_request_box_item['propertyId'] = goods_message['poa_id']
+                    sft_request_box_item['productId'] = goods_message['sku_id']
+                except TypeError:
+                    print('产品信息为空')
+            else:
+                sft_request_box_item['productId'] = find_goods_code.findOaGoodsBySku(goods_code)
+                sft_request_box_item['propertyId'] = 0
+            box_code_list.append(sft_request_box)
+            sft_request_box_item['originCode'] = psr_code
+            sft_request_box_item['quantity'] = goods_info['product_num']
+            # sft_request_box_item['propertyId'] = False
+
+            sft_request_box_item['amazonShop'] = "amazonShopApi"
+            productShiftBoxItemList.append(sft_request_box_item)
+        for i in range(0,box_code_info['box_num']):
+            sft_request_box_copy =  copy.deepcopy(sft_request_box)
+            sft_request_box_copy['productShiftBoxCode'] = box_code_list[count]
+            count += 1
+            productShiftBoxList.append(sft_request_box_copy)
+
+    request_data = json.dumps(sft_request_list,cls=DateEncoder)
+    SftFlow().createOaSFT(request_data)
+    print(request_data)
+    # return JsonResponse(request_data,safe=False,json_dumps_params={'ensure_ascii':False})
+    return JsonResponse({"sft_code":"sft_code","box_code":box_code_list},safe=False,json_dumps_params={'ensure_ascii':False})
+
+
+    pass
 
 def page_not_found(request):
     return redirect('http://127.0.0.1:8000/DBcreateOrder/index/')

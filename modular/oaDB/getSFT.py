@@ -21,8 +21,15 @@ class SftMessage(OAMessage):
     #     instorage_requests = self.cursor.fetchall(sql_get_instorage_request_by_customer.format(customer_order_no=SqlChangeFormat.list_to_str(customer_order_no_list)))
     #     return instorage_requests
 
-
-
+    def findExistSftCode(self, code):
+        sql = "  select ProductShitItemCode from ProductShiftItem where  ProductShitItemCode like '{0}%'  ORDER BY ProductShitItemCode DESC ;".format(
+            code)
+        sql_result = self.cursor.fetchone(sql)
+        return sql_result
+    def findExistBoxCode(self,code):
+        sql = "select ProductShiftBoxCode from ProductShiftBox where  ProductShiftBoxCode like '{0}%T'  ORDER BY ProductShiftBoxCode DESC ;".format(code)
+        sql_result = self.cursor.fetchone(sql)
+        return sql_result
 if __name__=="__main__":
 
     t = SftMessage()

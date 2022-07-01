@@ -9,5 +9,7 @@ urlpatterns=[
     url(r'^InStorageRequest$', views.InStorageRequest),
     url(r'^virtualInStorageRequest', views.virtualInStorageRequest),
     url(r'^InStorageRequestPPL$', views.InStorageRequestPPL),
-    url(r'^virtualInstorageRequestPPL$', views.virtualInstorageRequestPPL)
+    url(r'^virtualInstorageRequestPPL$', views.virtualInstorageRequestPPL),
+    url(r'^getPsr$', views.getPsr),
+    url(r'^virtualSyncSFT$', views.virtualSyncSFT)
 ]

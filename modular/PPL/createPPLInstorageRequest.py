@@ -118,7 +118,7 @@ class CreatePPLInstorageRequest():
         """
         从wsp数据库查询数据，inser到wms数据库
         原因：业务线下发数据不稳定，直接自己同步数据
-        :param ppl_codes:
+        :param ppl_codes 列表:
         :return:
         """
         insert_wms_isr_sql = self.query_wsp_db.returnInsertSql(ppl_codes)
