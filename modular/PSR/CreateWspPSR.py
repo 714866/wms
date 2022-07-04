@@ -1,6 +1,6 @@
 import requests
-from modular.common.SqlChangeFormat import DateEncoder
-from modular.oaDB.getPsr import PsrMessage
+from modular.common.SqlChangeFormat import DateEncoder, list_to_str
+from modular.oaDB.getPsr import PsrMessage, find_psr
 from modular.mapper import ConnectWSPdb
 from modular.wspDB.wspPsrDB import WspPsrSql
 import json
@@ -17,6 +17,7 @@ class CreateWspPSR(object):
     def get_oa_psr(self,data):
         psrs = PsrMessage().findPsrMessage(data)
         print ('查询PSR下发信息{0}'.format(psrs))
+        assert  len(psrs) != 0,('在OA查询无数据,{0}'.format(find_psr.format(list_to_str(data))))
         return psrs
     def put_wsp(self,request_data):
         header={"Content-Type":"application/json"}

@@ -124,13 +124,17 @@ def getPsr(request):
     post = request.POST
     if post.__len__() == 0:
         post = json.loads(request.body)
+    try:
+        psr_code = post.get('psr_codes')
+        test_psr = CreateWspPSR()
+        data = test_psr.get_oa_psr(psr_code)
+        source_psr_codes = test_psr.put_wsp(data)
+        operation_psr_codes = test_psr.source_to_operation(source_psr_codes)
+        return JsonResponse({'psr': operation_psr_codes})
+    except AssertionError as  err:
+        return JsonResponse({'报错提示': '{0}'.format(err).replace('\n', '')})
 
-    psr_code = post.get('psr_codes')
-    test_psr = CreateWspPSR()
-    data = test_psr.get_oa_psr(psr_code)
-    source_psr_codes = test_psr.put_wsp(data)
-    operation_psr_codes = test_psr.source_to_operation(source_psr_codes)
-    return JsonResponse({'psr': operation_psr_codes})
+
 @csrf_exempt
 def thirdPsr(request):
     third_psr = CreateThirdPsr()

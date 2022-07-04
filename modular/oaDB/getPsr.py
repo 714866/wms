@@ -45,11 +45,8 @@ find_psr = """   SELECT
         AND pop.PropertyID = ISNULL(psr.PropertyID, 0)
         LEFT JOIN SellerCube.dbo.ShiftRequestToAmazonShipment sras ON psr.ShiftRequestID = sras.ShiftRequestID
         LEFT JOIN SellerCube.dbo.AmazonInboundShipmentPlan aisp ON aisp.ShipmentId = sras.ShipmentId
-        WHERE
-        psr.ShiftStatus = 0
-        AND psr.AuditState = 2
-        AND psr.bStatus = 1
-        AND psr.IsCompleted = 0
+        WHERE  1=1
+
         and psr.ProductShiftRequestCode in ({0});"""
 
 update_process_by_psr = """ update  SellerCube.dbo.ProductShiftRequest set ProcessCenterID={process} where ProductShiftRequestCode in ({psr_codes})"""
