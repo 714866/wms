@@ -142,10 +142,45 @@ def thirdPsr(request):
     if post.__len__() == 0:
         post = json.loads(request.body)
     post_data = {}
-    post_data['goodsType'] =15
-    third_psr.thirdPsrApiMessages(post_data)
+    post_data['customerLabel'] =post.get('goods_code')
+    goods_code = post_data['customerLabel']
+    find_goods_code = goodsSql()
+    try:
+        if goods_code[0:3].upper() == "POA":
+            goods_message = find_goods_code.findOaGoodsByPoa(goods_code)
+            post_data['propertyId'] = goods_message['poa_id']
+            post_data['productId'] = goods_message['sku_id']
+        else:
+            post_data['productId'] = find_goods_code.findOaGoodsBySku(goods_code)
+            post_data['propertyId'] = '0'
+    except TypeError:
+        print('产品信息为空')
+        return JsonResponse({'error':'查询OA数据库，产品{0}信息为空'.format(goods_code)})
+    post_data['goodsType'] =post.get('goodsType')
+    post_data['shipType'] =post.get('shipType')
+    post_data['deliveryProductCode'] =post.get('deliveryProductCode')
+    post_data['shopName'] =post.get('shopName')
+    post_data['quantity'] =post.get('quantity')
+    post_data['processCenterId'] =post.get('TargetProcessCenterId')
+    post_data['sourceProcessCenterId'] =post.get('OriginProcessCenterId')
 
-    pass
+    request_data = third_psr.thirdPsrApiMessages(post_data)
+    try:
+        result_psr_code = third_psr.requestPsrThirdApi(request_data)
+    except AssertionError as err:
+        return JsonResponse({'error':'报错信息{0}'.format(err)})
+
+    try:
+        # 更改生成的调拨单状态
+        psr_codes = PsrMessage().updatePsrBstatusByCode(result_psr_code)
+        print('oa创建成功，且修改调拨请求的bstatus状态')
+        # wsp创建调拨请求与包裹单
+        put_wsp_db = CreateWspPSR().psr_create_pck([psr_codes])
+    except AssertionError as  err:
+        return JsonResponse({'psr': '{0}'.format(err)})
+
+    return JsonResponse({'psr': put_wsp_db})
+
 
 @csrf_exempt
 def InStorageRequest(request):
@@ -160,8 +195,11 @@ def InStorageRequest(request):
     post_data = {}
     post_data['sft_code'] = post.get('sft_code')
     isr = CreateSfiInstorageRequest()
-    wms_code = isr.createIsrRequestToWms(post.get('sft_code'))
-    print('创建入库单成功的单据{0}'.format(wms_code))
+    try:
+        wms_code = isr.createIsrRequestToWms(post.get('sft_code'))
+    except AssertionError as  err:
+        return JsonResponse({'报错提示': '{0}'.format(err).replace('\\', '')})
+
     return JsonResponse({'wms_code': list(wms_code)})
 
 @csrf_exempt
@@ -199,17 +237,6 @@ def virtualInStorageRequest(request):
             return JsonResponse({'error_message': '产品信息为空'})
         post_data['baseProductCode'] = base_product_code
 
-    # elif  start_code == "POA":
-    #     try:
-    #         goods_message = find_goods_code.findOaGoodsByPoa(post_data['baseProductCode'])
-    #     except TypeError:
-    #         print('产品信息为空')
-    #     post_data['propertyId'] = goods_message['poa_id']
-    #     post_data['productId'] = goods_message['sku_id']
-    # else:
-    #     post_data['productId'] = find_goods_code.findOaGoodsBySku(post_data['baseProductCode'])
-    #     post_data['PropertyCode'] = ''
-    #     post_data['propertyId'] = ''
     nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     post_data['modifyTimeStamp'] = nowDate
 
@@ -263,7 +290,7 @@ def InStorageRequestPPL(request):
     post_data = {}
     post_data['ppl_code'] = post.get('ppl_code')
     isr = CreatePPLInstorageRequest()
-    wms_code = isr.createIsrRequestToWms(post.get('ppl_code'))
+    wms_code = isr.createIsrRequestToWms(post.get('ppl_code'),post.get('is_wms'))
     print('创建入库单成功的单据{0}'.format(wms_code))
     return JsonResponse({'wms_code': list(wms_code)})
 
@@ -410,7 +437,7 @@ def virtualSyncSFT(request):
     SftFlow().createOaSFT(request_data)
     print(request_data)
     # return JsonResponse(request_data,safe=False,json_dumps_params={'ensure_ascii':False})
-    return JsonResponse({"sft_code":"sft_code","box_code":box_code_list},safe=False,json_dumps_params={'ensure_ascii':False})
+    return JsonResponse({"sft_code":sft_code,"box_code":box_code_list},safe=False,json_dumps_params={'ensure_ascii':False})
 
 
     pass

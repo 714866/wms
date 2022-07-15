@@ -5,6 +5,7 @@ import simplejson as simplejson   # 解决数据库返回Decimal类型转换成j
 from modular.GetApplication import get_value
 from modular.SFT.enums.shiptype import ShipType
 from modular.common.SqlChangeFormat import DateEncoder, list_to_str
+from modular.goods.goodsapi import putOaGoodsToWsp
 from modular.oaDB.getPPL import PPLMessage
 import json
 
@@ -91,15 +92,23 @@ class CreatePPLInstorageRequest():
         print(json.dumps(ppl_info, cls=DateEncoder))
         #在wsp生成PPL源单
         res = requests.request('POST', url=url, headers=header, data=json.dumps(ppl_info, cls=DateEncoder))
-        #对PPL源单生成作业单
-        SourceXXlJob.xxlJobAction('SourceToInStorageRequestTask')
+
+        if self.query_wsp_db.ExictWspGoodsInfo(ppl_info['productId'],ppl_info['propertyId']):
+            #对PPL源单生成作业单
+            SourceXXlJob.xxlJobAction('SourceToInStorageRequestTask')
+        else:
+            if ppl_info['propertyId'] == 0:
+                putOaGoodsToWsp(ppl_info['productId'])
+            else:
+                putOaGoodsToWsp(ppl_info['propertyId'])
+            SourceXXlJob.xxlJobAction('SourceToInStorageRequestTask')
         ppl_codes_list=[]
         for info_list in ppl_info:
             ppl_codes_list.append(info_list['packageCode'])
         ppl_codes_list = set(ppl_codes_list)
         instorage_request_lists = self.query_wsp_db.checkInstorageRequest(ppl_codes_list)
         if instorage_request_lists.__len__()==0:
-            return '生成入库申请单失败'
+            return '生成作业单据，入库申请单失败'
         order_no = []
         for instorage_request_dict in instorage_request_lists:
             order_no.append(instorage_request_dict['customer_order_no'])
@@ -111,7 +120,6 @@ class CreatePPLInstorageRequest():
                 continue
             else:
                 error_message+='{order_no} /n'.format(order_no=order_no)
-        self.query_wsp_db.updateInstorageRequestSrstatus(update_codes)
         return update_codes
 
     def isrFromWspToWms(self,ppl_codes):
@@ -121,15 +129,18 @@ class CreatePPLInstorageRequest():
         :param ppl_codes 列表:
         :return:
         """
+        self.query_wsp_db.updateInstorageRequestSrstatus(ppl_codes)
         insert_wms_isr_sql = self.query_wsp_db.returnInsertSql(ppl_codes)
         self.query_wms_db.inserIsrRequest(insert_wms_isr_sql)
         return ppl_codes
 
-    def createIsrRequestToWms(self,ppl_codes):
+    def createIsrRequestToWms(self,ppl_codes,is_wms=True):
         create_info = self.queryPPLToWsp(ppl_codes)
         wsp_isr = self.syncFromPPL(create_info)
-        wms_code = self.isrFromWspToWms(wsp_isr)
-        return wms_code
+        if is_wms:
+            wms_code = self.isrFromWspToWms(wsp_isr)
+            return wms_code
+        return wsp_isr
 
 if __name__=='__main__':
     test = CreatePPLInstorageRequest()

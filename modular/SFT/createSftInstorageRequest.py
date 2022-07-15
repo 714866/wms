@@ -8,6 +8,7 @@ from modular.common.SqlChangeFormat import DateEncoder, list_to_str
 from modular.oaDB.getSFT import SftMessage
 import json
 
+from modular.oaDB.oasql.sftsql import sql_get_sft_to_instorage
 from modular.wmsDB.instoragerequest import InstorageMessage1WMS
 from modular.wspDB.instoragerequest import InstorageMessage
 
@@ -115,8 +116,8 @@ class CreateSfiInstorageRequest():
             sft_codes_list.append(info_list['originCode'])
         sft_codes_list = set(sft_codes_list)
         instorage_request_lists = self.query_wsp_db.checkInstorageRequest(sft_codes_list)
-        if instorage_request_lists.__len__()==0:
-            return '生成入库申请单失败'
+        assert instorage_request_lists.__len__()!=0, '调用接口{0}生成入库申请单失败，参数：{1}'.format(url,json.dumps(separate_box_info_list, cls=DateEncoder))
+
         order_no = []
         for instorage_request_dict in instorage_request_lists:
             order_no.append(instorage_request_dict['customer_order_no'])
@@ -144,6 +145,7 @@ class CreateSfiInstorageRequest():
 
     def createIsrRequestToWms(self,sft_codes):
         create_info = self.queryProductShiftItemToWsp(sft_codes)
+        assert len(create_info)!=0, '在oa查询不到调拨单数据{0}'.format(sql_get_sft_to_instorage.format(list_to_str(create_info)))
         wsp_isr = self.syncFromProductShiftInfo(create_info)
         wms_code = self.isrFromWspToWms(wsp_isr)
         return wms_code

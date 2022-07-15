@@ -117,6 +117,11 @@ class PsrMessage():
         self.cursor.commit()
         print('修改状态，能正常下发wsp的调拨请求{0}'.format(psr_codes))
         return psr_codes
+    def updatePsrBstatusByCode(self,psr_code):
+        updateSql = "update ProductShiftRequest set bStatus=1 , AuditState=2 where  ProductShiftRequestCode in ('{0}'); ".format(psr_code)
+        self.cursor.executeAndcommit(updateSql)
+        return psr_code
+
 
 if __name__=="__main__":
 

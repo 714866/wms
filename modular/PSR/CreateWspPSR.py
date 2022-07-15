@@ -64,6 +64,11 @@ class CreateWspPSR(object):
         pass
 
     def source_to_operation(self, psr_codes):
+        """
+        PSR源单生成PSR作业单
+        :param psr_codes:
+        :return:
+        """
         operation_psr_codes = SourceXXlJob().SourcePsrToOperationHandler(psr_codes)
         return operation_psr_codes
 
@@ -81,6 +86,8 @@ class CreateWspPSR(object):
         # 返回源单的psr
         source_psr_codes = self.put_wsp(source_request_data)
         # 生成作业单据的psr
+        # source_request_data['productId']
+        # source_request_data['propertyId']
         operation_psr_codes = self.source_to_operation(psr_codes)
         # psr生成pck后，返回的psr
         pck_order = self.psr_to_pck(operation_psr_codes)

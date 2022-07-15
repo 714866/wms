@@ -91,6 +91,16 @@ class InstorageMessage(WspCommonDB):
         select_result = self.cursor.fetchone(order_sql)
         return select_result
 
+    def ExictWspGoodsInfo(self,sku_id,poa_id):
+        goods_sql= """select g.base_product_code,gmbp.bg_product_id,gmbp.bg_property_id
+        from goods g
+            inner join goods_bar_code gbc on g.id = gbc.goods_id
+  inner join goods_mapper_bg_product gmbp on g.id = gmbp.goods_id
+  where gmbp.bg_product_id={0} and bg_property_id={0}""".format(sku_id,poa_id)
+        result = self.cursor.fetchone(goods_sql)
+        if result == None:
+            return False
+        return True
     def findExistSftCode(self,code):
         sql = " select customer_order_no from in_storage_request where  customer_order_no like '{0}%'  ORDER BY customer_order_no DESC ;".format(code)
         sql_result = self.cursor.fetchone(sql)

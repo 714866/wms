@@ -1,0 +1,16 @@
+OA下发产品信息到WSP服务
+https://ewms-oa-api.banggood.cn/oa-sync-server
+/syncapi/product/queryProductInfoByLogIdByType?logId={logId}&top=400&type=产品信息
+
+https://wsp-api.banggood.cn/wsp/api/goods/sync
+
+
+
+wsp下拉产品接口：
+https://wspapi-test.banggood.cn/wsp/api/sync-download/download?key=1
+{
+  "downloadEnum": "产品同步",
+  "keyList": [
+    "string"
+  ]
+}

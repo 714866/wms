@@ -25,7 +25,6 @@ def serverConnect_db(db_name="sql_servetest"):
     user = cp.get(db_name, "db_user")
     password = cp.get(db_name, "db_password")
     database = cp.get(db_name, "db_database")
-    print(password)
     applicationName = "warehouse"
     # server =
     db = pymssql.connect(host, user, password, database)

@@ -1,4 +1,6 @@
 from modular import mapper
+import xmltodict
+import json
 
 find_sku = 'select ProductID from Product where ProductCode=\'{0}\''
 
@@ -66,8 +68,22 @@ VALUES ({source_process_id}, {targer_process_id}, '{shift_type}', 1.000, GETDATE
         self.cursor.executeAndcommit(inser_price_sql.format(source_process_id=source_process_id,targer_process_id=targer_process_id,shift_type=shift_type))
         return True
 
+    def updateCheckProductShiftRequest(self,shiftType):
+        sql = "select Detail from SystemConfig where code = 'CheckProductShiftRequest';"
+        result = self.cursor.fetchone(sql)
+        xml_parse = xmltodict.parse(result['Detail'])
+        content = xml_parse['c']['freeGoodsTypeList']['#text'] #获取免兼容货位类型运输方式处理中心配置数据
+        dict_content = json.loads(content)
+        dict_content.append(int(shiftType))
+        xml_parse['c']['freeGoodsTypeList']['#text'] = str(dict_content)
 
+        s = xmltodict.unparse(xml_parse).split('<?xml version="1.0" encoding="utf-8"?>\n')[1]
+        update_sql = "update SystemConfig set Detail='{0}' where code = 'CheckProductShiftRequest'".format(s)
+        print(update_sql)
+        self.cursor.executeAndcommit(update_sql)
+
+        return True
 
 if __name__=="__main__":
     testsql = goodsSql()
-    testsql.inserProcessCenterTransShipPrice(1040,1111,'Seaway')
+    testsql.updateCheckProductShiftRequest(27,2,1130)

@@ -48,9 +48,9 @@ sql_get_sft_to_instorage="""SELECT top 10
        -- psi.LastTraceStatus = 6
         -- AND 
         psi.ProductShitItemCode in ( {sft_codes})
-        AND ps.Deleted = 0
-        AND ps.Complete = 0
-        AND ps.CompleteQuantity = 0
+        -- AND ps.Deleted = 0
+        -- AND ps.Complete = 0
+        -- AND ps.CompleteQuantity = 0
         -- AND psi.Status = 1
         AND psi.Deleted = 0;
 """

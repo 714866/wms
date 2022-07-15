@@ -11,5 +11,6 @@ urlpatterns=[
     url(r'^InStorageRequestPPL$', views.InStorageRequestPPL),
     url(r'^virtualInstorageRequestPPL$', views.virtualInstorageRequestPPL),
     url(r'^getPsr$', views.getPsr),
-    url(r'^virtualSyncSFT$', views.virtualSyncSFT)
+    url(r'^virtualSyncSFT$', views.virtualSyncSFT),
+    url(r'^thirdPsr$', views.thirdPsr)
 ]
