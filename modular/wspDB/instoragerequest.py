@@ -96,7 +96,7 @@ class InstorageMessage(WspCommonDB):
         from goods g
             inner join goods_bar_code gbc on g.id = gbc.goods_id
   inner join goods_mapper_bg_product gmbp on g.id = gmbp.goods_id
-  where gmbp.bg_product_id={0} and bg_property_id={0}""".format(sku_id,poa_id)
+  where gmbp.bg_product_id={0} and bg_property_id={1}""".format(sku_id,poa_id)
         result = self.cursor.fetchone(goods_sql)
         if result == None:
             return False

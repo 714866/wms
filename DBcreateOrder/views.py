@@ -130,6 +130,7 @@ def getPsr(request):
         data = test_psr.get_oa_psr(psr_code)
         source_psr_codes = test_psr.put_wsp(data)
         operation_psr_codes = test_psr.source_to_operation(source_psr_codes)
+        test_psr.psr_to_pck(operation_psr_codes)
         return JsonResponse({'psr': operation_psr_codes})
     except AssertionError as  err:
         return JsonResponse({'报错提示': '{0}'.format(err).replace('\n', '')})
@@ -290,7 +291,7 @@ def InStorageRequestPPL(request):
     post_data = {}
     post_data['ppl_code'] = post.get('ppl_code')
     isr = CreatePPLInstorageRequest()
-    wms_code = isr.createIsrRequestToWms(post.get('ppl_code'),post.get('is_wms'))
+    wms_code = isr.createIsrRequestToWms(post['PPL_code'],post.get('is_wms'))
     print('创建入库单成功的单据{0}'.format(wms_code))
     return JsonResponse({'wms_code': list(wms_code)})
 

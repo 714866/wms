@@ -63,11 +63,12 @@ class SourceXXlJob(object):
             psr.updatePsrTargeProcess(operation_psr_codes, targe_process_id)
         pck_order = self.wsp_db.find_pck_by_psr(operation_psr_codes)
         # 更新pck状态为待调度，wms系统逻辑是下发到wms再跑服务变更的
+        self.wsp_db.update_psr_statue(pck_order)
         self.wsp_db.update_pck_statue(pck_order)
         # 使用查询语句组装insert语句
         insert_sql = self.wsp_db.returnInsertSql(pck_order)
         # 插入wms库
-        self.wms_db.insertLists(insert_sql)
+        # self.wms_db.insertLists(insert_sql)
         return pck_order
         # res = requests.request('POST', url=WSP_URL,headers=header, data = json.dumps(data_list,cls=DateEncoder))
 

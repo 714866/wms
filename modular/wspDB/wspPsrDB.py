@@ -81,6 +81,10 @@ from package_info where order_id in ({0});
         assert  len(pck_orders_codes) != 0,('全部数据未生成psr包裹单据PCK,{0}'.format(psr_codes))
         return pck_orders_codes
 
+    def update_psr_statue(self,psr_codes):
+        sql = """update product_shift_request set request_status=1 where product_shift_request_code in ({0});""".format(list_to_str(psr_codes))
+        self.cursor.executeAndcommit(sql)
+
     def update_pck_statue(self,psr_codes):
         sql = """update package_info set status=0 where is_deleted=0 and order_id in ({0});  """.format(list_to_str(psr_codes))
         self.cursor.executeAndcommit(sql)

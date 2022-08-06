@@ -1,4 +1,4 @@
-#coding=utf-8
+Frame#coding=utf-8
 from django.shortcuts import render
 from django.http import JsonResponse
 from .models import *

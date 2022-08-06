@@ -48,35 +48,35 @@ class CreatePPLInstorageRequest():
         for ppl_list in ppl_lists:
             is_not_exit = True
             ppl_instorage={}
-            for p in  ppl_instorage_lists:
-                ppl_instorage = {}
-                ppl_instorage['originProcessCenterId']=  ppl_list['OriginProcessCenterId']
-                ppl_instorage['targetProcessCenterId']=  ppl_list['TargetProcessCenterId']
-                ppl_instorage['shipType'] =  ppl_list['ShipType']
-                ppl_instorage['lastUpdateTime'] =  ppl_list['LastUpdateTime']
-                ppl_instorage['lastUpdateUserId'] =  ppl_list['LastUpdateUserID']
-                ppl_instorage['quantity'] =  ppl_list['Quantity']
-                ppl_instorage['productId'] =  ppl_list['ProductID']
-                ppl_instorage['propertyId'] =  ppl_list['PropertyID']
-                ppl_instorage['isTest'] =  ppl_list['IsTest']
-                ppl_instorage['goodsType'] =  ppl_list['GoodsType']
-                ppl_instorage['vacuumPacking'] =  ppl_list['vacuumPacking']
-                ppl_instorage['isShiftCosting'] =  ppl_list['IsShiftCosting']
-                ppl_instorage['goodsSize'] =  ppl_list['goodsSize']
-                ppl_instorage['salePlatform'] =  ppl_list['salePlatform']
-                ppl_instorage['packageId'] =  ppl_list['PackageID']
-                ppl_instorage['packageCode'] =  ppl_list['packageCode']
-                #lclLimitLevel 在原代码中是判断货物类型为21的则不允许拼箱，不为21允许相同货主拼箱
-                ppl_instorage['lclLimitLevel'] = "允许相同货主拼箱"
-                ppl_instorage['storageCode'] =  ppl_list['storageCode']
-                ppl_instorage['amazonShop'] =  ppl_list['AmazonShop']
-                ppl_instorage['deliveryProductCode'] =  ppl_list['deliveryProductCode']
-                ppl_instorage['isDrowback'] =  ppl_list['isDrowback']
-                ppl_instorage['shipmentId'] =  ppl_list['shipmentId']
-                ppl_instorage['createUserId'] =  ppl_list['CreateUserID']
-                ppl_instorage['createTime'] =  ppl_list['CreateTime']
-                ppl_instorage_lists.append(ppl_instorage)  # 加到主表中
-                # print(ppl_instorage)
+            # for p in  ppl_instorage_lists:
+            ppl_instorage = {}
+            ppl_instorage['originProcessCenterId']=  ppl_list['OriginProcessCenterId']
+            ppl_instorage['targetProcessCenterId']=  ppl_list['TargetProcessCenterId']
+            ppl_instorage['shipType'] =  ppl_list['ShipType']
+            ppl_instorage['lastUpdateTime'] =  ppl_list['LastUpdateTime']
+            ppl_instorage['lastUpdateUserId'] =  ppl_list['LastUpdateUserID']
+            ppl_instorage['quantity'] =  ppl_list['Quantity']
+            ppl_instorage['productId'] =  ppl_list['ProductID']
+            ppl_instorage['propertyId'] =  ppl_list['PropertyID']
+            ppl_instorage['isTest'] =  ppl_list['IsTest']
+            ppl_instorage['goodsType'] =  ppl_list['GoodsType']
+            ppl_instorage['vacuumPacking'] =  ppl_list['vacuumPacking']
+            ppl_instorage['isShiftCosting'] =  ppl_list['IsShiftCosting']
+            ppl_instorage['goodsSize'] =  ppl_list['goodsSize']
+            ppl_instorage['salePlatform'] =  ppl_list['salePlatform']
+            ppl_instorage['packageId'] =  ppl_list['PackageID']
+            ppl_instorage['packageCode'] =  ppl_list['packageCode']
+            #lclLimitLevel 在原代码中是判断货物类型为21的则不允许拼箱，不为21允许相同货主拼箱
+            ppl_instorage['lclLimitLevel'] = "允许相同货主拼箱"
+            ppl_instorage['storageCode'] =  ppl_list['storageCode']
+            ppl_instorage['amazonShop'] =  ppl_list['AmazonShop']
+            ppl_instorage['deliveryProductCode'] =  ppl_list['deliveryProductCode']
+            ppl_instorage['isDrowback'] =  ppl_list['isDrowback']
+            ppl_instorage['shipmentId'] =  ppl_list['shipmentId']
+            ppl_instorage['createUserId'] =  ppl_list['CreateUserID']
+            ppl_instorage['createTime'] =  ppl_list['CreateTime']
+            ppl_instorage_lists.append(ppl_instorage)  # 加到主表中
+            # print(ppl_instorage)
         print(json.dumps(ppl_instorage_lists, cls=DateEncoder))
         return ppl_instorage_lists
 
@@ -92,16 +92,18 @@ class CreatePPLInstorageRequest():
         print(json.dumps(ppl_info, cls=DateEncoder))
         #在wsp生成PPL源单
         res = requests.request('POST', url=url, headers=header, data=json.dumps(ppl_info, cls=DateEncoder))
-
-        if self.query_wsp_db.ExictWspGoodsInfo(ppl_info['productId'],ppl_info['propertyId']):
-            #对PPL源单生成作业单
-            SourceXXlJob.xxlJobAction('SourceToInStorageRequestTask')
-        else:
-            if ppl_info['propertyId'] == 0:
-                putOaGoodsToWsp(ppl_info['productId'])
+        for goods_info in ppl_info:
+            if self.query_wsp_db.ExictWspGoodsInfo(goods_info['productId'], goods_info['propertyId']):
+                pass
             else:
-                putOaGoodsToWsp(ppl_info['propertyId'])
-            SourceXXlJob.xxlJobAction('SourceToInStorageRequestTask')
+                if goods_info['propertyId'] == 0:
+                    putOaGoodsToWsp([goods_info['productId']])
+                else:
+                    putOaGoodsToWsp([goods_info['propertyId']])
+
+        #对PPL源单生成作业单
+        SourceXXlJob.xxlJobAction('SourceToInStorageRequestTask')
+
         ppl_codes_list=[]
         for info_list in ppl_info:
             ppl_codes_list.append(info_list['packageCode'])
@@ -144,6 +146,6 @@ class CreatePPLInstorageRequest():
 
 if __name__=='__main__':
     test = CreatePPLInstorageRequest()
-    ppl_lists = ['PPL-20190520-363856','PPL-20190521-372385']
-    separate_box_info_list=test.queryPPLToWsp(ppl_lists)
-    test.syncFromPPL(separate_box_info_list)
+    ppl_lists = ['PPL-20220728-610620']
+    separate_box_info_list=test.isrFromWspToWms(ppl_lists)
+    # test.syncFromPPL(separate_box_info_list)

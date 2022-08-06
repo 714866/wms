@@ -99,7 +99,7 @@ class CreateWspPSR(object):
 
 if __name__=='__main__':
     test_psr = CreateWspPSR()
-    psr_code =['PSR-A2-20220627-00002']
+    psr_code =['PSR-A2-20220801-00010']
     data = test_psr.get_oa_psr(psr_code)
     source_psr_codes = test_psr.put_wsp(data)
     operation_psr_codes = test_psr.source_to_operation(source_psr_codes)

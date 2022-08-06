@@ -44,6 +44,7 @@ INSTALLED_APPS = (
     # 'tinymce',
     # 'order',
     # 'haystack',
+    'rest_framework',
     'DBcreateOrder'
 )
 
