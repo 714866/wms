@@ -1,2 +1,9 @@
 1.django 中地址匹配问题,默认会根据正则匹配，在地址结尾加$,防止正则匹配
 如配置test 与test1, 请求test1时会匹配test,导致进不去test1,只要配置test$,则调用test1时不再匹配到test
+
+
+2.  rest_framework生成swagger页面的时候的时候，因为以下配置了permission_classes = [因此使用IsAuthenticated]，导致进入
+swagger页面显示了No operations defined in spec!
+
+  # 此处涉及最终展示页面权限问题，如果不需要认证，则使用AllowAny，这里需要权限认证，因此使用IsAuthenticated
+    permission_classes = [AllowAny]

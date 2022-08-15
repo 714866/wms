@@ -124,7 +124,13 @@
     <inspection_tool class="PyUnboundLocalVariableInspection" enabled="true" level="TYPO" enabled_by_default="true" />
     <inspection_tool class="PyUnnecessaryBackslashInspection" enabled="true" level="TYPO" enabled_by_default="true" />
     <inspection_tool class="PyUnreachableCodeInspection" enabled="true" level="TYPO" enabled_by_default="true" />
-    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="TYPO" enabled_by_default="true" />
+    <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="TYPO" enabled_by_default="true">
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="testRestFrame.views.*" />
+        </list>
+      </option>
+    </inspection_tool>
     <inspection_tool class="PyUnusedLocalInspection" enabled="true" level="TYPO" enabled_by_default="true" />
   </profile>
 </component>

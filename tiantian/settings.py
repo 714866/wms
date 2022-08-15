@@ -45,6 +45,7 @@ INSTALLED_APPS = (
     # 'order',
     # 'haystack',
     'rest_framework',
+    'rest_framework_swagger',
     'DBcreateOrder'
 )
 
@@ -146,3 +147,11 @@ HAYSTACK_CONNECTIONS = {
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE=10    #配置一页显示多少条数据
 
+
+
+#p配置swagger
+REST_FRAMEWORK = {
+# 2、设置DEFAULT_SCHEMA_CLASS，此处不设置后续会报错。
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
+
+}

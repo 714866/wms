@@ -24,6 +24,7 @@ urlpatterns = [
     # url(r'^cart/', include('cart.urls')),
     # url(r'^order/',include('order.urls')),
     url('DBcreateOrder/',include('DBcreateOrder.urls')),
+    url('testRestFrame/',include('testRestFrame.urls')),
     # url(r'^search/', include('haystack.urls')),
 ]
 
