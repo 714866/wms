@@ -129,6 +129,7 @@ sql_select_isr_box_item="""select id,
        origin_code,
        external_code,
        sale_platform,
-       speed
+       speed,
+       is_first_order
 from in_storage_request_box_item where is_deleted=0 and isr_box_id in ({isr_box_id});
 """

@@ -96,10 +96,8 @@ class CreatePPLInstorageRequest():
             if self.query_wsp_db.ExictWspGoodsInfo(goods_info['productId'], goods_info['propertyId']):
                 pass
             else:
-                if goods_info['propertyId'] == 0:
-                    putOaGoodsToWsp([goods_info['productId']])
-                else:
-                    putOaGoodsToWsp([goods_info['propertyId']])
+                putOaGoodsToWsp([goods_info['productId']])
+
 
         #对PPL源单生成作业单
         SourceXXlJob.xxlJobAction('SourceToInStorageRequestTask')

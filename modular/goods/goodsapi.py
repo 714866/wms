@@ -12,7 +12,7 @@ class GoodsApi(object):
 def putOaGoodsToWsp(goods_list):
     """
 
-    :param goods_list: 产品id列表
+    :param goods_list: 产品id列表,只需要穿SKU_ID，POA_id无效的
     :return:
     """
 
@@ -27,5 +27,5 @@ def putOaGoodsToWsp(goods_list):
     result.status_code==200
     # print(result)
 if __name__ == "__main__":
-    test1 = putOaGoodsToWsp(["2300917"])
+    test1 = putOaGoodsToWsp(["26334434"])
     # test1 =

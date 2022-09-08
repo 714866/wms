@@ -7,3 +7,4 @@ swagger页面显示了No operations defined in spec!
 
   # 此处涉及最终展示页面权限问题，如果不需要认证，则使用AllowAny，这里需要权限认证，因此使用IsAuthenticated
     permission_classes = [AllowAny]
+ （https://q1mi.github.io/Django-REST-framework-documentation/ 中文文档）

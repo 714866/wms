@@ -77,7 +77,7 @@ class GetCode(object):
         exist_PPL_code = self.wsp_db.findExistPplCode(code)
         if exist_PPL_code == None:
             for i in range(count):
-                ppl_code = code + '-' + str(i + 1).zfill(6)
+                ppl_code = code + '-' + str(i + 1).zfill(5)
                 ppl_codes.append(ppl_code)
         else:
             # 提取数字

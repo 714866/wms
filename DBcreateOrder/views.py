@@ -312,6 +312,10 @@ def virtualInstorageRequestPPL(request):
     ppl_instorage['createUserId'] = zzl_user_id
     ppl_instorage['createTime'] = nowDate
     ppl_instorage['quantity'] = ppl_list['quantity']
+    isFirstOrder = ppl_list['isFirstOrder']
+    if isFirstOrder is None or isFirstOrder=='':
+        isFirstOrder = 0
+    ppl_instorage['isFirstOrder'] = isFirstOrder
     wsp_db =InstorageMessage()
     try:
         porduct_info = wsp_db.findGoodsOAId( ppl_list['goods_code'])

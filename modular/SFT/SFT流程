@@ -1,8 +1,11 @@
 1.SFT在wms装箱申请成功时生成
-2.根据日志回传到oa，服务：ManifestUploadHandle  （同时也包含了出库回传）
+2.根据日志回传到调拨单到oa，服务：ManifestCreateUploadHandle
+3.wms操作出库后根据日志回传到调拨单出库状态到oa，服务：ManifestOutboundUploadHandle
 
-3.已出库调拨单下发单仓生成入库申请单
-
+4.已出库调拨单下发单仓生成入库申请单
+对应
+OA-WSP-同步调拨单相关信息
+bl_oa_wsp_product_shift_extend
 
 4
 
