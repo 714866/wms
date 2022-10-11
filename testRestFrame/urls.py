@@ -6,7 +6,7 @@ from django.conf.urls import url, include
 from testRestFrame.schema_view import SwaggerSchemaView
 # 自定义接口
 from testRestFrame.tests import CustomView
-from testRestFrame.views import CustomView1
+from testRestFrame.views import CustomView1,CreatePSRCommon
 
 router = routers.DefaultRouter()
 
@@ -20,4 +20,5 @@ urlpatterns = [
     # 测试接口
     url(r'^test1/$', CustomView.as_view(), name='test1'),
     url(r'^test2/$', CustomView1.as_view(), name='test2'),
+    url(r'^test3/$', CreatePSRCommon.as_view(), name='test3'),
 ]

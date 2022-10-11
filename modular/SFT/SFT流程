@@ -7,5 +7,7 @@
 OA-WSP-同步调拨单相关信息
 bl_oa_wsp_product_shift_extend
 
-4
+5,上架回传
+
+SyncShiftInShelfHandler
 
