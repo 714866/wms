@@ -19,3 +19,9 @@ class wmsCommonDB(object):
 class WspCommonDB(object):
     def __init__(self):
         self.cursor = mapper.ConnectWSPdb('wsp_mysql')
+
+
+class TwmsCommonDB(object):
+    def __init__(self):
+        self.cursor = mapper.connect_DB('twms_mysql')
+

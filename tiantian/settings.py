@@ -45,8 +45,11 @@ INSTALLED_APPS = (
     # 'order',
     # 'haystack',
     # 'rest_framework',
-    'rest_framework_swagger',
-    'DBcreateOrder'
+    # 'rest_framework_swagger',
+    'DBcreateOrder',
+    # 'drf_yasg',
+    'drf_spectacular',
+    'drf_spectacular_sidecar',
 )
 
 MIDDLEWARE = [
@@ -128,7 +131,7 @@ STATICFILES_DIRS=[
 ]
 
 #本地调试使用
-MEDIA_ROOT=os.path.join(BASE_DIR,'static')
+# MEDIA_ROOT=os.path.join(BASE_DIR,'static')
 # 发布配置，本地不需要改
 # MEDIA_ROOT='/var/www/tiantian/static'
 #富文本配置
@@ -148,10 +151,23 @@ HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 HAYSTACK_SEARCH_RESULTS_PER_PAGE=10    #配置一页显示多少条数据
 
 
-
 #p配置swagger
 REST_FRAMEWORK = {
 # 2、设置DEFAULT_SCHEMA_CLASS，此处不设置后续会报错。
-    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
+#     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.AutoSchema',
+#新的drf_spectacular 支持swagger3.0
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema'
 
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': '仓储API接口文档',
+    'DESCRIPTION': '仓储造数据平台',
+    'VERSION': '1.0.0',
+    # OTHER SETTINGS
+    #设置Swagger UI或Redoc。drf-spectacular-sidecar静态文件
+    'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
+    'REDOC_DIST': 'SIDECAR',
+    # OTHER SETTINGS
 }

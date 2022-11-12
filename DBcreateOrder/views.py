@@ -3,16 +3,14 @@ import json
 import time
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
 import os
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
-from  modular import mapper
+from django.http import HttpResponse, JsonResponse
 from modular.PPL.createPPLInstorageRequest import CreatePPLInstorageRequest
 from modular.PSR.CreateWspPSR import CreateWspPSR
 from modular.PSR.createPSR import createPSR, CreateThirdPsr
 from modular.SFT.createSftInstorageRequest import CreateSfiInstorageRequest
-from modular.SFT.enums.shiptype import ShipType
+from modular.enums.shiptype import ShipType
 from modular.SFT.sftflow import SftFlow
 from modular.common.SqlChangeFormat import DateEncoder
 from modular.common.craetecode import GetCode

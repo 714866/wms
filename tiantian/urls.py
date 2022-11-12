@@ -16,6 +16,9 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.urls import path
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView, \
+    SpectacularJSONAPIView
 
 urlpatterns = [
     url('admin/',admin.site.urls),
@@ -23,10 +26,20 @@ urlpatterns = [
     # url(r'^goods/', include('df_goods.urls')),
     # url(r'^cart/', include('cart.urls')),
     # url(r'^order/',include('order.urls')),
-    url('DBcreateOrder/',include('DBcreateOrder.urls')),
-    url('testRestFrame/',include('testRestFrame.urls')),
+    # url('testRestFrame/',include('testRestFrame.urls')),
+    # path('testRestFrame/',include('testRestFrame.urls')),
     # url(r'^search/', include('haystack.urls')),
+    path('swagger/json/', SpectacularJSONAPIView.as_view(), name='schema'),
+    # Optional UI:
+    path('swagger/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('swagger/ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('swagger/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    # YOUR PATTERNS
+    path('DBcreateOrder/', include('DBcreateOrder.urls')),
+
 ]
+
+
 
 #配置404和500返回页面
 from django.conf.urls import handler404, handler500

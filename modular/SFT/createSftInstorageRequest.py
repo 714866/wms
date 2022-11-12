@@ -1,9 +1,7 @@
-from datetime import time
 import requests
-import simplejson as simplejson   # 解决数据库返回Decimal类型转换成json错误使用
 
 from modular.GetApplication import get_value
-from modular.SFT.enums.shiptype import ShipType
+from modular.enums.shiptype import ShipType
 from modular.common.SqlChangeFormat import DateEncoder, list_to_str
 from modular.oaDB.getSFT import SftMessage
 import json

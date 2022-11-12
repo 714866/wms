@@ -8,3 +8,12 @@ swagger页面显示了No operations defined in spec!
   # 此处涉及最终展示页面权限问题，如果不需要认证，则使用AllowAny，这里需要权限认证，因此使用IsAuthenticated
     permission_classes = [AllowAny]
  （https://q1mi.github.io/Django-REST-framework-documentation/ 中文文档）
+
+
+
+3.rest_framework_swagger 库在19年已不维护了，前期搭建的时候用了 现在需要更换成新的库
+drf-yasg库 但只支持swagger2.0，官方文档提示drf-spectacular能支持swagger3.0
+对应资料https://cloud.tencent.com/developer/article/1576613
+
+4.drf-spectacular能支持swagger3.0
+对应文档https://drf-spectacular.readthedocs.io/en/latest/settings.html

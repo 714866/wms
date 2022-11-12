@@ -2,19 +2,18 @@ import copy
 import json
 import time
 
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
-import os
+from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
-from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 
-from  modular import mapper
 from modular.PPL.createPPLInstorageRequest import CreatePPLInstorageRequest
 from modular.PSR.CreateWspPSR import CreateWspPSR
 from modular.PSR.createPSR import createPSR, CreateThirdPsr
 from modular.SFT.createSftInstorageRequest import CreateSfiInstorageRequest
-from modular.SFT.enums.shiptype import ShipType
+from modular.enums.good_type import goods_type_option_enum
+from modular.enums.shiptype import ShipType, ship_type_option_enum
 from modular.SFT.sftflow import SftFlow
 from modular.common.SqlChangeFormat import DateEncoder
 from modular.common.craetecode import GetCode
@@ -26,7 +25,6 @@ from modular.oaDB.getPsr import PsrMessage
 
 # 测试验证用  暂时无用
 from modular.wspDB.instoragerequest import InstorageMessage
-from testRestFrame.schema_view import DocParam
 
 
 class CreatePSRCommon(APIView):
@@ -34,20 +32,29 @@ class CreatePSRCommon(APIView):
     post:
     模拟页面普通创建PSR接口
     '''
-    coreapi_fields = (
-        DocParam(name="ship_type", location='query', description='运输方式',required=False),
-        DocParam(name="source_process_id", location='query', description='来源处理中心',required=False),
-        DocParam(name="targer_process_id", location='query', description='目标处理中心',required=False),
-        DocParam(name="sku_code", location='query', description='sku&poa',required=False),
-        DocParam(name="product_num", location='query', description='产品数量',required=False ),
-        DocParam(name="oa_url", location='query', description='调用oa地址，不填写默认测试环境',required=False),
-        DocParam(name="storage", location='query', description='店铺',required=False),
-        DocParam(name="goods_type", location='query', description='货物类型',required=False),
-        DocParam(name="count_num", location='query', description='PSR生成数量',required=False),
-        DocParam(name="count_num", location='query', description='PSR生成数量',required=False),
 
-    )
+    @extend_schema(description='模拟页面普通创建PSR接口',
+                   methods=["POST"],
+                   parameters=[
+                       # OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=['Express-快递-1','Airlift-空运-2','General-常规-3','Seaway-海运-4','Railway-铁路-7','Ground-陆运-8','Vessel-快船-9'],default='General-常规-3'),
+                       OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=ship_type_option_enum(),default='3-General'),
+                       OpenApiParameter(name='source_process_id', description='来源处理中心', required=False, type=str,default=1040),
+                       OpenApiParameter(name='targer_process_id', description='目标处理中心', required=False, type=str,
+                                        default=1138),
+                       OpenApiParameter(name='sku_code', description='sku&poa', required=False, type=str,
+                                        default='POA4235465'),
+                       OpenApiParameter(name='product_num', description='产品数量', required=False, type=str,
+                                        default=10),
+                       OpenApiParameter(name='oa_url', description='调用oa地址', required=False, type=str,
+                                        default='http://apiewms-dev.banggood.cn'),
+                       OpenApiParameter(name='storage', description='店铺', required=False, type=str,
+                                        default=''),
+                       OpenApiParameter(name='goods_type', description='货物类型', required=False, type=str,
+                                        enum=goods_type_option_enum(),default='0-General'),
+                       OpenApiParameter(name='count_num', description='PSR生成数量', required=False, type=str,
+                                        default=10),
 
+                   ])
     def post(self,request):
         """
         PSR创建
@@ -57,9 +64,9 @@ class CreatePSRCommon(APIView):
         print('请求开始，验证是否重复请求的')
         post=request.POST
         if post.__len__()==0 :
-            post=json.loads(request.body)
+            post=request.query_params
         post_data={}
-        post_data['ship_type']=post.get('ship_type')
+        post_data['ship_type']=post.get('ship_type').split('-')[0]
         post_data['source_process_id']=post.get('source_process_id')
         if post_data['source_process_id'] is None or post_data['source_process_id']=='':
             post_data['source_process_id'] = 1040
@@ -72,9 +79,9 @@ class CreatePSRCommon(APIView):
         post_data['sku_code']=sku_code
         post_data['oa_url']=post.get('url')
         if post_data['oa_url'] is None or  post_data['oa_url']=='':
-            post_data['oa_url']='http://172.16.6.203:8092'
+            post_data['oa_url']='http://apiewms-dev.banggood.cn'
         post_data['storage']=post.get('storage')
-        goods_type = post.get('goods_type')
+        goods_type = post.get('goods_type').split('-')[1]
         if goods_type is None or goods_type=='':
             goods_type=0
         post_data['goods_type'] = goods_type
