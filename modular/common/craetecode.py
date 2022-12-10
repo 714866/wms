@@ -5,6 +5,7 @@ import time
 # sft_code = 'SFT-T1-'+time.strftime("%Y%m%d", time.localtime())
 from modular.oaDB.getSFT import SftMessage
 from modular.wspDB.instoragerequest import InstorageMessage
+from wmspda.models import OdsPckInfo
 
 class GetCode(object):
     __instance = None
@@ -16,6 +17,7 @@ class GetCode(object):
     def __init__(self):
         self.wsp_db = InstorageMessage()
         self.oa_db = SftMessage()
+
 
     def getSftCode(self,count):
         """
@@ -132,10 +134,19 @@ class GetCode(object):
                 box_code = code + '-' + num + 'T'
                 box_codes.append(box_code)
         return box_codes
+    def get_twms_pck_code(self,process,count=1):
+        pck_code = []
+        code ='PCK'+str(process).zfill(4)+time.strftime('%y%m%d',time.localtime())
+        exist_pck_info = OdsPckInfo.objects.using('twms').filter(pck_code__iexact=code)['']
+        if exist_pck_info == None:
+            pass
+
+
 
 
 if __name__=='__main__':
     test = GetCode()
     print(test)
-    print(test.getSftCode(2))
+    print(test.get_twms_pck_code(1038))
+
 

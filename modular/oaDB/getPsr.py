@@ -51,7 +51,7 @@ find_psr = """   SELECT
 
 update_process_by_psr = """ update  SellerCube.dbo.ProductShiftRequest set ProcessCenterID={process} where ProductShiftRequestCode in ({psr_codes})"""
 
-find_psr_targeprocess = """select ProcessCenterID from  SellerCube.dbo.ProductShiftRequest where   ProductShiftRequestCode = ('{psr_code}') """
+find_psr_targeprocess = """select ProcessCenterID from  SellerCube.dbo.ProductShiftRequest where   ProductShiftRequestCode = '{psr_code}' """
 
 class PsrMessage():
 

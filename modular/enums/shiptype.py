@@ -12,7 +12,14 @@ class ShipType(Enum):
     Ground = 8
     Vessel = 9
     ExpressGround = 10
-
+    SeawayFCL = 11
+    SeawayLCL = 12
+    RailwayFCL = 13
+    RailwayLCL = 14
+    VesselFCL = 15
+    VesselLCL = 16
+    GroundFCL = 17
+    GroundLCL = 18
 __ship_type_option = [ str(x.value)+'-'+x.name  for x in ShipType]
 
 def ship_type_option_enum():

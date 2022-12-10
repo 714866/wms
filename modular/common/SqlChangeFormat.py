@@ -16,6 +16,12 @@ def list_to_str(lists):
     return sql_str
 
 def selectChangeInsert(table,select_results):
+    """
+    讲查询返回语句变更为插入语句
+    :param table:
+    :param select_results:
+    :return:
+    """
     insert_sql=''
     for select_result in select_results:
         if insert_sql=='':
@@ -29,7 +35,14 @@ def selectChangeInsert(table,select_results):
             insert_sql = insert_sql + ',(' + row_value + ')'
     return insert_sql
 
-
+def dict_change_insert(tbale,table_dict):
+    """
+    传入字段值，返回插入语句
+    :param tbale:
+    :param table_dict:
+    :return:
+    """
+    pass
 
 """
 dumps方法无法对字典中datetime时间格式的数据进行转化

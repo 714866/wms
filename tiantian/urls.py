@@ -36,6 +36,7 @@ urlpatterns = [
     path('swagger/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
     # YOUR PATTERNS
     path('DBcreateOrder/', include('DBcreateOrder.urls')),
+    path('wmspda/', include('wmspda.urls')),
 
 ]
 

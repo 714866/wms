@@ -1,0 +1,84 @@
+
+
+s收货保存接口
+http://172.16.7.4:18201/own-wms-api/pda/receipt/saveReceipt
+{
+	"inStorageRequestNo": "IHP2022111900002W",
+	"items": [{
+		"baseProductCode": "PBUA00AFE5",
+		"externalCode": "",
+		"itemId": "1043479704731607040",
+		"quantity": 10
+	}],
+	"receiptTypeEnum": 0
+}
+
+2.入库保存接口
+http://172.16.7.4:18201/own-wms-api/pda/inStorage/saveInStorage
+{"receiptNo":"RC2022111900003A"}
+
+
+3.入库签收接口
+URL	http://172.16.7.4:18201/own-wms-api/pda/shelf/saveShelf
+{"targetCode":"FBOX-20221119-00001"}
+
+
+4.上架查询接口
+get:
+http://172.16.7.4:18201/own-wms-api/pda/shelf/getShelfInfo?targetCode=FBOX-20221119-00002&isInStorage=true
+{
+    "targetUrl":null,
+    "errorInfos":null,
+    "result":{
+        "list":[
+            {
+                "goodsId":"512941043587751936",
+                "rack":null,
+                "area":null,
+                "productName":"111",
+                "featureValue":"red",
+                "quantity":5,
+                "shelfId":"1043531718945628160",
+                "shelfCode":"SJ2022111900005A",
+                "sourceType":"入库单",
+                "baseProductCode":"PBUA00AFE5",
+                "externalCode":"PBUA00AFE6",
+                "rackId":"0",
+                "processcenterId":"1040",
+                "ownerId":"516925542164078592",
+                "managerId":"516925542164078592",
+                "shelfStatus":"上架中",
+                "historyRack":"A-A-02-01",
+                "historyRackQuantity":4,
+                "rackQuantity":null,
+                "masterName":"优质客户",
+                "isFull":false,
+                "relateStorageContainer":null,
+                "imgUrl":[
+                    ""
+                ],
+                "salePlatformName":"eBay",
+                "logicAreaName":null,
+                "sourceCode":"RK2022111900005A",
+                "sourceDocumentType":"采购入库",
+                "goodsLength":33,
+                "goodsWidth":33,
+                "goodsHeight":33,
+                "allQuantity":5,
+                "isHighWorth":false,
+                "isFirstOrder":0
+            }
+        ],
+        "isOpenRecommendRack":false,
+        "originProcessCenter":"",
+        "targetProcessCenter":"香港处理中心",
+        "inStorageType":null,
+        "customerBoxes":null
+    },
+    "success":true,
+    "authorizedRequest":false
+}
+
+5.上架保存接口
+http://172.16.7.4:18201/own-wms-api/pda/shelf/updateShelfRack
+[{"goodsId":"512941043587751936","quantity":5,"rack":"A-A-02-01","scanCode":"FBOX-20221119-00002","shelfCode":"SJ2022111900005A","uniqueCode":""}]

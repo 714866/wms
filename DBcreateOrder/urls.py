@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from . import views
-from .swagger_view import CreatePSRCommon
+from .swagger_view import CreatePSRCommon, CreateVirtualInstorageRequestPPL
 from .views import *
 from django.urls import path
 
@@ -16,5 +16,6 @@ urlpatterns=[
     url(r'^virtualSyncSFT$', views.virtualSyncSFT),
     url(r'^thirdPsr$', views.thirdPsr),
     url(r'^testPsr$', CreatePSRCommon.as_view(), name='test3'),
+    url(r'^createVirtualPPL$', CreateVirtualInstorageRequestPPL.as_view(), name='test4'),
 
 ]

@@ -86,7 +86,10 @@ class TwmsOrderDB(TwmsCommonDB):
         pckInfoId=str(time.time()).replace('.','')
         print(pckInf.format(pckInfoId, pck, order,process,time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
         self.cursor.execute(pckInf.format(pckInfoId, pck, order,process,time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
-        if process!='50025':
+        if process == 1087:
+            sku='SKU485329'
+            poa='POA1299836'
+        elif process!='50025':
             sku ='SKUJ36220'
             poa = 'POA9708319'
         else:
@@ -109,14 +112,16 @@ class TwmsOrderDB(TwmsCommonDB):
 
 if __name__ == "__main__":
 
-    pck='PCK121121061632269'
-    order='A000272106150V69'
+    pck='PCK121121061632275'
+    order='A000272106150V75'
     # 天马
     process=1221
     # 递四方
     # process=1142
     #海星
-    process=50025
+    # process=50025
+    # 惠州HBA
+    process=1087
 
     start = TwmsOrderDB()
     start.inser_pck(pck,order,process)

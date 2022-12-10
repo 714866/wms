@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     # 'drf_yasg',
     'drf_spectacular',
     'drf_spectacular_sidecar',
+    'wmspda'
 )
 
 MIDDLEWARE = [
@@ -91,16 +92,24 @@ WSGI_APPLICATION = 'tiantian.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST':'localhost',
-        'PORT':'3306',
-        'USER':'root',
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'HOST':'localhost',
+        # 'PORT':'3306',
+        # 'USER':'root',
         #mac mysql账号密码
         # 'PASSWORD':'zzlpython',
         # 'NAME': 'wms',
         # 公司mysql账号密码
-        'PASSWORD': 'python',
-        'NAME': 'ews',
+        # 'PASSWORD': 'python',
+        # 'NAME': 'ews',
+    },
+    'twms':{
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST':'192.168.1.203',
+        'PORT':'13306',
+        'USER':'twms',
+        'PASSWORD':'twms#321',
+        'NAME':'twms'
     }
 }
 

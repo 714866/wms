@@ -77,11 +77,11 @@ class CreatePSRCommon(APIView):
         if sku_code is None or sku_code=='':
             sku_code ='POA4235465'
         post_data['sku_code']=sku_code
-        post_data['oa_url']=post.get('url')
+        post_data['oa_url']=post.get('oa_url')
         if post_data['oa_url'] is None or  post_data['oa_url']=='':
             post_data['oa_url']='http://apiewms-dev.banggood.cn'
         post_data['storage']=post.get('storage')
-        goods_type = post.get('goods_type').split('-')[1]
+        goods_type = post.get('goods_type').split('-')[0]
         if goods_type is None or goods_type=='':
             goods_type=0
         post_data['goods_type'] = goods_type
@@ -213,80 +213,109 @@ def InStorageRequest(request):
 
     return JsonResponse({'wms_code': list(wms_code)})
 
-@csrf_exempt
-def virtualInStorageRequest(request):
-    """
-{
-	"goods_code":"PBUC01BBCAD",
-	"quantity":3,
-	"processcenter_id":1138,
-	"shipType":3,   -- 传入
+class virtualInStorageRequest(APIView):
+    '''
+    post:
+    虚拟生成SFT入库申请单
+    '''
 
-    :param request:
-    :return:
-    """
-    post = request.POST
-    if post.__len__() == 0:
-        post = json.loads(request.body)
-    post_datas = []
-    post_data = {}
-    post_data['quantity'] = post.get('quantity')
-    post_data['originProcessCenterId'] = post.get('ProcessCenterId')
-    post_data['targetProcessCenterId'] = post.get('ProcessCenterId')
-    # find_goods_code = goodsSql()
-    wsp_db =InstorageMessage()
-    post_data['baseProductCode'] = post.get('goods_code')
-    start_code = post_data['baseProductCode'][0:3].upper()
-    #WSP创建调拨单接口，如果判断property_id与productId都为空，则用baseProductCode查询goods表获取产品信息
-    post_data['propertyId'] = None
-    post_data['productId'] = None
-    if start_code!="PBU":
-        try:
-            base_product_code = wsp_db.findGoodsInfo( post_data['baseProductCode'])
-        except TypeError:
-            print('产品信息为空')
-            return JsonResponse({'error_message': '产品信息为空'})
-        post_data['baseProductCode'] = base_product_code
+    @extend_schema(description='虚拟生成SFT入库申请单',
+                   methods=["POST"],
+                   parameters=[
+                       # OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=['Express-快递-1','Airlift-空运-2','General-常规-3','Seaway-海运-4','Railway-铁路-7','Ground-陆运-8','Vessel-快船-9'],default='General-常规-3'),
+                       OpenApiParameter(name='shipType', description='运输方式', required=False, type=str,
+                                        enum=ship_type_option_enum(), default='3-General'),
+                       OpenApiParameter(name='ProcessCenterId', description='处理中心', required=False, type=str,
+                                        default=1040),
 
-    nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    post_data['modifyTimeStamp'] = nowDate
+                       OpenApiParameter(name='goods_code', description='sku&poa', required=False, type=str,
+                                        default='PBUC01BBCAD'),
+                       OpenApiParameter(name='quantity', description='产品数量', required=False, type=str,
+                                        default=10),
+                       OpenApiParameter(name='oa_url', description='调用oa地址', required=False, type=str,
+                                        default='http://apiewms-dev.banggood.cn'),
+                       OpenApiParameter(name='storage', description='店铺', required=False, type=str,
+                                        default=''),
+                       OpenApiParameter(name='goods_type', description='货物类型', required=False, type=str,
+                                        enum=goods_type_option_enum(), default='0-General'),
+                       OpenApiParameter(name='count_num', description='PSR生成数量', required=False, type=str,
+                                        default=10),
 
-    # 自建单号SFT-T1-日期 ,暂时只做单条的逻辑
-    get_code = GetCode()
-    sft_codes = get_code.getSftCode(1)
-    post_data['originCode']=sft_codes[0]
-    #自建分箱单号
-    box_codes = get_code.getboxCode(1)
-    post_data['productShiftBoxCode']=box_codes[0]
-    # 调拨单的来源单号，后面再看看是否可以传空
-    post_data['productShitItemOriginCode']=''
-    #运输方式
-    post_data['shipType'] = ShipType(post.get('shipType')).name
-    #货位类型
-    post_data['goodsType'] = post.get('goodsType')
-    post_data['length']='120'
-    post_data['width']='120'
-    post_data['height']='120'
-    post_data['weight']='120'
-    #可为空的 暂时就直接赋值空
-    post_data['storageCode']=''
-    post_data['deliveryProductCode']=''
-    post_data['amazonShop']=''
-    post_data['detailLabel']=''
-    post_data['relativeCode']=''
-    post_data['traceCode']=''
-    post_data['logId']=''
-    post_data['goodsSize']=''
-    post_data['fboxItemOriginCode']=''
-    post_data['type']=''
-    post_data['ful']=False
-    post_datas.append(post_data)
-    isr = CreateSfiInstorageRequest()
-    # 组装参数
-    create_info = isr.wspApiMessages(post_datas)
-    wsp_codes = isr.syncFromProductShiftInfo(create_info)
-    wms_codes = isr.isrFromWspToWms(wsp_codes)
-    return JsonResponse({'wms_code': wms_codes})
+                   ])
+    def api_post(self,request):
+        """
+    {
+        "goods_code":"PBUC01BBCAD",
+        "quantity":3,
+        "processcenter_id":1138,
+        "shipType":3,   -- 传入
+
+        :param request:
+        :return:
+        """
+        post = request.POST
+        if post.__len__() == 0:
+            post = request.query_params
+        post_data = {}
+        post_datas = []
+        post_data = {}
+        post_data['quantity'] = post.get('quantity')
+        post_data['originProcessCenterId'] = post.get('ProcessCenterId')
+        post_data['targetProcessCenterId'] = post.get('ProcessCenterId')
+        # find_goods_code = goodsSql()
+        wsp_db =InstorageMessage()
+        post_data['baseProductCode'] = post.get('goods_code')
+        start_code = post_data['baseProductCode'][0:3].upper()
+        #WSP创建调拨单接口，如果判断property_id与productId都为空，则用baseProductCode查询goods表获取产品信息
+        post_data['propertyId'] = None
+        post_data['productId'] = None
+        if start_code!="PBU":
+            try:
+                base_product_code = wsp_db.findGoodsInfo( post_data['baseProductCode'])
+            except TypeError:
+                print('产品信息为空')
+                return JsonResponse({'error_message': '产品信息为空'})
+            post_data['baseProductCode'] = base_product_code
+
+        nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        post_data['modifyTimeStamp'] = nowDate
+
+        # 自建单号SFT-T1-日期 ,暂时只做单条的逻辑
+        get_code = GetCode()
+        sft_codes = get_code.getSftCode(1)
+        post_data['originCode']=sft_codes[0]
+        #自建分箱单号
+        box_codes = get_code.getboxCode(1)
+        post_data['productShiftBoxCode']=box_codes[0]
+        # 调拨单的来源单号，后面再看看是否可以传空
+        post_data['productShitItemOriginCode']=''
+        #运输方式
+        post_data['shipType'] = post.get('shipType').split('-')[1]
+        #货位类型
+        post_data['goodsType'] = post.get('goodsType').split('-')[0]
+        post_data['length']='120'
+        post_data['width']='120'
+        post_data['height']='120'
+        post_data['weight']='120'
+        #可为空的 暂时就直接赋值空
+        post_data['storageCode']=''
+        post_data['deliveryProductCode']=''
+        post_data['amazonShop']=''
+        post_data['detailLabel']=''
+        post_data['relativeCode']=''
+        post_data['traceCode']=''
+        post_data['logId']=''
+        post_data['goodsSize']=''
+        post_data['fboxItemOriginCode']=''
+        post_data['type']=''
+        post_data['ful']=False
+        post_datas.append(post_data)
+        isr = CreateSfiInstorageRequest()
+        # 组装参数
+        create_info = isr.wspApiMessages(post_datas)
+        wsp_codes = isr.syncFromProductShiftInfo(create_info)
+        wms_codes = isr.isrFromWspToWms(wsp_codes)
+        return JsonResponse({'wms_code': wms_codes})
 
 @csrf_exempt
 def InStorageRequestPPL(request):
@@ -305,54 +334,78 @@ def InStorageRequestPPL(request):
     print('创建入库单成功的单据{0}'.format(wms_code))
     return JsonResponse({'wms_code': list(wms_code)})
 
-@csrf_exempt
-def virtualInstorageRequestPPL(request):
-    ppl_list = request.POST
-    if ppl_list.__len__() == 0:
-        ppl_list = json.loads(request.body)
-    nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    zzl_user_id = 50561
-    ppl_instorages = []
-    ppl_instorage = {}
-    ppl_instorage['originProcessCenterId'] = ppl_list['OriginProcessCenterId']
-    ppl_instorage['targetProcessCenterId'] = ppl_list['TargetProcessCenterId']
-    ppl_instorage['shipType'] = ppl_list['shipType']
-    ppl_instorage['lastUpdateTime'] = nowDate
-    ppl_instorage['lastUpdateUserId'] = zzl_user_id
-    ppl_instorage['createUserId'] = zzl_user_id
-    ppl_instorage['createTime'] = nowDate
-    ppl_instorage['quantity'] = ppl_list['quantity']
-    wsp_db =InstorageMessage()
-    try:
-        porduct_info = wsp_db.findGoodsOAId( ppl_list['goods_code'])
-    except TypeError:
-        print('产品信息为空')
-        return JsonResponse({'error_message': 'goods,goods_bar_code与goods_mapper_bg_product联表查询产品信息为空'})
+class CreateVirtualInstorageRequestPPL(APIView):
+    '''虚拟创建PPL入库申请单接口，并下发到wms
+    '''
+    @extend_schema(description='虚拟创建PPL入库申请单接口',
+                   methods=["POST"],
+                   parameters=[
+                       # OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=['Express-快递-1','Airlift-空运-2','General-常规-3','Seaway-海运-4','Railway-铁路-7','Ground-陆运-8','Vessel-快船-9'],default='General-常规-3'),
+                       OpenApiParameter(name='shipType', description='运输方式', required=False, type=str,
+                                        enum=ship_type_option_enum(), default='3-General'),
+                       OpenApiParameter(name='OriginProcessCenterId', description='来源处理中心', required=False, type=str,
+                                        default=1040),
+                       OpenApiParameter(name='TargetProcessCenterId', description='目标处理中心', required=False, type=str,
+                                        default=1040),
+                       OpenApiParameter(name='goods_code', description='sku&poa%pbu', required=False, type=str,
+                                        default='PBUA00AFE6'),
+                       OpenApiParameter(name='quantity', description='产品数量', required=False, type=int,
+                                        default=10),
+                       OpenApiParameter(name='goodsType', description='货物类型', required=False, type=str,
+                                        enum=goods_type_option_enum(), default='0-General'),
+                       OpenApiParameter(name='isTest', description='是否需要测试', required=False, type=int,
+                                        default=0),
+                       OpenApiParameter(name='isFirstOrder',description='是否首单标识',required=False,type=int,default=0)
 
-    ppl_instorage['productId'] = porduct_info['bg_product_id']
-    ppl_instorage['propertyId'] = porduct_info['bg_property_id']
-    ppl_instorage['isTest'] = ppl_list['isTest'] #是否需求测试
-    ppl_instorage['goodsType'] = ppl_list['goodsType']
-    ppl_instorage['vacuumPacking'] = 0  #是否真空包装
-    ppl_instorage['isShiftCosting'] = 0  #'是否资本化[0-来源仓入库结算,1-目标仓入库结算]',
-    ppl_instorage['goodsSize'] = 0   #o：普通 1：大货
-    ppl_instorage['salePlatform'] = 0  # 销售平台',
-    # ppl_instorage['packageId'] = ppl_list['PackageID']
-    ppl_instorage['packageCode'] = GetCode().getPPLCode(1)[0]
-    # lclLimitLevel 在原代码中是判断货物类型为21的则不允许拼箱，不为21允许相同货主拼箱
-    ppl_instorage['lclLimitLevel'] = "允许相同货主拼箱"
-    ppl_instorage['storageCode'] = 0  #仓库代码
-    ppl_instorage['amazonShop'] = 0    # '亚马逊店铺',
-    ppl_instorage['deliveryProductCode'] = ''  #分箱子明细发货条码
-    ppl_instorage['isDrowback'] = 0  #是否退税
-    ppl_instorage['shipmentId'] = ''   #入库单号
-    ppl_instorages.append(ppl_instorage)
-    isr = CreatePPLInstorageRequest()
-    #生成源单与作业单据
-    wsp_codes = isr.syncFromPPL(ppl_instorages)
-    #下发到wms
-    wms_code = isr.isrFromWspToWms(wsp_codes)
-    return JsonResponse({'wms_code':wms_code})
+                   ])
+    def post(self,request):
+        ppl_list = request.query_params
+        if ppl_list.__len__() == 0:
+            ppl_list = json.loads(request.body)
+        nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        zzl_user_id = 50561
+        ppl_instorages = []
+        ppl_instorage = {}
+        ppl_instorage['originProcessCenterId'] = ppl_list['OriginProcessCenterId']
+        ppl_instorage['targetProcessCenterId'] = ppl_list['TargetProcessCenterId']
+        ppl_instorage['shipType'] = ppl_list['shipType'].split('-')[0]
+        ppl_instorage['lastUpdateTime'] = nowDate
+        ppl_instorage['lastUpdateUserId'] = zzl_user_id
+        ppl_instorage['createUserId'] = zzl_user_id
+        ppl_instorage['createTime'] = nowDate
+        ppl_instorage['quantity'] = ppl_list['quantity']
+        wsp_db =InstorageMessage()
+        try:
+            porduct_info = wsp_db.findGoodsOAId( ppl_list['goods_code'])
+        except TypeError:
+            print('产品信息为空')
+            return JsonResponse({'error_message': 'goods,goods_bar_code与goods_mapper_bg_product联表查询产品信息为空'})
+
+        ppl_instorage['productId'] = porduct_info['bg_product_id']
+        ppl_instorage['propertyId'] = porduct_info['bg_property_id']
+        ppl_instorage['isTest'] = int(ppl_list['isTest']) #是否需求测试
+        ppl_instorage['isFirstOrder'] = int(ppl_list['isFirstOrder']) #是否首單
+        ppl_instorage['goodsType'] = ppl_list['goodsType'].split('-')[0]
+        ppl_instorage['vacuumPacking'] = 0  #是否真空包装
+        ppl_instorage['isShiftCosting'] = 0  #'是否资本化[0-来源仓入库结算,1-目标仓入库结算]',
+        ppl_instorage['goodsSize'] = 0   #o：普通 1：大货
+        ppl_instorage['salePlatform'] = 0  # 销售平台',
+        # ppl_instorage['packageId'] = ppl_list['PackageID']
+        ppl_instorage['packageCode'] = GetCode().getPPLCode(1)[0]
+        # lclLimitLevel 在原代码中是判断货物类型为21的则不允许拼箱，不为21允许相同货主拼箱
+        ppl_instorage['lclLimitLevel'] = "允许相同货主拼箱"
+        ppl_instorage['storageCode'] = 0  #仓库代码
+        ppl_instorage['amazonShop'] = 0    # '亚马逊店铺',
+        ppl_instorage['deliveryProductCode'] = ''  #分箱子明细发货条码
+        ppl_instorage['isDrowback'] = 0  #是否退税
+        ppl_instorage['shipmentId'] = ''   #入库单号
+        ppl_instorages.append(ppl_instorage)
+        isr = CreatePPLInstorageRequest()
+        #生成源单与作业单据
+        wsp_codes = isr.syncFromPPL(ppl_instorages)
+        #下发到wms
+        wms_code = isr.isrFromWspToWms(wsp_codes)
+        return JsonResponse({'wms_code':wms_code})
 
 
 @csrf_exempt
