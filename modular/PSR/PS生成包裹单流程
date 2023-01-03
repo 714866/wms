@@ -30,6 +30,6 @@ https://wsp-api.banggood.cn/wsp/api/productshiftrequest/syncSourceProductShiftRe
 
 
 6.wms操作装箱并申请后，生成货单回传OA，
-对应服务：ManifestUploadHandle
+对应服务：ManifestCreateUploadHandle
 
 7.
