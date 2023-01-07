@@ -30,6 +30,14 @@ https://wsp-api.banggood.cn/wsp/api/productshiftrequest/syncSourceProductShiftRe
 
 
 6.wms操作装箱并申请后，生成货单回传OA，
+业务线：
+1.WMS-WSP-货单号同步
+bl_manifest_status
+2.WMS-WSP-调拨-货单-作业单据日志
+bl_manifest_change_log_wms_wsp
+3.	WMS-WSP-已完成的分箱表-新
+bl_wsp_separate_box_by_finish1
+
 对应服务：ManifestCreateUploadHandle
 
 7.
