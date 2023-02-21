@@ -1,11 +1,15 @@
+import random
+import string
 import time
 
 # now_date = time.strftime("%Y%m%d", time.localtime())
 # sft_code_start = 'SFT-T1'
 # sft_code = 'SFT-T1-'+time.strftime("%Y%m%d", time.localtime())
+
+
 from modular.oaDB.getSFT import SftMessage
 from modular.wspDB.instoragerequest import InstorageMessage
-from wmspda.models import OdsPckInfo
+# from wmspda.models import OdsPckInfo  #使用django的models操作数据库
 
 class GetCode(object):
     __instance = None
@@ -134,19 +138,27 @@ class GetCode(object):
                 box_code = code + '-' + num + 'T'
                 box_codes.append(box_code)
         return box_codes
-    def get_twms_pck_code(self,process,count=1):
-        pck_code = []
-        code ='PCK'+str(process).zfill(4)+time.strftime('%y%m%d',time.localtime())
-        exist_pck_info = OdsPckInfo.objects.using('twms').filter(pck_code__iexact=code)['']
-        if exist_pck_info == None:
-            pass
+    # def get_twms_pck_code(self,process,count=1):
+    #     #使用django的models操作数据库，暂时先废弃想使用sqlalchemy进行操作
+    #
+    #     pck_code = []
+    #     code ='PCK'+str(process).zfill(4)+time.strftime('%y%m%d',time.localtime())
+    #     exist_pck_info = OdsPckInfo.objects.using('twms').filter(pck_code__iexact=code)['']
+    #     if exist_pck_info == None:
+    #         pass
 
-
+def get_order_codes(count=1):
+    start_code ='A06203'+time.strftime('%y%m%d',time.localtime())
+    a_codes=[]
+    for i in range(1):
+        extend_code=''.join(random.choices(string.ascii_uppercase+string.digits,k=5))
+        a_codes.append(start_code+extend_code)
+    return a_codes
 
 
 if __name__=='__main__':
-    test = GetCode()
-    print(test)
-    print(test.get_twms_pck_code(1038))
+    # test = GetCode()
+    # print(test)
+    print(get_order_code())
 
 

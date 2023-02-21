@@ -32,7 +32,7 @@ python manage.py inspectdb --database twms ods_pck_info ods_pck_detail ods_pck_a
 但数据库操作不够直观与方便
 
 方案三：寻找其他ORM模式，
- SQLAlchemy最多人用的，
+ SQLAlchemy最多人用的， https://blog.csdn.net/u013190417/article/details/122402879
 FLASK SQLAlchemy  对flask中针对SQLAlchemy进行优化的
 
 
@@ -43,5 +43,16 @@ db_user=wspuser
 db_password=wsppass
 db_database=ews
 
+[twms_mysql]
+db_host=192.168.1.203
+db_port=13306
+db_user=twms
+db_password=twms#321
+db_database=twms
+
+
 SQLAlchemy 反向生成model类
-sqlacodegen  mysql+pymysql://wspuser:wsppass@172.16.11.40:13306/ews --outfile ./modular/wmsDB/model.py --table ods_pck_info
+sqlacodegen  mysql+pymysql://wsp_test:wsp_test@mysql-test.banggood.cn:3307/wsp --outfile ./modular/wspDB/model.py --table global_order_operate,ods_pck_info,ods_pck_detail,ods_pck_attached,ods_pck_haikwan_detail,package_info,package_item
+
+
+sqlacodegen  mysql+pymysql://twms:twms#321@192.168.1.203:13306/twms --outfile ./modular/wmsDB/model.py --table ods_pck_info,ods_pck_detail,ods_pck_attached,ods_pck_haikwan_detail

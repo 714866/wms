@@ -37,6 +37,7 @@ urlpatterns = [
     # YOUR PATTERNS
     path('DBcreateOrder/', include('DBcreateOrder.urls')),
     path('wmspda/', include('wmspda.urls')),
+    path('order/', include('order.urls')),
 
 ]
 

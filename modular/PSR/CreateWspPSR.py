@@ -99,9 +99,9 @@ class CreateWspPSR(object):
 
 if __name__=='__main__':
     test_psr = CreateWspPSR()
-    psr_code =['PSR-A0-20221117-00002','PSR-A0-20221117-00001']
+    psr_code =['PSR-A2-20230206-00002']
     # data = test_psr.get_oa_psr(psr_code)
     # source_psr_codes = test_psr.put_wsp(data)
-    # operation_psr_codes = test_psr.source_to_operation(psr_code)
+    operation_psr_codes = test_psr.source_to_operation(psr_code)
     operation_psr_codes = test_psr.psr_to_pck(psr_code)
     # test_psr.put_wsp(data,url='http://172.16.6.203:9696/wsp/api/productshiftrequest/syncSourceProductShiftRequest-back')

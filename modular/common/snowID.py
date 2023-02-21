@@ -111,9 +111,8 @@ def get_snow_id(datacenter_id=1, worker_id=0, sequence=0):
     # print(id )
     return id
 
-
 if __name__ == '__main__':
-    get_snow_id()
+    print(get_snow_id())
     # from threading import Thread
     # worker = IdWorker(1, 1, 0)
     # l = list()

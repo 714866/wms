@@ -141,6 +141,6 @@ class CreatePPLInstorageRequest():
 
 if __name__=='__main__':
     test = CreatePPLInstorageRequest()
-    ppl_lists = ['PPL-20220728-610620']
+    ppl_lists = ['PPL-20220819-610852']
     separate_box_info_list=test.isrFromWspToWms(ppl_lists)
     # test.syncFromPPL(separate_box_info_list)

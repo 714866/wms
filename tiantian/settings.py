@@ -42,7 +42,7 @@ INSTALLED_APPS = (
     # 'df_goods',
     # 'cart',
     # 'tinymce',
-    # 'order',
+    'order',
     # 'haystack',
     # 'rest_framework',
     # 'rest_framework_swagger',
@@ -178,5 +178,6 @@ SPECTACULAR_SETTINGS = {
     'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'REDOC_DIST': 'SIDECAR',
+'displayOperationId': True,
     # OTHER SETTINGS
 }

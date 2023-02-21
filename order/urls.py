@@ -1,6 +1,9 @@
 from django.conf.urls import url
-from . import views
+from .swagger_view import MqOrder
+
 urlpatterns=[
-    url('order_index/$',views.order_index),
-    url('deal/$',views.order_deal),
+    url(r'^mqOrdert/', MqOrder.as_view(),name='order'),
+    # url(r'^AlbumViewset/', AlbumViewset().as_view(),name='order2'),
+
+
 ]

@@ -27,5 +27,5 @@ def putOaGoodsToWsp(goods_list):
     result.status_code==200
     # print(result)
 if __name__ == "__main__":
-    test1 = putOaGoodsToWsp(["26334434"])
+    test1 = putOaGoodsToWsp(["26335440"])
     # test1 =
