@@ -110,9 +110,33 @@ DATABASES = {
         'USER':'twms',
         'PASSWORD':'twms#321',
         'NAME':'twms'
-    }
+    },
+    'wms': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': '172.16.11.40',
+        'PORT': '13306',
+        'USER': 'wspuser',
+        'PASSWORD': 'wsppass',
+        'NAME': 'ews'
+    },
+    'wsp': {
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST': '192.168.1.204',
+        'PORT': '3306',
+        'USER': 'wspuser',
+        'PASSWORD': 'wsppass',
+        'NAME': 'wsp'
+    },
 }
+# 数据库路由
+DATABASE_ROUTERS = ['project_name.database_router.DatabaseAppsRouter']  # 路径
 
+# 根据app名称路由指定的数据库
+DATABASE_APPS_MAPPING = {
+    'twms': 'twms',
+    'wms': 'wms',
+    'wsp': 'wsp',
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

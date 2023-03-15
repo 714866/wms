@@ -89,6 +89,9 @@ class TwmsOrderDB(TwmsCommonDB):
         if process == 1087:
             sku='SKU485329'
             poa='POA1299836'
+        if process ==1223:
+            sku='SKU596683'
+            poa='POA1811893'
         elif process!='50025':
             sku ='SKUJ36220'
             poa = 'POA9708319'
@@ -112,8 +115,8 @@ class TwmsOrderDB(TwmsCommonDB):
 
 if __name__ == "__main__":
 
-    pck='PCK121121061632275'
-    order='A000272106150V75'
+    pck='PCK121121061632278'
+    order='A000272106150V78'
     # 天马
     process=1221
     # 递四方
@@ -122,6 +125,8 @@ if __name__ == "__main__":
     # process=50025
     # 惠州HBA
     process=1087
+    #谷仓
+    process=1223
 
     start = TwmsOrderDB()
     start.inser_pck(pck,order,process)

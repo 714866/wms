@@ -11,7 +11,10 @@ class MqOrderCreateSerializer(serializers.Serializer):
     order_num = serializers.IntegerField(default=1)
 
     # ggg = serializers.ListField(source='ProductListField')
+    #many=True 表示是一个列表
     productLists = ProductListField(many=True)
+    class Meta:
+        filter = ('process_center','order_num','sdlfjk')
 
 class OrderSerializer(serializers.Serializer):
     pass

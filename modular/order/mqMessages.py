@@ -1,7 +1,9 @@
+import time
+
 from modular.common.craetecode import get_order_codes
 
 
-def get_message(count=1,):
+def get_order_mq_message(process_id,product_lists):
     odder_code_list = get_order_codes()
     haikwan_datas = []
     haikwan_dict = {
@@ -38,11 +40,11 @@ def get_message(count=1,):
             "orderInfoJson": None,
             "trackingType": 0,
             "orderTypes": "normal",
-            "importDateTime": "2022-10-10 15:38:41",
-            "operateDateTime": "2022-10-10 15:38:58",
-            "payTime": "2022-10-10 23:37:18",
-            "orginalOrderTime": "2022-10-10 23:36:46",
-            "confirmedTime": "2022-10-10 15:38:57",
+            "importDateTime": time.strftime('%y-%m-%d %H:%M:%S',time.localtime()),
+            "operateDateTime": time.strftime('%y-%m-%d %H:%M:%S',time.localtime()),
+            "payTime": time.strftime('%y-%m-%d %H:%M:%S',time.localtime()),
+            "orginalOrderTime": time.strftime('%y-%m-%d %H:%M:%S',time.localtime()),
+            "confirmedTime": time.strftime('%y-%m-%d %H:%M:%S',time.localtime()),
             "userTraceId": "",
             "confirmedTimeStamp": "1665416337000",
             "deliverGoodsId": "1665416337000",
@@ -55,7 +57,7 @@ def get_message(count=1,):
             "freightCarrier": 0,
             "parentOaOrderIds": None,
             "orderDeliveryPriority": 0,
-            "modifyDate": "2022-10-10 15:38:57",
+            "modifyDate": time.strftime('%y-%m-%d %H:%M:%S',time.localtime()),
             "setting": "",
             "recipient": "Chris Berthold",
             "phone": "0414787945",
@@ -92,13 +94,13 @@ def get_message(count=1,):
             "bargainInterceptionType": 1,
             "throwingGoodsSent": 0,
             "lossInterceptTypeLog": "产品成本+运费-1.00*订单总价值&gt;100.00元（人民币）",
-            "preSendTime": "2022-10-12 02:37:18",
+            "preSendTime": time.strftime('%y-%m-%d %H:%M:%S',time.localtime()),
             "haikwanDetails": None,
             "orderDetails": None,
             "customerOrderType": "",
             "iossNumber": "IM1010000003",
             "recipientInfoDecryptionCode": None,
-            "createTime": "2022-10-10 15:38:58",
+            "createTime": time.strftime('%y-%m-%d %H:%M:%S',time.localtime()),
             "buyerDistrict": "",
             "totalPriceWithoutTax": "16.4300",
             "customerPayTax": "0",

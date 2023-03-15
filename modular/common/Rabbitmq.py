@@ -202,4 +202,5 @@ def producter(message):  # 消息生产者
 
 
 if __name__ == "__main__":
+    
     get_message()  # 程序执行入口

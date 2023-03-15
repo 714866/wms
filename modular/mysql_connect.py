@@ -42,5 +42,5 @@ def connect_dh_alchemy(db_name):
                            future=True,
                            pool_size=8,   #连接池的大小，默认为5个，设置为0时表示连接无限制
                            pool_recycle=60 * 30)  #设置时间以限制数据库多久没连接自动断开
-    db_session = sessionmaker(bind=engine)
-    return db_session()
+    return sessionmaker(bind=engine)
+    # return db_session
