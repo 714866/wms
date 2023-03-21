@@ -88,7 +88,11 @@ class CreatePPLInstorageRequest():
         url = wsp_url + '/wsp/api/in-storage-request/syncFromPPL-back?key='+key
         print(json.dumps(ppl_info, cls=DateEncoder))
         #在wsp生成PPL源单
+        # try:
         res = requests.request('POST', url=url, headers=header, data=json.dumps(ppl_info, cls=DateEncoder))
+        # except :
+        #     print('连接失败')
+        #     return  {"error":True,"error_info":"请求wsp生成源单报错"}  #一开始没有设置后 后面太多地方要g改了，先放着
         for goods_info in ppl_info:
             if self.query_wsp_db.ExictWspGoodsInfo(goods_info['productId'], goods_info['propertyId']):
                 pass

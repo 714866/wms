@@ -1,3 +1,4 @@
+from django.db import connections
 from pymysql import IntegrityError
 
 from modular import mapper
@@ -25,3 +26,13 @@ class TwmsCommonDB(object):
     def __init__(self):
         self.cursor = mapper.connect_DB('twms_mysql')
 
+
+
+def wms_sql_select_return_dict(sql):
+    with connections['wms'].cursor() as cursor:
+        cursor.execute(sql)
+        columns = [info[0]  for info in cursor.description]
+        result= [
+            dict(zip(columns,row))  for row in cursor.fetchall()
+        ]
+    return result

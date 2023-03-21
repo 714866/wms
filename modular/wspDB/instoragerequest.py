@@ -6,7 +6,8 @@ from modular.common.SqlChangeFormat import  selectChangeInsert, list_to_str
 from modular.common.commonDB import WspCommonDB
 
 from modular.wspDB.wspsql.instoragerequestsql import sql_get_instorage_request_by_customer, \
-    sql_update_isr_request_sr_status, sql_select_isr_request, sql_select_isr_box, sql_select_isr_box_item
+    sql_update_isr_request_sr_status, sql_select_isr_request, sql_select_isr_box, sql_select_isr_box_item, \
+    get_goods_oa_id_by_num
 
 
 class InstorageMessage(WspCommonDB):
@@ -115,7 +116,13 @@ class InstorageMessage(WspCommonDB):
         sql_result = self.cursor.fetchone(sql)
         return sql_result
 
+    def find_goods_id_by_nums(self,nums):
+        return self.cursor.fetchall(get_goods_oa_id_by_num(nums))
+
+
 if __name__=='__main__':
     t =InstorageMessage()
-    t.returnInsertSql(['SFT-A1-20220307-5006A','SFT-B1-21830-00300093'])
-
+    # t.returnInsertSql(['SFT-A1-20220307-5006A','SFT-B1-21830-00300093'])
+    goods_list = t.find_goods_id_by_nums(3000)
+    for goods in goods_list:
+        print(goods)

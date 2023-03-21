@@ -37,7 +37,7 @@ class CreatePSRCommon(APIView):
                    methods=["POST"],
                    parameters=[
                        # OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=['Express-快递-1','Airlift-空运-2','General-常规-3','Seaway-海运-4','Railway-铁路-7','Ground-陆运-8','Vessel-快船-9'],default='General-常规-3'),
-                       OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=ship_type_option_enum(),default='3-General'),
+                       OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=ship_type_option_enum(),default='2-Airlift'),
                        OpenApiParameter(name='source_process_id', description='来源处理中心', required=False, type=str,default=1040),
                        OpenApiParameter(name='targer_process_id', description='目标处理中心', required=False, type=str,
                                         default=1138),
@@ -129,21 +129,6 @@ class CreatePSRCommon(APIView):
 
         return JsonResponse({'psr': put_wsp_db})
 
-@csrf_exempt
-def getPsr(request):
-    post = request.POST
-    if post.__len__() == 0:
-        post = json.loads(request.body)
-    try:
-        psr_code = post.get('psr_codes')
-        test_psr = CreateWspPSR()
-        data = test_psr.get_oa_psr(psr_code)
-        source_psr_codes = test_psr.put_wsp(data)
-        operation_psr_codes = test_psr.source_to_operation(source_psr_codes)
-        test_psr.psr_to_pck(operation_psr_codes)
-        return JsonResponse({'psr': operation_psr_codes})
-    except AssertionError as  err:
-        return JsonResponse({'报错提示': '{0}'.format(err).replace('\n', '')})
 
 
 @csrf_exempt
@@ -193,27 +178,9 @@ def thirdPsr(request):
     return JsonResponse({'psr': put_wsp_db})
 
 
-@csrf_exempt
-def InStorageRequest(request):
-    """
-    生成入库申请
-    :param request:
-    :return:
-    """
-    post = request.POST
-    if post.__len__() == 0:
-        post = json.loads(request.body)
-    post_data = {}
-    post_data['sft_code'] = post.get('sft_code')
-    isr = CreateSfiInstorageRequest()
-    try:
-        wms_code = isr.createIsrRequestToWms(post.get('sft_code'))
-    except AssertionError as  err:
-        return JsonResponse({'报错提示': '{0}'.format(err).replace('\\', '')})
 
-    return JsonResponse({'wms_code': list(wms_code)})
 
-class virtualInStorageRequest(APIView):
+class SWvirtualInStorageRequest(APIView):
     '''
     post:
     虚拟生成SFT入库申请单
@@ -224,7 +191,7 @@ class virtualInStorageRequest(APIView):
                    parameters=[
                        # OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=['Express-快递-1','Airlift-空运-2','General-常规-3','Seaway-海运-4','Railway-铁路-7','Ground-陆运-8','Vessel-快船-9'],default='General-常规-3'),
                        OpenApiParameter(name='shipType', description='运输方式', required=False, type=str,
-                                        enum=ship_type_option_enum(), default='3-General'),
+                                        enum=ship_type_option_enum(), default='2-Airlift'),
                        OpenApiParameter(name='ProcessCenterId', description='处理中心', required=False, type=str,
                                         default=1040),
 
@@ -232,17 +199,16 @@ class virtualInStorageRequest(APIView):
                                         default='PBUC01BBCAD'),
                        OpenApiParameter(name='quantity', description='产品数量', required=False, type=str,
                                         default=10),
-                       OpenApiParameter(name='oa_url', description='调用oa地址', required=False, type=str,
-                                        default='http://apiewms-dev.banggood.cn'),
+                       OpenApiParameter(name='goodsKins', description='明细需要多少个产品种类，传值goods_code传值无效', required=False, type=str,
+                                        default='1'),
                        OpenApiParameter(name='storage', description='店铺', required=False, type=str,
-                                        default=''),
-                       OpenApiParameter(name='goods_type', description='货物类型', required=False, type=str,
+                                        ),
+                       OpenApiParameter(name='goodsType', description='货物类型', required=False, type=str,
                                         enum=goods_type_option_enum(), default='0-General'),
-                       OpenApiParameter(name='count_num', description='PSR生成数量', required=False, type=str,
-                                        default=10),
+                       OpenApiParameter(name='count_num', description='生入库申请单数量', required=False, type=str),
 
                    ])
-    def api_post(self,request):
+    def post(self,request):
         """
     {
         "goods_code":"PBUC01BBCAD",
@@ -263,19 +229,25 @@ class virtualInStorageRequest(APIView):
         post_data['originProcessCenterId'] = post.get('ProcessCenterId')
         post_data['targetProcessCenterId'] = post.get('ProcessCenterId')
         # find_goods_code = goodsSql()
-        wsp_db =InstorageMessage()
-        post_data['baseProductCode'] = post.get('goods_code')
-        start_code = post_data['baseProductCode'][0:3].upper()
-        #WSP创建调拨单接口，如果判断property_id与productId都为空，则用baseProductCode查询goods表获取产品信息
-        post_data['propertyId'] = None
-        post_data['productId'] = None
-        if start_code!="PBU":
-            try:
-                base_product_code = wsp_db.findGoodsInfo( post_data['baseProductCode'])
-            except TypeError:
-                print('产品信息为空')
-                return JsonResponse({'error_message': '产品信息为空'})
-            post_data['baseProductCode'] = base_product_code
+        if 'goodsKins' in post:
+        #判断是否按产品种类查库生成，
+        # 如果没有传这个字段，则还是按接口传入的产品信息进行生成
+        #r如果有，则查产品表，获取goodsKins各产品塞到一个明细里面
+            post_data['goodsKins'] = post['goodsKins']
+        else:
+            wsp_db =InstorageMessage()
+            post_data['baseProductCode'] = post.get('goods_code')
+            start_code = post_data['baseProductCode'][0:3].upper()
+            #WSP创建调拨单接口，如果判断property_id与productId都为空，则用baseProductCode查询goods表获取产品信息
+            post_data['propertyId'] = None
+            post_data['productId'] = None
+            if start_code!="PBU":
+                try:
+                    base_product_code = wsp_db.findGoodsInfo( post_data['baseProductCode'])
+                except TypeError:
+                    print('产品信息为空')
+                    return JsonResponse({'error_message': '产品信息为空'})
+                post_data['baseProductCode'] = base_product_code
 
         nowDate = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         post_data['modifyTimeStamp'] = nowDate
@@ -313,7 +285,9 @@ class virtualInStorageRequest(APIView):
         isr = CreateSfiInstorageRequest()
         # 组装参数
         create_info = isr.wspApiMessages(post_datas)
+
         wsp_codes = isr.syncFromProductShiftInfo(create_info)
+
         wms_codes = isr.isrFromWspToWms(wsp_codes)
         return JsonResponse({'wms_code': wms_codes})
 

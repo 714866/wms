@@ -133,3 +133,10 @@ sql_select_isr_box_item="""select id,
        is_first_order
 from in_storage_request_box_item where is_deleted=0 and isr_box_id in ({isr_box_id});
 """
+
+def get_goods_oa_id_by_num(nums):
+    return """SELECT distinct g.base_product_code, bgp.bg_product_id, bgp.bg_property_id
+FROM goods g
+         INNER JOIN goods_mapper_bg_product bgp ON bgp.goods_id = g.id
+inner join goods_bar_code gbc on g.id = gbc.goods_id
+where g.is_deleted=0 and bgp.is_deleted=0  group by bgp.bg_product_id, bgp.bg_property_id  limit 1,{0} ;""".format(nums)

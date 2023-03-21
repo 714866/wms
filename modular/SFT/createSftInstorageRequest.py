@@ -72,27 +72,43 @@ class CreateSfiInstorageRequest():
                 product_shift['productShiftDownToWspItemList']=[]
                 product_shift_lists.append(product_shift)  # 加到主表中
 
-            productShiftDownToWspItemList=[]
             # 明细赋值
+            if 'goodsKins'  in sft_list:
+                goods_id_list = self.query_wsp_db.find_goods_id_by_nums(sft_list['goodsKins'])
+                for goods in goods_id_list:
+                    item = {}
+                    item['baseProductCode'] = goods['base_product_code']
+                    item['productId'] = goods['bg_product_id']
+                    item['propertyId'] = goods['bg_property_id']
+                    item['quantity'] = sft_list['quantity']
+                    item['height'] = sft_list['height']
+                    item['length'] = sft_list['length']
+                    item['width'] = sft_list['width']
+                    item['weight'] = sft_list['weight']
+                    item['productShiftBoxCode'] = sft_list['productShiftBoxCode']
+                    item['detailLabel'] = sft_list['detailLabel']
+                    item['ful'] = sft_list['ful']
+                    item['fboxItemOriginCode'] = sft_list['fboxItemOriginCode']
+                    item['type'] = sft_list['type']
 
-            item = {}
-            item['baseProductCode'] = sft_list['baseProductCode']
-            item['productId'] = sft_list['productId']
-            item['propertyId'] = sft_list['propertyId']
-            item['quantity'] = sft_list['quantity']
-            item['height'] = sft_list['height']
-            item['length'] = sft_list['length']
-            item['width'] = sft_list['width']
-            item['weight'] = sft_list['weight']
-            item['productShiftBoxCode'] = sft_list['productShiftBoxCode']
-            item['detailLabel'] = sft_list['detailLabel']
-            item['ful'] = sft_list['ful']
-            item['fboxItemOriginCode'] = sft_list['fboxItemOriginCode']
-            item['type'] = sft_list['type']
+                    #请求参数组装明细
 
-            #请求参数组装明细
-
-            product_shift['productShiftDownToWspItemList'].append(item)
+                    product_shift['productShiftDownToWspItemList'].append(item)
+            else:
+                item = {}
+                item['baseProductCode'] = sft_list['baseProductCode']
+                item['productId'] = sft_list['productId']
+                item['propertyId'] = sft_list['propertyId']
+                item['quantity'] = sft_list['quantity']
+                item['height'] = sft_list['height']
+                item['length'] = sft_list['length']
+                item['width'] = sft_list['width']
+                item['weight'] = sft_list['weight']
+                item['productShiftBoxCode'] = sft_list['productShiftBoxCode']
+                item['detailLabel'] = sft_list['detailLabel']
+                item['ful'] = sft_list['ful']
+                item['fboxItemOriginCode'] = sft_list['fboxItemOriginCode']
+                item['type'] = sft_list['type']
             # product_shift_dict['originCode']['productShiftDownToWspItemList'].append(item)
             print(product_shift)
         print(json.dumps(product_shift_lists, cls=DateEncoder))
@@ -109,6 +125,8 @@ class CreateSfiInstorageRequest():
         url = wsp_url + 'wsp/api/separate-box/syncFromProductShiftInfo?key='+key
         print(url)
         res = requests.request('POST', url=url, headers=header, data=json.dumps(separate_box_info_list, cls=DateEncoder))
+        assert json.loads(res.text)['result']!=0, '调用接口{0}生成入库申请单失败，参数：{1}'.format(url,json.dumps(separate_box_info_list, cls=DateEncoder))
+
         sft_codes_list=[]
         for info_list in separate_box_info_list:
             sft_codes_list.append(info_list['originCode'])
