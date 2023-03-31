@@ -17,7 +17,7 @@ def list_to_str(lists):
 
 def selectChangeInsert(table,select_results):
     """
-    讲查询返回语句变更为插入语句
+    将查询返回语句变更为插入语句
     :param table:
     :param select_results:
     :return:

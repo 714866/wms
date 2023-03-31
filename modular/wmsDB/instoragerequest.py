@@ -1,8 +1,11 @@
+import time
 from itertools import chain
+
+from pymysql import IntegrityError
 
 from modular.common.SqlChangeFormat import list_to_str
 from modular.common.commonDB import wmsCommonDB
-from modular.wspDB.instoragerequest import InstorageMessage
+from modular.common.snowID import get_snow_id
 
 inserSql = """INSERT INTO `ews`.`outbound_group_config` (`id`, `delivery_type`, `batch_model`, `group_type`, `priority`, `is_limit`,
                                            `limit_quantity`, `is_open`, `is_hint`, `processcenter_id`, `create_date`,
@@ -45,7 +48,7 @@ class InstorageMessage1WMS(wmsCommonDB):
 
 
 if __name__=='__main__':
-    t =InstorageMessage1WMS()
+    t =InstorageMessage1WMS().test()
     # wmssql = t.returnInsertSql(['SFT-B1-21830-00300094','SFT-B1-21830-00300095'])
     # g = InstorageMessage1WMS()
     # g.inserIsrRequest(wmssql)
@@ -57,7 +60,7 @@ if __name__=='__main__':
     processcenter = 934
     #设置销售类型
     delivery_type = 0
-    t.inserOutbountConfig(delivery_type,processcenter)
+    # t.inserOutbountConfig(delivery_type,processcenter)
 
 
 

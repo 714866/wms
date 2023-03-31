@@ -47,6 +47,7 @@ class wmsRequest(object):
         order_code = {"targetCode":param}
         result = self.session.post(url=save_shelf_url,json=order_code)
         result_text = json.loads(result.text)
+        print(result_text)
         if len(result_text['errorInfos'])!=0:
             # 判断是否有报错信息
             return {"error":True,"error_info":result_text['errorInfos'][0]}
@@ -87,7 +88,7 @@ class wmsRequest(object):
         api_result = self.session.post(url=api_url,json=post_data)
         return json.loads(api_result.text)
 
-    def update_shelf_rack(self,param):
+    def update_shelf_rack(self,params):
         """
         s上架
         :param param:[{
@@ -100,13 +101,17 @@ class wmsRequest(object):
     }]
         :return:
         """
+        api_url = wms_api_url + '/own-wms-api/pda/shelf/updateShelfRack'
         post_data=[]
-
-        shelf_dict=     {
-        "goodsId":"1073909340791595008",
-        "quantity":1,
-        "rack":"A-A-01",
-        "scanCode":"Fbox-20230211-00002",
-        "shelfCode":"SJ2023021100003A",
-        "uniqueCode":""
-    }
+        for param in params:
+            shelf_dict = {
+                "goodsId": param.get('goods_id'),
+                "quantity": param.get('quantity'),
+                "rack": param.get('rack'),
+                "scanCode": param.get('source_code'),
+                "shelfCode": param.get('shelf_code'),
+                "uniqueCode": ""
+            }
+            post_data.append(shelf_dict)
+        result = self.session.post(url=api_url,json=post_data)
+        return json.loads(result.text)

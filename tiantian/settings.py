@@ -92,16 +92,16 @@ WSGI_APPLICATION = 'tiantian.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.mysql',
-        # 'HOST':'localhost',
-        # 'PORT':'3306',
-        # 'USER':'root',
-        #mac mysql账号密码
+        'ENGINE': 'django.db.backends.mysql',
+        'HOST':'localhost',
+        'PORT':'3306',
+        'USER':'root',
+        # mac mysql账号密码
         # 'PASSWORD':'zzlpython',
         # 'NAME': 'wms',
         # 公司mysql账号密码
-        # 'PASSWORD': 'python',
-        # 'NAME': 'ews',
+        'PASSWORD': 'python',
+        'NAME': 'ews',
     },
     'twms':{
         'ENGINE': 'django.db.backends.mysql',
@@ -129,7 +129,7 @@ DATABASES = {
     },
 }
 # 数据库路由
-DATABASE_ROUTERS = ['project_name.database_router.DatabaseAppsRouter']  # 路径
+DATABASE_ROUTERS = ['tiantian.database_router.DatabaseAppsRouter']  # 路径
 
 # 根据app名称路由指定的数据库
 DATABASE_APPS_MAPPING = {
@@ -205,3 +205,8 @@ SPECTACULAR_SETTINGS = {
 'displayOperationId': True,
     # OTHER SETTINGS
 }
+
+
+# WMS_URL = 'http://172.16.6.203:18201'
+WMS_URL = 'http://172.16.6.203:18201'
+WMS_KEY = 'AS'

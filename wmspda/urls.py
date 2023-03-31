@@ -7,6 +7,10 @@ from django.urls import path
 urlpatterns=[
     url(r'^login/', PdaLogin.as_view(),name='手持登录接口'),
     url(r'^createtwmspck/', TwmsOdsPckInfo.as_view(),name='twms新增接口'),
+    url(r'^saveShelf/', PdaSaveShelf.as_view(),name='入库签收接口'),
+    url(r'^saveReceipt/', PdaSaveReceipt.as_view(),name='收货接口'),
+    url(r'^saveInstorage/', PdaSaveInStorage.as_view(),name='入库接口'),
+    url(r'^UpdateShelfRack/', PdaUpdateShelfRack.as_view(),name='上架接口'),
 
 
 ]

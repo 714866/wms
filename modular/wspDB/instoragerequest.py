@@ -4,6 +4,7 @@ from pytz import unicode
 
 from modular.common.SqlChangeFormat import  selectChangeInsert, list_to_str
 from modular.common.commonDB import WspCommonDB
+from modular.common.snowID import get_snow_id
 
 from modular.wspDB.wspsql.instoragerequestsql import sql_get_instorage_request_by_customer, \
     sql_update_isr_request_sr_status, sql_select_isr_request, sql_select_isr_box, sql_select_isr_box_item, \

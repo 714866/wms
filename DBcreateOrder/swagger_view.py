@@ -191,7 +191,7 @@ class SWvirtualInStorageRequest(APIView):
                    parameters=[
                        # OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=['Express-快递-1','Airlift-空运-2','General-常规-3','Seaway-海运-4','Railway-铁路-7','Ground-陆运-8','Vessel-快船-9'],default='General-常规-3'),
                        OpenApiParameter(name='shipType', description='运输方式', required=False, type=str,
-                                        enum=ship_type_option_enum(), default='2-Airlift'),
+                                        enum=ship_type_option_enum(), default='3-General'),
                        OpenApiParameter(name='ProcessCenterId', description='处理中心', required=False, type=str,
                                         default=1040),
 

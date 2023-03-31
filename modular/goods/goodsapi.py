@@ -3,6 +3,7 @@ import json
 import requests
 
 from modular.GetApplication import get_value
+from modular.common.SqlChangeFormat import selectChangeInsert
 
 wsp_url =  get_value('wsp_url','url')
 wsp_key = get_value('wsp_url','key')
@@ -26,6 +27,13 @@ def putOaGoodsToWsp(goods_list):
     result = requests.request('POST',url=get_goods_url,headers=header,data=json.dumps(request_data))
     result.status_code==200
     # print(result)
+
+def put_wsp_to_wms_goods():
+    WspCommonDB
+    psr_item_insert_sql = selectChangeInsert('product_shift_request_item', psr_item)
+
 if __name__ == "__main__":
+
+
     test1 = putOaGoodsToWsp(["2525752"])
     # test1 =
