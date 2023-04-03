@@ -22,6 +22,8 @@ where  isr.in_storage_request_no='{code}'  or isr.customer_order_no='{code}' or 
 def find_goods_by_id(goods_lists_str):
     return 'select * from goods where id in ({0})'.format(goods_lists_str)
 
+def find_goods_by_code(goods_code):
+    return "select * from goods where base_product_code='{0}'".format(goods_code)
 
 def insert_goods_volume(goods_id, type=2):
     time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())

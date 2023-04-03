@@ -26,6 +26,7 @@ def selectChangeInsert(table,select_results):
     for select_result in select_results:
         if insert_sql=='':
             row_key = ','.join(str(v) for v in select_result.keys())
+            #r如果是类型的 加引号'，不是这不加’
             row_value = ','.join('\'' +str(v) +'\'' if isinstance(v,str) or isinstance(v, unicode) or isinstance(v,datetime) or isinstance(v,date) else str(v) for v in select_result.values())
             row_value = row_value.replace('None', 'NULL')
             insert_sql = "insert into `%s`(%s) values (%s)" % (table, row_key, row_value)

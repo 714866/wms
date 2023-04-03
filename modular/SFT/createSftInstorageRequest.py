@@ -109,6 +109,7 @@ class CreateSfiInstorageRequest():
                 item['ful'] = sft_list['ful']
                 item['fboxItemOriginCode'] = sft_list['fboxItemOriginCode']
                 item['type'] = sft_list['type']
+                product_shift['productShiftDownToWspItemList'].append(item)
             # product_shift_dict['originCode']['productShiftDownToWspItemList'].append(item)
             print(product_shift)
         print(json.dumps(product_shift_lists, cls=DateEncoder))

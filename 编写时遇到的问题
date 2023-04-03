@@ -30,6 +30,7 @@ drf-yasg库 但只支持swagger2.0，官方文档提示drf-spectacular能支持s
 方案二：django的models，在setting设置多个数据库连接
 使用自带models,还能直接从数据库反向生成models类
 python manage.py inspectdb --database twms ods_pck_info ods_pck_detail ods_pck_attached ods_pck_haikwan_detail  > wmspda/models.py
+
 但数据库操作不够直观与方便
 1.可以配置多数据库，在本项目实现
 2.执行原生sql时，使用from django.db import connections ，易错点：使用了connection，导致无法指定数据库

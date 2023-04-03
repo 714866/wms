@@ -7,10 +7,22 @@ from modular.common.SqlChangeFormat import selectChangeInsert
 from modular.common.commonDB import wmsCommonDB,WspCommonDB
 from modular.goods.wms_sql import find_not_exict_goods_by_isr_box_id, find_goods_by_id, insert_goods_volume, \
     inset_goods_weight, goods_weight_exist_zero, update_goods_weight_valuse, goods_volume_exist_zero, \
-    update_goods_volume_valuse, find_isr_goods_id_by_code, goods_volume_not_exict, goods_weight_not_exict
+    update_goods_volume_valuse, find_isr_goods_id_by_code, goods_volume_not_exict, goods_weight_not_exict, \
+    find_goods_by_code
 
 
 class WmsGoods(wmsCommonDB):
+
+
+
+
+    def inser_goods_from_wsp_by_goods_code(self,goods_code):
+        wsp_cursor = WspCommonDB().cursor
+        wsp_goods_info = wsp_cursor.fetchall(find_goods_by_code(goods_code))
+        goods_insert_sql = selectChangeInsert('goods', wsp_goods_info)
+        print(goods_insert_sql)
+        self.cursor.execute(goods_insert_sql)
+
     def insert_goods_by_wsp(self,isr_box_id):
         """
         查询wsp有产品信息，但wms没有的，对wms进行插入

@@ -37,6 +37,17 @@ class wmsRequest(object):
         }
         self.session.post(url=login_url, json=post_data, headers=self.header)
 
+    def update_user_processcenter(self,processcenter):
+        """
+        切换手持登录处理中心
+        :param processcenter:
+        :return:
+        """
+        url = wms_api_url+"/own-wms-api/pda/sys-user/updateUserProcessCenter?processCenterId="+str(processcenter)
+        self.session.get(wms_api_url)
+
+
+
     def save_shelf(self,param):
         """
         入库签收
@@ -48,10 +59,10 @@ class wmsRequest(object):
         result = self.session.post(url=save_shelf_url,json=order_code)
         result_text = json.loads(result.text)
         print(result_text)
-        if len(result_text['errorInfos'])!=0:
+        if result_text['errorInfos'] is not None:
             # 判断是否有报错信息
             return {"error":True,"error_info":result_text['errorInfos'][0]}
-        return {"error":False,"message":result_text['errorInfos'][0]}
+        return {"error":False,"message":result_text}
 
     def save_receipt(self,param):
         """
@@ -81,11 +92,12 @@ class wmsRequest(object):
         :param param:
         :return:
         """
-        login_process = 1
-        user_processcenter = param.processcenter_id
         api_url = wms_api_url+'/own-wms-api/pda/inStorage/saveInStorage'
-        post_data = {'receiptNo':param.receipt_code}
+        post_data = {'receiptNo':param}
         api_result = self.session.post(url=api_url,json=post_data)
+        if len(json.loads(api_result.text)['errorInfos']) > 0:
+            print(api_result.text)
+            return json.loads(api_result.text)['errorInfos']
         return json.loads(api_result.text)
 
     def update_shelf_rack(self,params):

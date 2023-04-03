@@ -8,6 +8,9 @@ cp.read(os.path.abspath(os.path.dirname(__file__)) + '/config/mysqldb.conf')
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+#bit类型查询返回b'\x00 处理
+converions = pymysql.converters.conversions
+converions[pymysql.FIELD_TYPE.BIT] = lambda x:'0' if 'x00' else '1'
 
 def connect_db(db_name):
     host = cp.get(db_name, "db_host")
@@ -20,7 +23,8 @@ def connect_db(db_name):
                          user=user,
                          password=password,
                          database=database,
-                         cursorclass=pymysql.cursors.DictCursor
+                         cursorclass=pymysql.cursors.DictCursor,
+                         conv = converions
                          )
     return db
 

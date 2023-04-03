@@ -11,6 +11,7 @@ urlpatterns=[
     url(r'^saveReceipt/', PdaSaveReceipt.as_view(),name='收货接口'),
     url(r'^saveInstorage/', PdaSaveInStorage.as_view(),name='入库接口'),
     url(r'^UpdateShelfRack/', PdaUpdateShelfRack.as_view(),name='上架接口'),
+    url(r'^goodsShelf/', goodsShelf.as_view(),name='从SFT生成到上架'),
 
 
 ]
