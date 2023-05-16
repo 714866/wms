@@ -86,4 +86,4 @@ VALUES ({source_process_id}, {targer_process_id}, '{shift_type}', 1.000, GETDATE
 
 if __name__=="__main__":
     testsql = goodsSql()
-    testsql.updateCheckProductShiftRequest(27,2,1130)
+    testsql.inserProcessCenterTransShipPrice(1040,1138,2)

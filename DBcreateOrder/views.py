@@ -117,6 +117,7 @@ def returnResult(request):
         return JsonResponse({'psr': '{0}'.format(err)})
 
     return JsonResponse({'psr': put_wsp_db})
+
 @csrf_exempt
 def getPsr(request):
     post = request.POST

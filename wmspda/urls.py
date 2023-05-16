@@ -12,6 +12,7 @@ urlpatterns=[
     url(r'^saveInstorage/', PdaSaveInStorage.as_view(),name='入库接口'),
     url(r'^UpdateShelfRack/', PdaUpdateShelfRack.as_view(),name='上架接口'),
     url(r'^goodsShelf/', goodsShelf.as_view(),name='从SFT生成到上架'),
+    url(r'^AllocationTask/', AllocationTask.as_view(),name='纸质配货'),
 
 
 ]

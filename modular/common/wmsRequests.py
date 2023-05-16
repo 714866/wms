@@ -127,3 +127,22 @@ class wmsRequest(object):
             post_data.append(shelf_dict)
         result = self.session.post(url=api_url,json=post_data)
         return json.loads(result.text)
+
+    def pda_allocation_task_save(self,tx_code):
+        get_task_api_url = wms_api_url+'/own-wms-api/pda/allocation-task/getBatchAllocationData?batchBarCode='+tx_code
+        get_task_result = self.session.get(url=get_task_api_url)
+        task_result = json.loads(get_task_result.text)['result']
+
+        save_param = {
+            "commandId": task_result[0]['commandId'],
+            "quantity": task_result[0]['quantity'],
+            "containerCode": "",
+            "taskCode": "",
+            "rackCode": task_result[0]['rack'],
+            "batchModelEnum": "纸质配货"
+        }
+        save_api_url = wms_api_url+'/own-wms-api/pda/allocation-task/save'
+        save_result = self.session.post(url=save_api_url,json=save_param)
+        return json.loads(save_result.text)
+
+

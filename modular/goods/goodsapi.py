@@ -28,12 +28,12 @@ def putOaGoodsToWsp(goods_list):
     result.status_code==200
     # print(result)
 
-def put_wsp_to_wms_goods():
-    WspCommonDB
-    psr_item_insert_sql = selectChangeInsert('product_shift_request_item', psr_item)
+# def put_wsp_to_wms_goods():
+#     WspCommonDB
+#     psr_item_insert_sql = selectChangeInsert('product_shift_request_item', psr_item)
 
 if __name__ == "__main__":
 
 
-    test1 = putOaGoodsToWsp(["2525752"])
+    test1 = putOaGoodsToWsp(["1959354"])
     # test1 =

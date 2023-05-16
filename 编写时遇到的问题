@@ -21,7 +21,9 @@ drf-yasg库 但只支持swagger2.0，官方文档提示drf-spectacular能支持s
 
 4.drf-spectacular能支持swagger3.0
 对应文档https://drf-spectacular.readthedocs.io/en/latest/settings.html
-
+全局定义API视图传参
+drf_spectacular.openapi.AutoSchema创建自定义架构类，并将get_override_parameters(...)***方法重写为
+https://www.saoniuhuo.com/question/detail-2169169.html
 
 5.思考数据库插入简化逻辑
 方案一：自写通用模块，传入字典，组装成insert语句，再增加一个存放对应表字段的全局字典，使用深拷贝提供其他使用
@@ -30,6 +32,7 @@ drf-yasg库 但只支持swagger2.0，官方文档提示drf-spectacular能支持s
 方案二：django的models，在setting设置多个数据库连接
 使用自带models,还能直接从数据库反向生成models类
 python manage.py inspectdb --database twms ods_pck_info ods_pck_detail ods_pck_attached ods_pck_haikwan_detail  > wmspda/models.py
+python manage.py inspectdb --database wms  goods  > wmspda/models1.py
 
 但数据库操作不够直观与方便
 1.可以配置多数据库，在本项目实现

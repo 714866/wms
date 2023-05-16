@@ -150,7 +150,7 @@ class GetCode(object):
 def get_order_codes(count=1):
     start_code ='A06203'+time.strftime('%y%m%d',time.localtime())
     a_codes=[]
-    for i in range(1):
+    for i in range(count):
         extend_code=''.join(random.choices(string.ascii_uppercase+string.digits,k=5))
         a_codes.append(start_code+extend_code)
     return a_codes
@@ -159,6 +159,6 @@ def get_order_codes(count=1):
 if __name__=='__main__':
     # test = GetCode()
     # print(test)
-    print(get_order_code())
+    print(get_order_codes())
 
 

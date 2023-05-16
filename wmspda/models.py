@@ -12,7 +12,7 @@ class OdsPckInfo(models.Model):
     id = models.BigIntegerField(primary_key=True)
     package_id = models.CharField(max_length=20)
     order_id = models.CharField(max_length=30)
-    batchgridorderdata_id = models.CharField(max_length=30)
+    # batchgridorderdata_id = models.CharField(max_length=30)  # wsp没有这个字段，
     process_center_id = models.IntegerField()
     delivery_type = models.CharField(max_length=50)
     order_type = models.CharField(max_length=20, blank=True, null=True)

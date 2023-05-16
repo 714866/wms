@@ -121,10 +121,10 @@ DATABASES = {
     },
     'wsp': {
         'ENGINE': 'django.db.backends.mysql',
-        'HOST': '192.168.1.204',
-        'PORT': '3306',
-        'USER': 'wspuser',
-        'PASSWORD': 'wsppass',
+        'HOST': 'mysql-test.banggood.cn',
+        'PORT': '3307',
+        'USER': 'wsp_test',
+        'PASSWORD': 'wsp_test',
         'NAME': 'wsp'
     },
 }

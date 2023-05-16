@@ -7,7 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 
 Base = declarative_base()
-
+#这个是sqlalchemy的
 
 class GlobalOrderOperate(Base):
     __tablename__ = 'global_order_operate'

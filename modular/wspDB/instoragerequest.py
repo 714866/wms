@@ -70,7 +70,7 @@ class InstorageMessage(WspCommonDB):
 #   and g.base_product_code = '{0}';'''.format(goods_code)
         order_sql = """
             select g.base_product_code
-        from goods g inner join goods_bar_code gbc on g.id = gbc.goods_id where gbc.goods_code='{0}' ;
+        from goods g inner join goods_bar_code gbc on g.id = gbc.goods_id where g.is_deleted=0 and gbc.is_deleted=0  and gbc.goods_code='{0}' ;
         """.format(goods_code)
         select_result = self.cursor.fetchone(order_sql)
         return select_result['base_product_code']

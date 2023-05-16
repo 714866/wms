@@ -144,7 +144,7 @@ def get_message():
                         "packageLength": 8,
                         "packageWidth": 6,
                         "packageHeight": 2,
-                        "barCode": "",
+                        "barCode": "barCode",    #三方编码
                         "salePrice": 3.5,
                         "productLabels": [
                             "24",
@@ -182,21 +182,21 @@ def get_message():
                 ]
             }
         )
-        producter(message)
+        order_producter(message)
 
 
 # 消息生产者
 
-def producter(message):  # 消息生产者
+def order_producter(message):  # 消息生产者
     # 获取与rabbitmq 服务的连接，虚拟队列需要指定参数 virtual_host，如果是默认的可以不填（默认为/)，也可以自己创建一个
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(host='192.168.1.146', port=5672, credentials=pika.PlainCredentials('guest', 'guest'),virtual_host='sp-crm'))
     # 创建一个 AMQP 信道（Channel）,建造一个大邮箱，隶属于这家邮局的邮箱
     channel = connection.channel()
     # 声明消息队列tester，消息将在这个队列传递，如不存在，则创建,durable参数与mq配置的要一样，且
-    channel.queue_declare(queue='q_ewms_wosPrep_flow_handle',durable=True)
+    channel.queue_declare(queue='q_ewms_wosPrep_flow_handle_zzl',durable=True)
     # 向队列插入数值 routing_key的队列名为tester，body 就是放入的消息内容，exchange指定消息在哪个队列传递，这里是空的exchange但仍然能够发送消息到队列中，因为我们使用的是我们定义的空字符串“”exchange（默认的exchange）
-    channel.basic_publish(exchange='x_sp_orderservice', routing_key='r_order_orderservice_flow_push_autoconfirminfo', body=message)
+    channel.basic_publish(exchange='x_sp_orderservice', routing_key='r_order_orderservice_flow_push_autoconfirminfo_zzl', body=json.dumps(message))
     # 关闭连接
     connection.close()
 

@@ -26,7 +26,7 @@ class PdaLogin(APIView):
     手持登录接口
     '''
 
-    @extend_schema(description='模拟页面普通创建PSR接口',
+    @extend_schema(description='手持登录', summary='手持PDA登录',
                    methods=["POST"],
                    parameters=[
                        OpenApiParameter(name='username', description='用户名', type=str,
@@ -37,8 +37,8 @@ class PdaLogin(APIView):
     def post(self, request):
         login_url = 'http://172.16.6.203:18201/own-wms-api/pda/sys-user/login'
         api_params = request.query_params
-        use = OdsPckInfo.objects.filter(order_id='A0005121030402RX')
-        use1 = OdsPckInfo.objects.using('twms').filter(order_id='A0005121030402RX')
+        # use = OdsPckInfo.objects.filter(order_id='A0005121030402RX')
+        # use1 = OdsPckInfo.objects.using('twms').filter(order_id='A0005121030402RX')
         r = wmsRequest(is_login=False)
         r.login(api_params)
 
@@ -49,7 +49,7 @@ class PdaSaveShelf(APIView):
     手持入库签收接口
     '''
 
-    @extend_schema(description='手持PDA入库签收',
+    @extend_schema(description='手持PDA入库签收', summary='3手持PDA入库签收',
                    methods=["GET"],
                    parameters=[
                        OpenApiParameter(name='targetCode', description='入库签收单据', type=str
@@ -70,7 +70,7 @@ class PdaSaveReceipt(APIView):
     """
 
     # @catch_exception 自写装饰器在上面的时候，extend_schema没生效
-    @extend_schema(description='手持PDA收货', methods=["GET"],
+    @extend_schema(description='手持PDA收货', methods=["GET"], summary='1手持PDA收货',
                    parameters=[OpenApiParameter(name='code', description='收货单据', required=True), ], )
     # @catch_exception
     def get(self, request):
@@ -86,7 +86,7 @@ class PdaSaveInStorage(APIView):
     手持入库
     """
 
-    @extend_schema(description='手持PDA入库', methods=['GET'],
+    @extend_schema(description='手持PDA入库', methods=['GET'], summary='2手持PDA入库',
                    parameters=[OpenApiParameter(name='code', description='入库单据', required=True)],
                    )
     def get(self, request):
@@ -105,7 +105,7 @@ class PdaUpdateShelfRack(APIView):
     手持上架 ，上架单号与来源单号不能同时为空
     """
 
-    @extend_schema(description='手持上架', methods=['GET'],
+    @extend_schema(description='手持上架', methods=['GET'], summary='4手持PDA上架',
                    parameters=[OpenApiParameter(name='shelfCode', description='上架单号', required=False),
                                OpenApiParameter(name='sourceCode', description='来源单号', required=False),
                                OpenApiParameter(name='rack', description='上架货位', required=True, ),
@@ -126,8 +126,8 @@ class PdaUpdateShelfRack(APIView):
             update_shelf_info['rack'] = request.query_params.get('rack')
             update_shelf_info['quantity'] = request.query_params.get('quantity') if request.query_params.get(
                 'quantity') else (
-                        update_shelf_info['quantity'] - update_shelf_info.get('in_quantity') - update_shelf_info.get(
-                    'exception_quantity'))
+                    update_shelf_info['quantity'] - update_shelf_info.get('in_quantity') - update_shelf_info.get(
+                'exception_quantity'))
             shelf_info_list.append(update_shelf_info)
             response = wmsRequest().update_shelf_rack(shelf_info_list)
             print('查找shelf表数据，获取goodsId，数量quantity')
@@ -143,8 +143,8 @@ class PdaUpdateShelfRack(APIView):
 
 class goodsShelf(APIView):
 
-    @extend_schema(description='按产品货位完成上架', methods=['GET'],
-                   parameters=[OpenApiParameter(name='goodsCode', description='产品', required=True,),
+    @extend_schema(description='按产品货位完成上架', methods=['GET'], summary='按产品货位完成调度单上架流程',
+                   parameters=[OpenApiParameter(name='goodsCode', description='产品', required=True, ),
                                OpenApiParameter(name='quantity', description='数量', required=True),
                                OpenApiParameter(name='rack', description='上架货位', required=True),
                                OpenApiParameter(name='processcenter', description='上架处理中心', required=True)
@@ -169,7 +169,7 @@ class goodsShelf(APIView):
             try:
                 base_product_code = wsp_db.findGoodsInfo(post_data['baseProductCode'])
             except TypeError:
-                print('wsp产品信息为空')
+                print('wsp产品goods_bar_code信息为空')
                 return JsonResponse({'error_message': 'wsp产品{0}信息为空'.format(post_data['baseProductCode'])})
             post_data['baseProductCode'] = base_product_code
 
@@ -207,12 +207,12 @@ class goodsShelf(APIView):
         wsp_codes = isr.syncFromProductShiftInfo(create_info)
         wms_codes = isr.isrFromWspToWms(wsp_codes)
 
-        #需要增加对产品是否在wms的判断
-        wms_goods_info = Goods.objects.values('id').filter(base_product_code=request.query_params.get('goodsCode')).first()
+        # 需要增加对产品是否在wms的判断
+        wms_goods_info = Goods.objects.values('id').filter(base_product_code=post_data['baseProductCode']).first()
         if wms_goods_info is None:
-            #从wsp拉数据到wms
+            # 从wsp拉数据到wms
             wms_goods = WmsGoods()
-            wms_goods.inser_goods_from_wsp_by_goods_code(request.query_params.get('goodsCode'))
+            wms_goods.inser_goods_from_wsp_by_goods_code(post_data['baseProductCode'])
             wms_goods.fix_goods_weigth_and_volume(sft_codes[0])
 
             pass
@@ -221,30 +221,42 @@ class goodsShelf(APIView):
         wms_request.update_user_processcenter(request.query_params.get('ProcessCenterId'))
         save_shelf_response = wmsRequest().save_shelf(wms_codes[0])
         if save_shelf_response.get('error'):
-            #返回入库
+            # 返回入库
             return save_shelf_response
 
         # 3进行上架
-        #todo 后期需加收对货位是否可用的判断
+        # todo 后期需加收对货位是否可用的判断
         shelf_info_list = wms_sql_select_return_dict(
             find_shelf_by_source_code(wms_codes[0], request.query_params.get('rack')))
         if len(shelf_info_list) == 0:
             return JsonResponse({'error': '{code}未生成上架单'.format(code=wms_codes[0])})
 
         response = wmsRequest().update_shelf_rack(shelf_info_list)
-        if json.loads(response.text)['errorInfos'] is not None:
+        if json.loads(response)['errorInfos'] is not None:
             # 判断是否有报错信息
             return {"error": True, "error_info": json.loads(response.text)['errorInfos'][0]}
         return JsonResponse({'info': '{code}上架处理中心{process}到货架：{rack}，数量：{quantiy}成功'.format(
-            code=wms_codes[0],process=request.query_params.get('processcenter'),quantiy=request.query_params.get('quantity'),
+            code=wms_codes[0], process=request.query_params.get('processcenter'),
+            quantiy=request.query_params.get('quantity'),
             rack=request.query_params.get('rack')
         )
         }
         )
 
 
+class AllocationTask(APIView):
+    # 手持配货
+    @extend_schema(description='纸质配货', methods=['POST'], summary='纸质配货',
+                   parameters=[OpenApiParameter(name='TX', description='批次号', required=True)])
+    def post(self, request):
+        api_action = wmsRequest()
+        tx_code = request.query_params.get('TX')
+        return api_action.pda_allocation_task_save(tx_code)
+
+
+
 class TwmsOdsPckInfo(APIView):
-    @extend_schema(description='查询twms包裹单的')
+    @extend_schema(description='查询twms包裹单的', summary='查询twms包裹单的')
     def post(self, request):
         # GetCode().get_twms_pck_code(1038)
         OdsPckInfo.objects.using('twms').create(id=get_snow_id(),

@@ -53,6 +53,12 @@ class CreatePSRCommon(APIView):
                                         enum=goods_type_option_enum(),default='0-General'),
                        OpenApiParameter(name='count_num', description='PSR生成数量', required=False, type=str,
                                         default=10),
+                       # OpenApiParameter(  # 设置请求头参数
+                       #     name="accept-language",
+                       #     type=str,
+                       #     location=OpenApiParameter.HEADER,
+                       #     description="`fa` or `en`. The default value is en",
+                       # )
 
                    ])
     def post(self,request):
@@ -186,7 +192,7 @@ class SWvirtualInStorageRequest(APIView):
     虚拟生成SFT入库申请单
     '''
 
-    @extend_schema(description='虚拟生成SFT入库申请单',
+    @extend_schema(description='虚拟生成SFT入库申请单',summary='虚拟生成SFT入库申请单',
                    methods=["POST"],
                    parameters=[
                        # OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=['Express-快递-1','Airlift-空运-2','General-常规-3','Seaway-海运-4','Railway-铁路-7','Ground-陆运-8','Vessel-快船-9'],default='General-常规-3'),
@@ -311,7 +317,7 @@ def InStorageRequestPPL(request):
 class CreateVirtualInstorageRequestPPL(APIView):
     '''虚拟创建PPL入库申请单接口，并下发到wms
     '''
-    @extend_schema(description='虚拟创建PPL入库申请单接口',
+    @extend_schema(description='虚拟创建PPL入库申请单接口',summary='虚拟创建PPL入库申请单接口',
                    methods=["POST"],
                    parameters=[
                        # OpenApiParameter(name='ship_type', description='运输方式', required=False, type=str,enum=['Express-快递-1','Airlift-空运-2','General-常规-3','Seaway-海运-4','Railway-铁路-7','Ground-陆运-8','Vessel-快船-9'],default='General-常规-3'),

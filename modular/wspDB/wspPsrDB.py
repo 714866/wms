@@ -1,5 +1,6 @@
 from modular import mapper
 from modular.common.SqlChangeFormat import list_to_str, selectChangeInsert
+from modular.common.commonDB import wmsCommonDB
 from modular.wspDB.wspsql.PsrSql import sql_select_pck_info, sql_select_pck_item, sql_select_psr, sql_select_psr_item
 
 
@@ -114,9 +115,25 @@ from package_info where order_id in ({0});
         print(psr_item_insert_sql)
         return pck_main_insert_sql,pck_item_insert_sql,psr_main_insert_sql,psr_item_insert_sql
 
+    def return_pck_insert_sql(self,psr_code):
+        #获取pck主表，并组装插入sql
+        psr_codes = list_to_str(psr_code)
+        sql = sql_select_pck_info.format(psr_codes)
+        pck_main = self.cursor.fetchall(sql)
+        pck_main_insert_sql = selectChangeInsert('package_info',pck_main)
+        print(pck_main_insert_sql)
+        #获取包裹明细表，并组装插入sql
+        package_id =  ','.join('\''+str(pck['package_id'])+'\'' for pck in pck_main)
+        pck_item = self.cursor.fetchall(sql_select_pck_item.format(package_id))
+        pck_item_insert_sql = selectChangeInsert('package_item',pck_item)
+        print(pck_item_insert_sql)
+        return pck_main_insert_sql,pck_item_insert_sql
+
 
 if __name__=='__main__':
     test = WspPsrSql()
-    g= test.returnInsertSql(['PSR-A2-20220311-00674','PSR-A2-20220311-00673'])
-    print (g)
+    insert_sql= test.return_pck_insert_sql(['PSR-A2-20230407-00006','PSR-A2-20230407-00007','PSR-A2-20230407-00008','PSR-A2-20230407-00009'])
+    # 插入wms库
+    wmsCommonDB().insertLists(insert_sql)
+    # print (g)
 
